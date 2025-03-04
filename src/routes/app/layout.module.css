@@ -1,0 +1,17 @@
+.layout {
+  position : fixed;
+  z-index  : -1;
+  top      : 0;
+  left     : 50%;
+  transform: translateX(-50%);
+
+  overflow-x: hidden;
+
+  width    : 100vw;
+  max-width: 600px;
+  height   : 100vh;
+  margin   : 0 auto;
+
+  box-shadow: 0 10px 20px rgb(0 0 0 / 19%),
+    0 6px 6px rgb(0 0 0 / 23%);
+}
