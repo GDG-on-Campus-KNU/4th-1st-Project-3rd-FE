@@ -1,0 +1,3 @@
+interface ChatMbtiRequestBody {
+  content: string;
+}
