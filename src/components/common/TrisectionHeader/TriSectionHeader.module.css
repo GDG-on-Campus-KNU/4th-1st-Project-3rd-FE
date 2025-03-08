@@ -1,0 +1,48 @@
+.header {
+  position: sticky;
+  top     : 0;
+  left    : 0;
+
+  overflow: hidden;
+
+  width : 100%;
+  height: 60px;
+  border: 1px solid grey;
+}
+
+.relator {
+  position: relative;
+  width   : 100%;
+  height  : 100%;
+}
+
+.header-section {
+  position: absolute;
+
+  overflow       : hidden;
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+
+
+  height: 100%;
+}
+
+.header-side-section {
+  max-width: calc(calc(100% - 5.5vw)/8);
+
+}
+
+.left-section {
+  left: 5.5vw;
+}
+
+.center-section {
+  right    : 50%;
+  transform: translateX(50%);
+  max-width: calc(calc(100% - 5.5vw)/2);
+}
+
+.right-section {
+  right: 5.5vw;
+}
