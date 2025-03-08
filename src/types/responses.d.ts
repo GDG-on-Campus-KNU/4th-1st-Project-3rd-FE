@@ -8,5 +8,14 @@ type ResponseInMocking<T = MessageResponse> = BaseResponse<T> & {
   status?: StatusCode;
 };
 
-// response
-type MessageResponse = { message: string };
+interface MessageResponse {
+  content: string;
+  order: number;
+  isUserChat: boolean;
+  time: string;
+}
+
+type ChatMbtiResponseBody = {
+  messageResponses: MessageResponse[];
+};
+type ChatMbtiResponse = BaseResponse<ChatMbtiResponseBody>;
