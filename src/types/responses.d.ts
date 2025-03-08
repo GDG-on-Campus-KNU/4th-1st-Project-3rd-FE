@@ -19,3 +19,5 @@ type ChatMbtiResponseBody = {
   messageResponses: MessageResponse[];
 };
 type ChatMbtiResponse = BaseResponse<ChatMbtiResponseBody>;
+
+type EmptyResponse = Record<string, never>;
