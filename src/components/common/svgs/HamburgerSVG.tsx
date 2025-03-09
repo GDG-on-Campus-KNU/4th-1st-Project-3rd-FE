@@ -1,6 +1,6 @@
-import { SVGElementProp } from '@_/types/props';
+import { SVGComponentProp } from '@_/types/props';
 
-export default function HamburgerSVG(props: SVGElementProp) {
+export default function HamburgerSVG(props: SVGComponentProp) {
   const { width, height, color, ...restProps } = props;
 
   return (
