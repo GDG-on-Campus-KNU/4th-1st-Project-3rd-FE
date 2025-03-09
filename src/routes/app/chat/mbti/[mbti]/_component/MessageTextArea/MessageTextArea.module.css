@@ -1,0 +1,67 @@
+.message-text-area {
+  position        : relative;
+  padding         : 10px;
+  border-radius   : 10px;
+  background-color: #f5f5f5;
+}
+
+.text-area {
+  width : 100%;
+  height: 24px;
+  border: none;
+
+  font-size: 14px;
+
+  outline    : none;
+  caret-color: #4949e9;
+}
+
+.send-container {
+  display        : flex;
+  align-items    : center;
+  justify-content: space-between;
+}
+
+.send-counter {
+  font-size: 14px;
+}
+
+.proper-message .send-counter {
+  color: #4949e9;
+}
+
+.empty-message .send-counter {
+  color: #c3c3c3;
+}
+
+.over-message .send-counter {
+  color: #FF451B;
+}
+
+
+.send-button {
+  cursor: pointer;
+
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+
+  width        : 28px;
+  height       : 28px;
+  border-radius: 6px;
+}
+
+
+.proper-message .send-button {
+  background-color: #4949e9;
+}
+
+.empty-message .send-button {
+  cursor          : default;
+  background-color: #c3c3c3;
+}
+
+.over-message .send-button {
+  cursor          : default;
+  background-color: #c3c3c3;
+}
