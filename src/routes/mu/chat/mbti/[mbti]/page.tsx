@@ -49,10 +49,14 @@ const handleServer =async (e:React.MouseEvent<HTMLButtonElement>) => {
     }
   };
 
+  const handleRefresh = () => {
+    window.location.reload();
+  }
+
   return (
     <div style={{ 
       width: '250px', 
-      height: '400px', 
+      height: '300px', 
       backgroundColor: '#E7CBCB',
       display: 'flex',
       flexDirection: 'column'
@@ -63,26 +67,37 @@ const handleServer =async (e:React.MouseEvent<HTMLButtonElement>) => {
         marginTop: '10px'
       }}>Server</h1>
 
-      {errorMessage && <p style={{ color: 'red', textAlign: 'center' }}>{errorMessage}</p>}
+      {errorMessage && <p style={{ color: 'red', textAlign: 'center', marginTop: '15px' }}>{errorMessage}</p>}
 
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
         <textarea
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           placeholder="메시지를 입력하세요"
           style={{ 
             margin: '20px auto',
-            height: '80px',
-            width: '200px',
+            marginTop: '30px',
+            height: '100px',
+            width: '230px',
             display: 'block'
           }}
         />
-        <button type="submit">전송</button>
+         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+
+         </div>
+        <button 
+        type="submit" style={{width : '240px'}}>
+          전송
+        </button>
       </form>
-      <button onClick={handleServer}>
-        {serverActive ? '서버 닫기' : '서버 열기'}
-      </button>
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+        <button onClick={handleServer} style={{width : '120px'}}>
+          {serverActive ? '서버 닫기' : '서버 열기'}
+        </button>
+        <button onClick={handleRefresh} style={{width : '120px'}}>새로고침</button> 
+      </div>
     </div>
+
   );
 }
