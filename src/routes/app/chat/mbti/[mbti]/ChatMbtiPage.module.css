@@ -1,0 +1,29 @@
+.under-header {
+  padding         : 0 10px;
+  background-color: #f1f1f1;
+
+}
+
+.content-box {
+  display       : flex;
+  flex-direction: column;
+  gap           : 20px;
+  align-items   : center;
+
+  min-height: calc(100vh - var(--chat-header-height) - 95px);
+
+
+  background-color: #f1f1f1;
+}
+
+.text-area {
+  position: sticky;
+  bottom  : 0;
+
+  box-sizing: content-box;
+  width     : calc(100%);
+  margin    : 0 auto;
+  padding   : 10px 0;
+
+  background-color: #f1f1f1;
+}
