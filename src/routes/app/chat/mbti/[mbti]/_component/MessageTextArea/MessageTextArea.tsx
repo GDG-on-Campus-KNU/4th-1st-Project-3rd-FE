@@ -28,13 +28,11 @@ export default function MessageTextArea(props: MessageTextAreaProps) {
 
   useEffect(() => {
     const el = textAreaRef.current;
-    console.log(el);
     if (!el) return;
 
     const lastHeight = el.style.height;
     function resizeTextArea() {
       if (!el) return;
-      console.log(el.scrollHeight, el.style.height);
       const height = Math.min(el.scrollHeight, maxTextAreaHeight);
       el.style.height = height + 'px';
     }
@@ -47,7 +45,9 @@ export default function MessageTextArea(props: MessageTextAreaProps) {
     };
   }, [maxTextAreaHeight]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (valueLength === 0 || valueLength >= maxTextAreaHeight) return;
     try {
       await onSubmit(value);
       setValue('');
@@ -69,7 +69,10 @@ export default function MessageTextArea(props: MessageTextAreaProps) {
   );
 
   return (
-    <div className={styles['message-text-area-container']}>
+    <form
+      onSubmit={handleSubmit}
+      className={styles['message-text-area-container']}
+    >
       <textarea
         className={styles['text-area']}
         name="message"
@@ -83,10 +86,10 @@ export default function MessageTextArea(props: MessageTextAreaProps) {
         <span
           className={styles['send-counter']}
         >{`${valueLength}/${textLimit}`}</span>
-        <div className={styles['send-button']} onClick={handleSubmit}>
+        <button className={styles['send-button']} type="submit">
           <SolidArrowSVG direction="up" />
-        </div>
+        </button>
       </div>
-    </div>
+    </form>
   );
 }
