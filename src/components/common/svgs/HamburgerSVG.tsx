@@ -15,23 +15,23 @@ export default function HamburgerSVG(props: SVGComponentProp) {
       <path
         d="M23.1429 3.12488H0.857178"
         stroke={color || '#606060'}
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M23.1429 12.1249H0.857178"
         stroke={color || '#606060'}
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M23.1429 21.1249H0.857178"
         stroke={color || '#606060'}
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
