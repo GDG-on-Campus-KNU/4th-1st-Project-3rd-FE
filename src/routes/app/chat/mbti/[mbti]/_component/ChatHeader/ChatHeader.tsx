@@ -9,6 +9,8 @@ export interface ChatHeaderProps {
   profileSrc?: string;
 }
 
+const WRONG_SRC = '/wrong';
+
 export default function ChatHeader(props: ChatHeaderProps) {
   const { onMenuClick, title, profileSrc } = props;
   const imageOnError = useImageOnError();
@@ -24,7 +26,7 @@ export default function ChatHeader(props: ChatHeaderProps) {
       <div className={styles.profile}>
         <img
           className={styles['profile-img']}
-          src={profileSrc}
+          src={profileSrc || WRONG_SRC}
           onError={imageOnError}
         />
         <span className={styles['profile-name']}>{title}</span>
