@@ -63,7 +63,7 @@ const handleServer =async (e:React.MouseEvent<HTMLButtonElement>) => {
         marginTop: '10px'
       }}>Server</h1>
 
-      {errorMessage && <p style={{ color: 'red', textAlign: 'center' }}>{errorMessage}</p>} // 오류 메시지 표시
+      {errorMessage && <p style={{ color: 'red', textAlign: 'center' }}>{errorMessage}</p>}
 
 
       <form onSubmit={handleSubmit}>
