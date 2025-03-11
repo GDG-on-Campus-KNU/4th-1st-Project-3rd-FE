@@ -29,6 +29,7 @@
 
   font-weight: 300;
   line-height: 150%;
+  white-space: pre-line;
 }
 
 .mine .chat-bubble {
