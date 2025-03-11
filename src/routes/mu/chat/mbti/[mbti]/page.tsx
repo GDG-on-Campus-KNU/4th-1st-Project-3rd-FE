@@ -14,6 +14,14 @@ const handleServer =async (e:React.MouseEvent<HTMLButtonElement>) => {
       });
       const data = await response.json();
       console.log(`${action} 서버 응답:`, data);
+
+      if (!serverActive) { //서버가 stop일 때
+        setErrorMessage('');
+      }
+      if (serverActive) {
+        setErrorMessage('서버가 현재 비활성화 상태입니다.');
+      }
+
       setServerActive(!serverActive);  // 서버 상태 토글
     } catch (error) {
       console.error('서버 제어 에러:', error);
