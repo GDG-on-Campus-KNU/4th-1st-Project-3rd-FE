@@ -7,6 +7,7 @@ import styles from './MessageTextArea.module.css';
 export interface MessageTextAreaProps
   extends Omit<HTMLProps<HTMLFormElement>, 'onSubmit'> {
   onSubmit: (str: string) => void;
+  onValueChange?: (str?: string) => void;
   textLimit?: number;
   maxTextAreaHeight?: number;
 }
@@ -22,6 +23,7 @@ const getStatus = (stringLength: number, textLimit: number) => {
 export default function MessageTextArea(props: MessageTextAreaProps) {
   const {
     onSubmit,
+    onValueChange,
     textLimit = 120,
     maxTextAreaHeight = Infinity,
     className,
@@ -69,12 +71,16 @@ export default function MessageTextArea(props: MessageTextAreaProps) {
       setValue(e.target.value);
 
       const el = textAreaRef.current;
-      if (!el) return;
-      el.style.height = 'auto';
-      const height = Math.min(el.scrollHeight, maxTextAreaHeight);
-      el.style.height = height + 'px';
+      if (el) {
+        el.style.height = 'auto';
+        const height = Math.min(el.scrollHeight, maxTextAreaHeight);
+        el.style.height = height + 'px';
+      }
+      if (onValueChange) {
+        onValueChange(value);
+      }
     },
-    [maxTextAreaHeight],
+    [maxTextAreaHeight, onValueChange, value],
   );
 
   return (

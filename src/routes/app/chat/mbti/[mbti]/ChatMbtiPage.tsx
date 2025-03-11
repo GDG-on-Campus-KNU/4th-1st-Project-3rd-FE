@@ -1,4 +1,11 @@
-import { Fragment, useCallback, useEffect, useState } from 'react';
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import { useSearchParams } from 'react-router-dom';
 
@@ -18,6 +25,20 @@ export default function AppChatMbtiPage() {
   const [searchParams] = useSearchParams();
   const mbti: Mbti =
     (searchParams.get('mbti')?.toUpperCase() as Mbti) || 'ISFJ';
+  const headerRef = useRef<HTMLElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const messageTextAreaRef = useRef<HTMLDivElement>(null);
+
+  const handleValueChange = useCallback(() => {
+    if (!contentRef.current) return;
+    if (!headerRef.current) return;
+    if (!messageTextAreaRef.current) return;
+    contentRef.current.style.minHeight = `calc(100vh - ${headerRef.current.clientHeight}px - ${messageTextAreaRef.current.clientHeight}px )`;
+  }, []);
+
+  useLayoutEffect(() => {
+    handleValueChange();
+  }, [handleValueChange]);
 
   useEffect(() => {
     async function messageUpdate() {
@@ -33,6 +54,7 @@ export default function AppChatMbtiPage() {
     const timeoutId = setInterval(messageUpdate, 100);
     return () => clearInterval(timeoutId);
   }, [messages, mbti]);
+
   const handleSubmit = useCallback(
     async (value: string) => {
       postFetch<ChatMbtiRequestBody>(HTTP_API_END_POINT.mbtiChatPost(mbti), {
@@ -41,6 +63,7 @@ export default function AppChatMbtiPage() {
     },
     [mbti],
   );
+
   // useEffect(() => {
   //   for (let i = 0; i < 100; i++) {
   //     handleSubmit('123123');
@@ -48,9 +71,9 @@ export default function AppChatMbtiPage() {
   // }, []);
   return (
     <>
-      <ChatHeader onMenuClick={() => {}} title={mbti} />
+      <ChatHeader onMenuClick={() => {}} title={mbti} ref={headerRef} />
       <div className={styles['under-header']}>
-        <div className={styles['content-box']}>
+        <div className={styles['content-box']} ref={contentRef}>
           {messages.map((message, index) => {
             const lastMessage = messages[index - 1];
             const lastDate = lastMessage
@@ -70,8 +93,11 @@ export default function AppChatMbtiPage() {
             );
           })}
         </div>
-        <div className={styles['text-area']}>
-          <MessageTextArea onSubmit={handleSubmit} />
+        <div className={styles['text-area']} ref={messageTextAreaRef}>
+          <MessageTextArea
+            onSubmit={handleSubmit}
+            onValueChange={handleValueChange}
+          />
         </div>
       </div>
     </>
