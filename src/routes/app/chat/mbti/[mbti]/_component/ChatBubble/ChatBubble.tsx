@@ -1,10 +1,11 @@
-import { ReactNode } from 'react';
+import { HTMLProps, ReactNode } from 'react';
 
 import getDateByISO8601 from '@_/utils/getDateByISO8601';
 
 import styles from './ChatBubble.module.css';
 
-export interface ChatBubbleProps {
+export interface ChatBubbleProps
+  extends Omit<HTMLProps<HTMLDivElement>, 'content'> {
   content: ReactNode;
   isUserChat: boolean;
   timeISO: string;
@@ -23,7 +24,8 @@ const getTimeStrByDate = (date: Date) => {
   return `${hours}:${minutes} ${period}`;
 };
 export default function ChatBubble(props: ChatBubbleProps) {
-  const { content, isUserChat, timeISO } = props;
+  const { content, isUserChat, timeISO, className, style, ...restProps } =
+    props;
   const date = getDateByISO8601(timeISO);
   const timeStr = getTimeStrByDate(date);
   return (
@@ -31,7 +33,10 @@ export default function ChatBubble(props: ChatBubbleProps) {
       className={[
         styles['chat-bubble-container'],
         styles[isUserChat ? 'mine' : 'others'],
+        className,
       ].join(' ')}
+      style={style}
+      {...restProps}
     >
       <span className={styles['time-span']}>{timeStr}</span>
       <div className={styles['chat-bubble']}>{content}</div>

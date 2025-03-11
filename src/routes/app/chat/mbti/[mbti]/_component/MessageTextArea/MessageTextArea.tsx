@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { HTMLProps, useCallback, useEffect, useRef, useState } from 'react';
 
 import SolidArrowSVG from '@_/components/common/svgs/SolidArrowSVG';
 
 import styles from './MessageTextArea.module.css';
 
-export interface MessageTextAreaProps {
+export interface MessageTextAreaProps
+  extends Omit<HTMLProps<HTMLFormElement>, 'onSubmit'> {
   onSubmit: (str: string) => void;
   textLimit?: number;
   maxTextAreaHeight?: number;
@@ -19,7 +20,14 @@ const getStatus = (stringLength: number, textLimit: number) => {
 };
 
 export default function MessageTextArea(props: MessageTextAreaProps) {
-  const { onSubmit, textLimit = 120, maxTextAreaHeight = Infinity } = props;
+  const {
+    onSubmit,
+    textLimit = 120,
+    maxTextAreaHeight = Infinity,
+    className,
+    style,
+    ...restProps
+  } = props;
   const [value, setValue] = useState('');
   const valueLength = [...new Intl.Segmenter().segment(value)].length;
   const status = getStatus(valueLength, textLimit);
@@ -55,6 +63,7 @@ export default function MessageTextArea(props: MessageTextAreaProps) {
       setValue(value);
     }
   };
+
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setValue(e.target.value);
@@ -71,7 +80,9 @@ export default function MessageTextArea(props: MessageTextAreaProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className={styles['message-text-area-container']}
+      className={[styles['message-text-area-container'], className].join(' ')}
+      style={style}
+      {...restProps}
     >
       <textarea
         className={styles['text-area']}

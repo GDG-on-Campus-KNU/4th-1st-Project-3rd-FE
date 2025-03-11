@@ -1,9 +1,11 @@
+import { HTMLProps } from 'react';
+
 import HamburgerSVG from '@_/components/common/svgs/HamburgerSVG';
 import useImageOnError from '@_/hooks/useImageOnError';
 
 import styles from './ChatHeader.module.css';
 
-export interface ChatHeaderProps {
+export interface ChatHeaderProps extends HTMLProps<HTMLElement> {
   onMenuClick: () => void;
   title: string;
   profileSrc?: string;
@@ -12,11 +14,16 @@ export interface ChatHeaderProps {
 const WRONG_SRC = '/wrong';
 
 export default function ChatHeader(props: ChatHeaderProps) {
-  const { onMenuClick, title, profileSrc } = props;
+  const { onMenuClick, title, profileSrc, className, style, ...restProps } =
+    props;
   const imageOnError = useImageOnError();
 
   return (
-    <header className={styles.header}>
+    <header
+      className={[styles.header, className].join(' ')}
+      style={style}
+      {...restProps}
+    >
       <HamburgerSVG
         className={styles.menu}
         width={24}
