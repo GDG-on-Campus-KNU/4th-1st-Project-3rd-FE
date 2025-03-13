@@ -1,6 +1,6 @@
 const APP_END_POINT = {
   main: '/',
-  chatMbtiWildCard: '/chat/mbti/*',
+  chatMbtiWithSegment: '/chat/mbti/:mbti',
   chatMbti: (mbti: Mbti) => '/chat/mbti/' + mbti.toLowerCase(),
 };
 

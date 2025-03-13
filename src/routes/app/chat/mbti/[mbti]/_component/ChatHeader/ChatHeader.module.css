@@ -1,0 +1,48 @@
+:root {
+  --chat-header-height: 60px;
+}
+
+.header {
+  position: sticky;
+  top     : 0;
+
+  display: flex;
+
+  box-sizing: border-box;
+  width     : 100%;
+  height    : var(--chat-header-height);
+  padding   : 10px 10px 14px;
+
+  background-color: #f1f1f1E6;
+}
+
+.menu {
+  margin-right: 14px;
+  padding     : 6px;
+}
+
+.profile {
+  display        : flex;
+  gap            : 10px;
+  justify-content: flex-start;
+  height         : 36px;
+}
+
+.profile-img {
+  width        : 36px;
+  height       : 36px;
+  border-radius: 100%;
+  object-fit   : cover;
+}
+
+.profile-name {
+  display    : flex;
+  align-items: center;
+
+  height    : 30px;
+  margin-top: 4px;
+
+  font-family: Pretendard,
+    sans-serif;
+  font-weight: 500;
+}

@@ -12,7 +12,7 @@ export default function MURouter() {
       <Routes>
         <Route path={APP_END_POINT.main} element={<MUMainPage />} />
         <Route
-          path={APP_END_POINT.chatMbtiWildCard}
+          path={APP_END_POINT.chatMbtiWithSegment}
           element={<MuChatMbtiPage />}
         />
         {/* <Route path={APP_END_POINT.testHTTP} element={<MUTestHttpPage />} />
