@@ -3,7 +3,7 @@ import { HttpResponse, http } from 'msw';
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import MOCK_CONSTANTS from '@_/constants/mock';
 
-import getCookiesStr from '../utils/getCookiesStr';
+import getCookiesStr from '../../utils/getCookiesStr';
 import checkIsAuthed from './checkIsAuthed';
 
 const LOGIN_POST = http.post(HTTP_API_END_POINT.login, ({ cookies }) => {
