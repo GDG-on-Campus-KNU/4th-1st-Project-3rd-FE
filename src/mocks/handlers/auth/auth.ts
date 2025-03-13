@@ -1,56 +1,42 @@
 import { HttpResponse, http } from 'msw';
 
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
-import MOCK_CONSTANTS from '@_/constants/mock';
 
-import getCookiesStr from '../../utils/getCookiesStr';
-import checkIsAuthed from './checkIsAuthed';
-
-const LOGIN_POST = http.post(HTTP_API_END_POINT.login, ({ cookies }) => {
-  if (checkIsAuthed(cookies)) {
+let isAuthed = false;
+export const checkIsAuthed = () => isAuthed === true;
+const LOGIN_POST = http.post(HTTP_API_END_POINT.login, () => {
+  if (checkIsAuthed()) {
     return HttpResponse.json(
       { errorMessage: '이미 로그인되어 있음' },
       { status: 401 },
     );
   }
   return new HttpResponse(null, {
-    headers: {
-      'Set-Cookie': getCookiesStr(cookies, {
-        sets: [[MOCK_CONSTANTS.cookieAuthKey, MOCK_CONSTANTS.cookieAuthValue]],
-      }),
-    },
     status: 200,
   });
 });
 
-const LOGOUT_POST = http.post(HTTP_API_END_POINT.logout, ({ cookies }) => {
-  if (!checkIsAuthed(cookies)) {
+const LOGOUT_POST = http.post(HTTP_API_END_POINT.logout, () => {
+  if (!isAuthed) {
     return HttpResponse.json(
       { errorMessage: '로그인 되어있지 않음음' },
       { status: 401 },
     );
   }
-  return new HttpResponse(null, {
-    headers: {
-      'Set-Cookie': getCookiesStr(cookies, {
-        deleteKeys: [MOCK_CONSTANTS.cookieAuthKey],
-      }),
-    },
-  });
+  isAuthed = false;
+  return new HttpResponse(null);
 });
 
 const CHECK_IS_AUTHED_GET = http.get(
   HTTP_API_END_POINT.checkIsAuthed,
-  ({ cookies }) => {
-    return HttpResponse.json<BaseResponse<CheckIsAuthedBody>>(
+  ({ request }) => {
+    return HttpResponse.json(
       {
         data: {
-          isAuthed:
-            cookies[MOCK_CONSTANTS.cookieAuthKey] ===
-            MOCK_CONSTANTS.cookieAuthValue,
+          isAuthed: isAuthed,
         },
       },
-      { status: 200 },
+      { status: 200, headers: request.headers },
     );
   },
 );
