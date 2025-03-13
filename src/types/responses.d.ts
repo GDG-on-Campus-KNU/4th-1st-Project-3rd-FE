@@ -20,4 +20,7 @@ type ChatMbtiResponseBody = {
 };
 type ChatMbtiResponse = BaseResponse<ChatMbtiResponseBody>;
 
+type CheckIsAuthedBody = { isAuthed: boolean };
+type CheckIsAuthedResponse = BaseResponse<CheckIsAuthedBody>;
+
 type EmptyResponse = Record<string, never>;
