@@ -1,3 +1,3 @@
 export default function MULoginPage() {
-  return <></>;
+  return <>이곳에 작성</>;
 }
