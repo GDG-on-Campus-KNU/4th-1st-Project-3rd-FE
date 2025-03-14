@@ -1,3 +1,6 @@
+import getNetworkError from './getNetworkError';
+import handleNetworkError from './handleNetworkError';
+
 type EmptyBodyMethod = 'GET' | 'HEAD' | 'DELETE' | 'OPTIONS';
 type CanHasBodyMethod = 'POST' | 'PUT' | 'PATCH';
 
@@ -42,7 +45,11 @@ async function normalizedFetch<ResponseType, BodyType = unknown>(
   option: CustomRequestInit<BodyType>,
 ): Promise<ResponseType> {
   const response = await baseFetch<BodyType>(url, option);
-  if (!response.ok) throw new Error('에러가 났어용~');
+  if (!response.ok) {
+    const networkError = getNetworkError(response);
+    // 이 함수에서 에러 throw
+    handleNetworkError(networkError);
+  }
 
   const json = (await response.json()) as BaseResponse<ResponseType>;
   return json.data;

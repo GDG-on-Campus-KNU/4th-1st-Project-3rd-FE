@@ -1,6 +1,9 @@
 const HTTP_PURE_STRING_API_END_POINT = {
   mbtiChatWildCard: '/chat/mbti/*',
   mockMbtiChatWildCard: '/mock/chat/mbti/*',
+  checkIsAuthed: '/auth/isAuthed',
+  login: '/auth/login',
+  logout: '/auth/logout',
 } as const;
 
 const HTTP_PURE_FUNCTION_API_END_POINT = {
