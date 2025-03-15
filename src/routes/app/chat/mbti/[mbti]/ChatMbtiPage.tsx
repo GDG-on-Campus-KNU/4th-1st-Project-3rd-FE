@@ -33,7 +33,7 @@ export default function AppChatMbtiPage() {
     if (!contentRef.current) return;
     if (!headerRef.current) return;
     if (!messageTextAreaRef.current) return;
-    contentRef.current.style.minHeight = `calc(100vh - ${headerRef.current.clientHeight}px - ${messageTextAreaRef.current.clientHeight}px )`;
+    contentRef.current.style.minHeight = `calc(100dvh - ${headerRef.current.clientHeight}px - ${messageTextAreaRef.current.clientHeight}px )`;
   }, []);
 
   useLayoutEffect(() => {
