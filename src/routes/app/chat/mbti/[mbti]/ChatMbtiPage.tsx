@@ -28,6 +28,7 @@ export default function AppChatMbtiPage() {
   const headerRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const messageTextAreaRef = useRef<HTMLDivElement>(null);
+  const endRef = useRef<HTMLDivElement>(null);
 
   const handleValueChange = useCallback(() => {
     if (!contentRef.current) return;
@@ -54,6 +55,10 @@ export default function AppChatMbtiPage() {
     const timeoutId = setInterval(messageUpdate, 100);
     return () => clearInterval(timeoutId);
   }, [messages, mbti]);
+
+  useLayoutEffect(() => {
+    endRef.current?.scrollIntoView();
+  }, [messages]);
 
   const handleSubmit = useCallback(
     async (value: string) => {
@@ -92,6 +97,7 @@ export default function AppChatMbtiPage() {
               </Fragment>
             );
           })}
+          <div ref={endRef} />
         </div>
         <div className={styles['text-area']} ref={messageTextAreaRef}>
           <MessageTextArea
