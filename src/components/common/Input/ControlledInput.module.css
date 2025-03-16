@@ -1,0 +1,65 @@
+.input-container {
+  position: relative;
+}
+
+.input {
+  box-sizing   : border-box;
+  width        : 100%;
+  height       : 48px;
+  padding      : 12px 10px;
+  border-style : solid;
+  border-width : 1px;
+  border-radius: 10px;
+
+  font-size: 16px;
+}
+
+input[type="password"] {
+  -webkit-text-security: none;
+
+}
+
+.input:focus {
+  outline: none;
+}
+
+
+.normal {
+  border-color: #c3c3c3;
+  color       : #666;
+  caret-color : #4849e87F;
+}
+
+.normal:focus {
+  border-color: #4849e8b2;
+  outline     : none;
+}
+
+.normal::placeholder {
+  color: #c3c3c3
+}
+
+/* 현재 normal과 똑같음 */
+.disabled {
+  border-color: #c3c3c3;
+  color       : #666;
+  caret-color : #4849e87F;
+}
+
+
+.invalid {
+  border-color: #ff321b80;
+  color       : #FF321B;
+  caret-color : #ff321b80;
+}
+
+.invalid::placeholder {
+  color: #c3c3c3
+}
+
+.right-node {
+  position : absolute;
+  top      : 50%;
+  right    : 10px;
+  transform: translateY(-50%);
+}
