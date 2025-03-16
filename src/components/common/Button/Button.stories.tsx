@@ -4,7 +4,11 @@ import Button, { ButtonProps } from './Button';
 
 const TmpElement = (props: Pick<ButtonProps, 'isValid' | 'children'>) => {
   const { children, isValid } = props;
-  return <Button isValid={isValid}>{children}</Button>;
+  return (
+    <Button isValid={isValid} onClick={() => alert('click!')}>
+      {children}
+    </Button>
+  );
 };
 
 const meta = {

@@ -1,4 +1,9 @@
-import { ButtonHTMLAttributes, DetailedHTMLProps } from 'react';
+import {
+  ButtonHTMLAttributes,
+  DetailedHTMLProps,
+  MouseEvent as ReactMouseEvent,
+  useCallback,
+} from 'react';
 
 import styles from './Button.module.css';
 
@@ -11,8 +16,13 @@ export interface ButtonProps
 }
 
 export default function Button(props: ButtonProps) {
-  const { isValid, children, className, style, ...restProps } = props;
-
+  const { isValid, children, className, onClick, ...restProps } = props;
+  const handleClick = useCallback(
+    (e: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => {
+      if (isValid !== false && onClick) onClick(e);
+    },
+    [onClick, isValid],
+  );
   return (
     <button
       className={[
@@ -20,7 +30,7 @@ export default function Button(props: ButtonProps) {
         styles.button,
         className,
       ].join(' ')}
-      style={style}
+      onClick={handleClick}
       {...restProps}
     >
       {children}
