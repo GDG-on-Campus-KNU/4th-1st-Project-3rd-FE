@@ -26,7 +26,7 @@ export default function Button(props: ButtonProps) {
   return (
     <button
       className={[
-        styles[isValid ? 'valid' : 'invalid'],
+        styles[isValid !== false ? 'valid' : 'invalid'],
         styles.button,
         className,
       ].join(' ')}
