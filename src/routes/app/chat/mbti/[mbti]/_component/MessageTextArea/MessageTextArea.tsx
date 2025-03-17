@@ -57,7 +57,7 @@ export default function MessageTextArea(props: MessageTextAreaProps) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (valueLength === 0 || valueLength >= maxTextAreaHeight) return;
+    if (valueLength === 0 || valueLength > textLimit) return;
     try {
       await onSubmit(value);
       setValue('');
