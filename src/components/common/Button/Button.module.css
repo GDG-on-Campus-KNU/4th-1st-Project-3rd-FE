@@ -3,7 +3,6 @@
   width        : 100%;
   height       : 60px;
   padding      : 12px 10px;
-  border       : 1px solid #4849e833;
   border-radius: 10px;
 
   font-size  : 18px;
@@ -12,9 +11,13 @@
 }
 
 .valid {
+  border          : 1px solid #4849e833;
   background-color: #4949E9;
+
 }
 
 .invalid {
+  border          : 1px solid #60606019;
   background-color: #dedede;
+
 }
