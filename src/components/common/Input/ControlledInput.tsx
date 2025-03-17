@@ -17,26 +17,16 @@ const getStatus = (disabled?: boolean, isError?: boolean) => {
   return 'normal';
 };
 
-const getParsedValue = (
-  value: string | number | readonly string[] | undefined,
-  type?: React.HTMLInputTypeAttribute,
-) => {
-  if (value === undefined) return '';
-  if (type === 'password') return value.toString().replace(/./g, '*');
-  return value;
-};
-
 export default function ControlledInput(props: ControlledInputProps) {
   const { disabled, isError, rightIcon, className, value, type, ...restProps } =
     props;
   const status = getStatus(disabled, isError);
-  const parsedValue = getParsedValue(value, type);
 
   return (
     <div className={styles['input-container']}>
       <input
         className={[styles[status], styles.input, className].join(' ')}
-        value={parsedValue}
+        value={value}
         type={type}
         {...restProps}
       />
