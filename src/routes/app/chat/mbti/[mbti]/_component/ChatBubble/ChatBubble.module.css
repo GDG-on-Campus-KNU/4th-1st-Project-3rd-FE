@@ -27,9 +27,11 @@
   padding      : 8px 16px;
   border-radius: 10px;
 
-  font-weight: 300;
-  line-height: 150%;
-  white-space: pre-line;
+  font-weight  : 300;
+  line-height  : 150%;
+  overflow-wrap: break-word;
+  white-space  : pre-line;
+
 }
 
 .mine .chat-bubble {
