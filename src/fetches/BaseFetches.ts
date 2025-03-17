@@ -51,7 +51,9 @@ async function normalizedFetch<ResponseType, BodyType = unknown>(
     handleNetworkError(networkError);
   }
 
-  const json = (await response.json()) as BaseResponse<ResponseType>;
+  const json = (await response.json()) as ResponseType extends EmptyResponse
+    ? EmptyResponse
+    : BaseResponse<ResponseType>;
   return json.data;
 }
 
