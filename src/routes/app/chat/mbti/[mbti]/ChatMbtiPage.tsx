@@ -103,6 +103,7 @@ export default function AppChatMbtiPage() {
           <MessageTextArea
             onSubmit={handleSubmit}
             onValueChange={handleValueChange}
+            maxTextAreaHeight={70}
           />
         </div>
       </div>
