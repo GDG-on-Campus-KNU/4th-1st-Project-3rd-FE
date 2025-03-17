@@ -11,7 +11,8 @@ const LOGIN_POST = http.post(HTTP_API_END_POINT.login, () => {
       { status: 401 },
     );
   }
-  return new HttpResponse(null, {
+  isAuthed = true;
+  return new HttpResponse(JSON.stringify({}), {
     status: 200,
   });
 });
@@ -24,7 +25,7 @@ const LOGOUT_POST = http.post(HTTP_API_END_POINT.logout, () => {
     );
   }
   isAuthed = false;
-  return new HttpResponse(null);
+  return new HttpResponse(JSON.stringify({}));
 });
 
 const CHECK_IS_AUTHED_GET = http.get(
