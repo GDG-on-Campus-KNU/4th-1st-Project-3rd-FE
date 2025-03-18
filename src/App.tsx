@@ -13,7 +13,7 @@ function App() {
         <BrowserRouter>
           <NetworkErrorBoundary>
             <AppRouter />
-            <MURouter />
+            {import.meta.env.VITE_MSW && <MURouter />}
           </NetworkErrorBoundary>
         </BrowserRouter>
       </RerenderProvider>
