@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styles from './page.module.css';
+import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 
 export default function MuChatMbtiPage() {
   const [inputText, setInputText] = useState('');
@@ -9,7 +10,7 @@ export default function MuChatMbtiPage() {
 
      // 서버에 POST 요청 보내기
      try {
-      const response = await fetch('https://tesdasfdfjasdlkfjslkfjt.com/mock/chat/mbti/isfj', {
+      const response = await fetch(HTTP_API_END_POINT.mockMbtiChat('ISFJ'), {
         method: 'POST',     // await -> fetch 함수가 응답할 때까지 기다림
         headers: {
           'Content-Type': 'application/json' //요청 본문 타입이 json임

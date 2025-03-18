@@ -2,7 +2,7 @@ import { HttpResponse, http } from 'msw';
 
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 
-let isAuthed = true;
+let isAuthed = false;
 export const checkIsAuthed = () => isAuthed === true;
 const LOGIN_POST = http.post(HTTP_API_END_POINT.login, () => {
   if (checkIsAuthed()) {
