@@ -2,12 +2,13 @@ import { StrictMode } from 'react';
 
 import { createRoot } from 'react-dom/client';
 
-import startMSW from '@_/mocks/index.ts';
-
 import App from './App.tsx';
+import startMSW from './mocks/index.ts';
 import './styles/reset.css';
 
-await startMSW();
+if (import.meta.env.VITE_MSW) {
+  await startMSW();
+}
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
