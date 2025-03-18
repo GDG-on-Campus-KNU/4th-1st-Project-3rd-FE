@@ -1,111 +1,49 @@
 import React, { useState } from 'react';
+import styles from './page.module.css';
 
 export default function MuChatMbtiPage() {
   const [inputText, setInputText] = useState('');
-  const [serverActive, setServerActive] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('');
 
-const handleServer =async (e:React.MouseEvent<HTMLButtonElement>) => {
-  e.preventDefault();
-  try { 
-    const action = serverActive ? 'stop' : 'start';
-    const response = await fetch(`https://tesdasfdfjasdlkfjslkfjt.com/mock/chat/mbti/isfj/${action}`, {
-        method: 'POST'
-      });
-      const data = await response.json();
-      console.log(`${action} 서버 응답:`, data);
-
-      if (!serverActive) { //서버가 stop일 때
-        setErrorMessage('');
-      }
-      if (serverActive) {
-        setErrorMessage('서버가 현재 비활성화 상태입니다.');
-      }
-
-      setServerActive(!serverActive);  // 서버 상태 토글
-    } catch (error) {
-      console.error('서버 제어 에러:', error);
-    }
-  };
-
-
-  const handleSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!serverActive) {
-      const message = "서버가 현재 비활성화 상태입니다.";
-      console.error(message);
-      setErrorMessage(message); // 오류 메시지 상태 설정
-      return;
-    }
-      setErrorMessage(''); // 오류 메시지 초기화
+  const handleSubmit = async (e : React.FormEvent<HTMLFormElement>) => { //async -> 비동기적, await 사용 가능
+    e.preventDefault(); //기본 동작 방지 매서드           //매개변수 e, <HTMLFormElement> 타입임. HTML의 form 요소에서 발생
 
      // 서버에 POST 요청 보내기
      try {
       const response = await fetch('https://tesdasfdfjasdlkfjslkfjt.com/mock/chat/mbti/isfj', {
-        method: 'POST',
+        method: 'POST',     // await -> fetch 함수가 응답할 때까지 기다림
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json' //요청 본문 타입이 json임
         },
-        body: JSON.stringify({ content: inputText })
+        body: JSON.stringify({ content: inputText }) // 자바스트립트를 json 문자열로 환
       });
       const data = await response.json();
       console.log('전송 응답:', data);
       setInputText(""); // 입력창 초기화
     } catch (error) {
       console.error('Fetch 에러입니다', error);
-      setErrorMessage('메시지 전송에 실패하였습니다.'); // 오류 메시지 설정
     }
   };
 
-  const handleRefresh = () => {
-    window.location.reload();
+  const handleRefresh = () => { //초기화 함수
+    setInputText(''); // 입력창 내용만 초기화함
   }
 
   return (
-    <div style={{ 
-      width: '250px', 
-      height: '300px', 
-      backgroundColor: '#E7CBCB',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
-      <h1 style={{
-        fontSize: '24px',
-        textAlign: 'center',
-        marginTop: '10px'
-      }}>Server</h1>
-
-      {errorMessage && <p style={{ color: 'red', textAlign: 'center', marginTop: '15px' }}>{errorMessage}</p>}
-
-
-      <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+    <div className={styles.container}>
+      <h1 className={styles.title}>AI REPLY SERVICE</h1>
+      <form onSubmit={handleSubmit} className={styles.form}>
         <textarea
+          className={styles.textarea}
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           placeholder="메시지를 입력하세요"
-          style={{ 
-            margin: '20px auto',
-            marginTop: '30px',
-            height: '100px',
-            width: '230px',
-            display: 'block'
-          }}
         />
-         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
 
-         </div>
-        <button 
-        type="submit" style={{width : '240px'}}>
-          전송
-        </button>
-      </form>
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
-        <button onClick={handleServer} style={{width : '120px'}}>
-          {serverActive ? '서버 닫기' : '서버 열기'}
-        </button>
-        <button onClick={handleRefresh} style={{width : '120px'}}>새로고침</button> 
+      <div className={styles.buttonsContainer}>
+        <button className={styles.submitButton} type="submit">전송</button>
+        <button className={styles.refreshButton} type="button" onClick={handleRefresh}>새로고침</button>
       </div>
+      </form>
     </div>
-
   );
 }
