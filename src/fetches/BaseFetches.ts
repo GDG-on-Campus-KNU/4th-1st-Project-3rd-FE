@@ -14,7 +14,6 @@ type JSONValue =
   | JSONValue[]
   | { [key: string | number]: JSONValue };
 
-export type EmptyBody = [never];
 // body가 있으면 안되는 메서드에서는 body를 제한
 interface EmptyBodyRequestInit extends Omit<RequestInit, 'body'> {
   method: Method;
@@ -88,13 +87,13 @@ export async function deleteFetch<ResponseType>(
   return normalizedFetch<ResponseType>(url, { ...option, method: 'DELETE' });
 }
 
-type CanHasBodyFetchArgs<BodyType extends JSONValue | EmptyBody> =
-  BodyType extends EmptyBody
-    ? [url: string, option?: Omit<EmptyBodyRequestInit, 'method'>]
-    : [url: string, option: Omit<HasBodyRequestInit<BodyType>, 'method'>];
+type CanHasBodyFetchArgs<BodyType extends JSONValue | undefined> =
+  BodyType extends JSONValue
+    ? [url: string, option: Omit<HasBodyRequestInit<BodyType>, 'method'>]
+    : [url: string, option?: Omit<EmptyBodyRequestInit, 'method'>];
 
 export async function postFetch<
-  BodyType extends JSONValue | EmptyBody = EmptyBody,
+  BodyType extends JSONValue | undefined = undefined,
   ResponseType = EmptyResponse,
 >(...args: CanHasBodyFetchArgs<BodyType>) {
   const [url, options] = args;
@@ -110,7 +109,7 @@ export async function postFetch<
 }
 
 export async function patchFetch<
-  BodyType extends JSONValue | EmptyBody = EmptyBody,
+  BodyType extends JSONValue | undefined = undefined,
   ResponseType = EmptyResponse,
 >(...args: CanHasBodyFetchArgs<BodyType>) {
   const [url, options] = args;
