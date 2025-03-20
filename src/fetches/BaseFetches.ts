@@ -40,9 +40,9 @@ async function baseFetch(
   return await fetch(url, optionResult);
 }
 
-async function normalizedFetch<ResponseType, BodyType = unknown>(
+async function normalizedFetch<ResponseType>(
   url: string,
-  option: CustomRequestInit<BodyType>,
+  option: CustomRequestInit,
 ): Promise<ResponseType> {
   const response = await baseFetch(url, option);
   if (!response.ok) {
@@ -77,7 +77,7 @@ export async function postFetch<BodyType, ResponseType = EmptyResponse>(
     body: undefined as BodyType,
   },
 ) {
-  return normalizedFetch<ResponseType, BodyType>(url, {
+  return normalizedFetch<ResponseType>(url, {
     ...option,
     method: 'POST',
   });
@@ -89,7 +89,7 @@ export async function patchFetch<BodyType, ResponseType = EmptyResponse>(
     body: undefined as BodyType,
   },
 ) {
-  return normalizedFetch<ResponseType, BodyType>(url, {
+  return normalizedFetch<ResponseType>(url, {
     ...option,
     method: 'PATCH',
   });
