@@ -14,12 +14,12 @@ interface HasBodyRequestInit<BodyType> extends Omit<RequestInit, 'body'> {
   body: BodyType;
 }
 
-type CustomRequestInit<BodyType> =
+type CustomRequestInit<BodyType = unknown> =
   | EmptyBodyRequestInit
   | HasBodyRequestInit<BodyType>;
 
-function isEmptyBodyRequestInit<BodyType>(
-  customRequestInit: CustomRequestInit<BodyType>,
+function isEmptyBodyRequestInit(
+  customRequestInit: CustomRequestInit,
 ): customRequestInit is EmptyBodyRequestInit {
   return !!(
     customRequestInit.method &&
@@ -28,9 +28,9 @@ function isEmptyBodyRequestInit<BodyType>(
 }
 const EMPTY_BODY_METHOD_LIST = ['GET', 'HEAD', 'DELETE', 'OPTIONS'];
 
-async function baseFetch<BodyType>(
+async function baseFetch(
   url: string,
-  option: CustomRequestInit<BodyType>,
+  option: CustomRequestInit,
 ): Promise<Response> {
   const { body, ...restOption } = option;
   const optionResult: RequestInit = restOption;
@@ -44,7 +44,7 @@ async function normalizedFetch<ResponseType, BodyType = unknown>(
   url: string,
   option: CustomRequestInit<BodyType>,
 ): Promise<ResponseType> {
-  const response = await baseFetch<BodyType>(url, option);
+  const response = await baseFetch(url, option);
   if (!response.ok) {
     const networkError = getNetworkError(response);
     // 이 함수에서 에러 throw
