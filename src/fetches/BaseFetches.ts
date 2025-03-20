@@ -14,14 +14,18 @@ type JSONValue =
   | JSONValue[]
   | { [key: string | number]: JSONValue };
 
+type ResponseErrorHandler = (response?: Response) => void;
+interface CustomRequestInitBase extends RequestInit {
+  handleResponseError?: ResponseErrorHandler;
+}
 // body가 있으면 안되는 메서드에서는 body를 제한
-interface EmptyBodyRequestInit extends Omit<RequestInit, 'body'> {
+interface EmptyBodyRequestInit extends Omit<CustomRequestInitBase, 'body'> {
   method: Method;
   body?: never;
 }
 
 interface HasBodyRequestInit<BodyType extends JSONValue>
-  extends Omit<RequestInit, 'body'> {
+  extends Omit<CustomRequestInitBase, 'body'> {
   method: CanHasBodyMethod;
   body: BodyType;
 }
@@ -56,15 +60,23 @@ async function baseFetch(
   return fetch(url, getAddedDefaultHeader(optionResult));
 }
 
+const handleDefaultResponseError: ResponseErrorHandler = (
+  response?: Response,
+) => {
+  if (!response) return;
+  const networkError = getNetworkError(response);
+  // 이 함수에서 에러 throw
+  handleNetworkError(networkError);
+};
+
 async function normalizedFetch<ResponseType>(
   url: string,
   option: CustomRequestInit,
 ): Promise<ResponseType> {
   const response = await baseFetch(url, option);
   if (!response.ok) {
-    const networkError = getNetworkError(response);
-    // 이 함수에서 에러 throw
-    handleNetworkError(networkError);
+    if (option.handleResponseError) option.handleResponseError(response);
+    handleDefaultResponseError(response);
   }
 
   const json = (await response.json()) as ResponseType extends EmptyResponse
