@@ -12,7 +12,7 @@ type JSONValue =
   | boolean
   | null
   | JSONValue[]
-  | { [key: string]: JSONValue };
+  | { [key: string | number]: JSONValue };
 
 export type EmptyBody = [never];
 // body가 있으면 안되는 메서드에서는 body를 제한
