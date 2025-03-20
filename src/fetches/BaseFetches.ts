@@ -32,7 +32,7 @@ type CustomRequestInit<BodyType extends JSONValue = JSONValue> =
 function isEmptyBodyRequestInit(
   customRequestInit: CustomRequestInit,
 ): customRequestInit is EmptyBodyRequestInit {
-  return !customRequestInit.body;
+  return customRequestInit.body === undefined;
 }
 
 async function baseFetch(
