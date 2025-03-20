@@ -6,13 +6,17 @@ type CanHasBodyMethod = 'POST' | 'PUT' | 'PATCH';
 
 type Method = EmptyBodyMethod | CanHasBodyMethod;
 
-type JSONValue =
-  | string
-  | number
-  | boolean
-  | null
-  | JSONValue[]
-  | { [key: string | number]: JSONValue };
+// TODO: object가 아닌 number|string|null 등으로 이루어진 객체타입으로 고쳐야 함(현재 mapped 타입으로 할 시 기본 객체 적용용 안됨)
+// 기존 코드
+// type JSONValue =
+//   | string
+//   | number
+//   | boolean
+//   | null
+//   | JSONValue[]
+//   | { [key: string | number]: JSONValue };
+
+type JSONValue = object;
 
 type ResponseErrorHandler = (response?: Response) => void;
 interface CustomRequestInitBase extends RequestInit {
