@@ -5,7 +5,7 @@ const HTTP_PURE_STRING_API_END_POINT = {
   login: '/auth/login',
   logout: '/auth/logout',
   sendEmailCode: '/auth/email/code',
-  checkEmailCode: '/auth/email/code/verify',
+  verifyEmail: '/auth/email/code/verify',
   mockEmailServerCheck: '/mock/auth/email/code',
 } as const;
 
