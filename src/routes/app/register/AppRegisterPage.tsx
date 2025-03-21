@@ -33,7 +33,7 @@ export default function AppRegisterPage() {
               .catch(() => setHasMailErrorMessage(true))
           }
         >
-          메일 인증 받기
+          코드 확인
         </button>
       )}
       {hasMailErrorMessage && (
