@@ -4,6 +4,10 @@ const HTTP_PURE_STRING_API_END_POINT = {
   checkIsAuthed: '/auth/isAuthed',
   login: '/auth/login',
   logout: '/auth/logout',
+  sendEmailCode: '/auth/email/code',
+  verifyEmail: '/auth/email/code/verify',
+  mockCheckVerifyEmail: '/mock/auth/email/code/verify',
+  register: '/auth/register',
 } as const;
 
 const HTTP_PURE_FUNCTION_API_END_POINT = {
