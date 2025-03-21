@@ -6,7 +6,7 @@ const HTTP_PURE_STRING_API_END_POINT = {
   logout: '/auth/logout',
   sendEmailCode: '/auth/email/code',
   verifyEmail: '/auth/email/code/verify',
-  mockEmailServerCheck: '/mock/auth/email/code',
+  mockCheckEmailVerify: '/mock/auth/email/code/verify',
 } as const;
 
 const HTTP_PURE_FUNCTION_API_END_POINT = {
