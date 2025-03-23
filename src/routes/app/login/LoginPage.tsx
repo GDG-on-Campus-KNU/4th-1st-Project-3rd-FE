@@ -18,15 +18,15 @@ export default function AppLoginPage() {
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    postFetch<LoginRequestBody>(HTTP_API_END_POINT.login, {
-      body: { email, password },
-    })
-      .then(() => {
-        navigate(APP_END_POINT.chatMbti('ISFJ'));
-      })
-      .catch(() => {
-        setErrorMessage('아이디 혹은 비밀번호가 틀렸습니다');
+    try {
+      await postFetch<LoginRequestBody>(HTTP_API_END_POINT.login, {
+        body: { email, password },
       });
+    } catch (_: unknown) {
+      console.log(_);
+      setErrorMessage('아이디 혹은 비밀번호가 틀렸습니다');
+    }
+    navigate(APP_END_POINT.chatMbti('ISFJ'));
   };
 
   return (
