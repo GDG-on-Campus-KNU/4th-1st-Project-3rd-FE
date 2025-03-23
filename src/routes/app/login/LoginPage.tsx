@@ -7,10 +7,12 @@ import ControlledInput from '@_/components/common/Input/ControlledInput';
 import APP_END_POINT from '@_/constants/appEndpoint';
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { postFetch } from '@_/fetches/BaseFetches';
+import useNonLoginPage from '@_/hooks/useNonLoginPage';
 
 import styles from './LoginPage.module.css';
 
 export default function AppLoginPage() {
+  useNonLoginPage();
   const [email, setEmail] = useState('');
   const [password, setPassWord] = useState('');
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
@@ -21,10 +23,11 @@ export default function AppLoginPage() {
     try {
       await postFetch<LoginRequestBody>(HTTP_API_END_POINT.login, {
         body: { email, password },
+        headers: { credentials: 'include' },
       });
     } catch (_: unknown) {
-      console.log(_);
       setErrorMessage('아이디 혹은 비밀번호가 틀렸습니다');
+      return;
     }
     navigate(APP_END_POINT.chatMbti('ISFJ'));
   };
