@@ -5,6 +5,7 @@ import { postFetch } from '@_/fetches/BaseFetches';
 import useChangeHandler from '@_/hooks/useChangeHandler';
 
 const VERIFY_INIT_SECOND = 5 * 60;
+const LEFT_COUNT_INIT = 5;
 export default function useEmailVerify() {
   const [email, setEmail] = useState('');
   const [hasEmailError, setHasEmailError] = useState(false);
@@ -14,7 +15,7 @@ export default function useEmailVerify() {
   const [code, setCode] = useState<string>('');
   const [canCheckCode, setCanVerifyCode] = useState(false);
   const [leftSecond, setLeftSecond] = useState(0);
-  const [leftCnt, setLeftCnt] = useState(5);
+  const [leftCnt, setLeftCnt] = useState(LEFT_COUNT_INIT);
   const [hasCodeError, setHasCodeError] = useState(false);
 
   const intervalIdRef = useRef<ReturnType<typeof setInterval>>(undefined);
@@ -48,6 +49,7 @@ export default function useEmailVerify() {
     }
     setHasEmailError(false);
     setIsValidCode(true);
+    setLeftCnt(LEFT_COUNT_INIT);
     setLeftSecond(VERIFY_INIT_SECOND);
   }, [isValidCode, email]);
 
