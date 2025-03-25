@@ -103,7 +103,7 @@ export default function AppRegisterPage() {
     }
     if (nowStep === 4) {
       await postFetch<RegisterRequestBody>(HTTP_API_END_POINT.register, {
-        body: { email: '', password: '', mbti: 'ISFJ' },
+        body: { email, password, mbti: mbti as Mbti },
       });
       setNowStep(5);
       return;
@@ -113,7 +113,7 @@ export default function AppRegisterPage() {
       return;
     }
     return setNowStep((prev) => (prev + 1) as Step);
-  }, [nowStep, navigate, sendCode]);
+  }, [nowStep, email, password, mbti, navigate, sendCode]);
 
   return (
     <section>
