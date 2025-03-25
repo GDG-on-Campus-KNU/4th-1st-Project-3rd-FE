@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { postFetch } from '@_/fetches/BaseFetches';
@@ -6,6 +6,9 @@ import useChangeHandler from '@_/hooks/useChangeHandler';
 
 const VERIFY_INIT_SECOND = 5 * 60;
 const LEFT_COUNT_INIT = 5;
+
+const EMAIL_REGEX =
+  /^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/;
 export default function useEmailVerify() {
   const [email, setEmail] = useState('');
   const [hasEmailError, setHasEmailError] = useState(false);
@@ -72,7 +75,10 @@ export default function useEmailVerify() {
     setIsVerified(true);
   }, [canCheckCode, leftSecond, code, leftCnt, email]);
 
-  const handleChangeEmail = useChangeHandler(setEmail);
+  const handleChangeEmail = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.currentTarget.value);
+    setHasEmailError(!EMAIL_REGEX.test(e.currentTarget.value));
+  }, []);
 
   const handleChangeCode = useChangeHandler(setCode);
 
