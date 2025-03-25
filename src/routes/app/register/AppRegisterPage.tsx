@@ -12,9 +12,11 @@ import useNonLoginPage from '@_/hooks/useNonLoginPage';
 
 import styles from './AppRegisterPage.module.css';
 import useEmailVerify from './_hooks/useEmailVerify';
+import useMBTIInput from './_hooks/useMBTIInput';
 import usePassword from './_hooks/usePassword';
 import RegisterCodePage from './_pages/RegisterCodePage/RegisterCodePage';
 import RegisterEmailPage from './_pages/RegisterEmailPage/RegisterEmailPage';
+import RegisterMBTIPage from './_pages/RegisterMBTIPage/RegisterMBTIPage';
 import RegisterPasswordPage from './_pages/RegisterPasswordPage/RegisterPasswordPage';
 
 type Step = 1 | 2 | 3 | 4 | 5;
@@ -71,6 +73,19 @@ export default function AppRegisterPage() {
     handleChangePassword,
     handleChangePasswordChecker,
   } = usePassword();
+
+  const {
+    isMBTICompleted,
+    mbti,
+    energyChar,
+    perspectiveChar,
+    judgeChar,
+    planningChar,
+    changeEnergyChar,
+    changePerspectiveChar,
+    changeJudgeChar,
+    changePlanningChar,
+  } = useMBTIInput();
 
   const handleGoBackward = useCallback(() => {
     if (nowStep === 1) {
@@ -147,6 +162,18 @@ export default function AppRegisterPage() {
               hasPasswordCheckerError={hasPasswordCheckerError}
               onChangePassword={handleChangePassword}
               onChangePasswordChecker={handleChangePasswordChecker}
+            />
+          )}
+          {nowStep === 4 && (
+            <RegisterMBTIPage
+              energyChar={energyChar}
+              perspectiveChar={perspectiveChar}
+              judgeChar={judgeChar}
+              planningChar={planningChar}
+              changeEnergyChar={changeEnergyChar}
+              changePerspectiveChar={changePerspectiveChar}
+              changeJudgeChar={changeJudgeChar}
+              changePlanningChar={changePlanningChar}
             />
           )}
         </div>
