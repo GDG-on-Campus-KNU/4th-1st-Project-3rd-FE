@@ -1,6 +1,4 @@
-import { useState } from 'react';
-
-import useChangeHandler from '@_/hooks/useChangeHandler';
+import { ChangeEvent, useCallback, useState } from 'react';
 
 const ONLY_DIGIT_ALPHABET_REGEX = /^[\dA-Za-z]+$/;
 const PASSWORD_MIN_LENGTH = 8;
@@ -12,7 +10,7 @@ const getPasswordErrorMessage = (password: string) => {
     password.length < PASSWORD_MIN_LENGTH ||
     password.length > PASSWORD_MAX_LENGTH
   )
-    return '8~20자리를 사용하실 수 있습니다.';
+    return '8~20글자만 사용하실 수 있습니다.';
   return null;
 };
 const getPasswordCheckerErrorMessage = (
@@ -26,18 +24,33 @@ const getPasswordCheckerErrorMessage = (
 export default function usePassword() {
   const [password, setPassword] = useState('');
   const [passwordChecker, setPasswordChecker] = useState('');
-  const passwordErrorMessage = getPasswordErrorMessage(password);
-  const passwordCheckerErrorMessage = getPasswordCheckerErrorMessage(
-    password,
-    passwordChecker,
-  );
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState<
+    string | null
+  >(null);
+  const [passwordCheckerErrorMessage, setPasswordCheckerErrorMessage] =
+    useState<string | null>(null);
+
   const hasPasswordError = !!(
-    passwordCheckerErrorMessage || passwordCheckerErrorMessage
+    passwordErrorMessage || passwordCheckerErrorMessage
   );
   const hasPasswordCheckerError = !!passwordCheckerErrorMessage;
-  const handleChangePassword = useChangeHandler(setPassword);
-  const handleChangePasswordChecker = useChangeHandler(setPasswordChecker);
-
+  const handleChangePassword = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const value = e.currentTarget.value;
+      setPassword(value);
+      setPasswordErrorMessage(getPasswordErrorMessage(value));
+    },
+    [],
+  );
+  const handleChangePasswordChecker = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setPasswordChecker(e.currentTarget.value);
+      setPasswordCheckerErrorMessage(
+        getPasswordCheckerErrorMessage(password, e.currentTarget.value),
+      );
+    },
+    [password],
+  );
   return {
     password,
     passwordChecker,
