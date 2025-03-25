@@ -11,6 +11,8 @@ import { postFetch } from '@_/fetches/BaseFetches';
 import useNonLoginPage from '@_/hooks/useNonLoginPage';
 
 import styles from './AppRegisterPage.module.css';
+import useEmailVerify from './_hooks/useEmailVerify';
+import RegisterEmailPage from './_pages/RegisterEmailPage/RegisterEmailPage';
 
 type Step = 1 | 2 | 3 | 4 | 5;
 const getButtonStr = (step: Step) => {
@@ -43,6 +45,19 @@ export default function AppRegisterPage() {
   useNonLoginPage();
   const navigate = useNavigate();
   const [nowStep, setNowStep] = useState<Step>(1);
+  const {
+    email,
+    code,
+    leftCnt,
+    hasEmailError,
+    leftSecond,
+    isVerified,
+    hasCodeError,
+    sendCode,
+    verifyCode,
+    handleChangeEmail,
+    handleChangeCode,
+  } = useEmailVerify();
 
   const handleGoBackward = useCallback(() => {
     if (nowStep === 1) {
@@ -53,6 +68,11 @@ export default function AppRegisterPage() {
   }, [nowStep, navigate]);
 
   const handleGoNextStep = useCallback(async () => {
+    if (nowStep === 1) {
+      await sendCode();
+      setNowStep(2);
+      return;
+    }
     if (nowStep === 4) {
       await postFetch<RegisterRequestBody>(HTTP_API_END_POINT.register, {
         body: { email: '', password: '', mbti: 'ISFJ' },
@@ -62,9 +82,10 @@ export default function AppRegisterPage() {
     }
     if (nowStep === 5) {
       navigate(APP_END_POINT.login);
+      return;
     }
     return setNowStep((prev) => (prev + 1) as Step);
-  }, [nowStep, navigate]);
+  }, [nowStep, navigate, sendCode]);
 
   return (
     <section>
@@ -81,7 +102,16 @@ export default function AppRegisterPage() {
         className={styles['step-indicator']}
       />
       <section className={styles['section-layout']}>
-        <div>{null}</div>
+        <div>
+          {nowStep === 1 && (
+            <RegisterEmailPage
+              email={email}
+              hasEmailError={hasEmailError}
+              onEmailChange={handleChangeEmail}
+            />
+          )}
+        </div>
+
         <Button
           className={styles.button}
           disabled={false}
