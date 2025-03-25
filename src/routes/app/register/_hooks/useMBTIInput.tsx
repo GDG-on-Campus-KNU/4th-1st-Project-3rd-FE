@@ -60,6 +60,10 @@ export default function useMBTIInput() {
   return {
     isMBTICompleted,
     mbti,
+    energyChar,
+    perspectiveChar,
+    judgeChar,
+    planningChar,
     changeEnergyChar,
     changePerspectiveChar,
     changeJudgeChar,
