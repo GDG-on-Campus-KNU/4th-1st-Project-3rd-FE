@@ -84,6 +84,9 @@ export default function useEmailVerify() {
 
   return {
     email,
+    code,
+    leftCnt,
+    leftSecond,
     hasEmailError,
     isVerified,
     hasCodeError,
