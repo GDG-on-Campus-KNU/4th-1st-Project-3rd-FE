@@ -82,7 +82,11 @@ export default function AppRegisterPage() {
       />
       <section className={styles['section-layout']}>
         <div>{null}</div>
-        <Button disabled={false} onClick={handleGoNextStep}>
+        <Button
+          className={styles.button}
+          disabled={false}
+          onClick={handleGoNextStep}
+        >
           {getButtonStr(nowStep)}
         </Button>
       </section>
