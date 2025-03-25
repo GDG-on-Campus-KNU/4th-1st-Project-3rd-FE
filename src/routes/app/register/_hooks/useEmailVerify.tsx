@@ -63,7 +63,6 @@ export default function useEmailVerify() {
         body: { email, code: Number(code) },
       });
     } catch (_: unknown) {
-      setHasEmailError(true);
       if (leftCnt) setLeftCnt(leftCnt - 1);
       setCanVerifyCode(true);
       setHasCodeError(true);
