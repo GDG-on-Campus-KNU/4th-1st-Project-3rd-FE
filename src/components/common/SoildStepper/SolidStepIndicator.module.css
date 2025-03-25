@@ -1,0 +1,62 @@
+.stepper-container {
+  display: flex;
+  gap    : 3px;
+  width  : 100%;
+}
+
+.step {
+  position: relative;
+
+  overflow: hidden;
+  flex    : 1;
+
+  height       : 4px;
+  border-radius: 10px;
+}
+
+.step-indicator {
+  position: absolute;
+  top     : 0;
+  left    : 0;
+
+  height: 100%;
+
+  background-color: #4849e8;
+}
+
+.used {
+  width: 100%;
+}
+
+.unused {
+  width: 0%;
+}
+
+.increasing {
+  animation: increasing-working-animation 300ms linear forwards;
+}
+
+.before-using {
+  animation: decreasing-working-animation 300ms linear forwards;
+}
+
+@keyframes increasing-working-animation {
+  0% {
+    width: 0%;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+
+@keyframes decreasing-working-animation {
+  0% {
+    width: 100%;
+  }
+
+  100% {
+    width: 0%;
+  }
+}
