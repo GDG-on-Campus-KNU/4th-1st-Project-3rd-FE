@@ -12,6 +12,7 @@ import useNonLoginPage from '@_/hooks/useNonLoginPage';
 
 import styles from './AppRegisterPage.module.css';
 import useEmailVerify from './_hooks/useEmailVerify';
+import RegisterCodePage from './_pages/RegisterCodePage/RegisterCodePage';
 import RegisterEmailPage from './_pages/RegisterEmailPage/RegisterEmailPage';
 
 type Step = 1 | 2 | 3 | 4 | 5;
@@ -108,6 +109,20 @@ export default function AppRegisterPage() {
               email={email}
               hasEmailError={hasEmailError}
               onEmailChange={handleChangeEmail}
+            />
+          )}
+          {nowStep === 2 && (
+            <RegisterCodePage
+              email={email}
+              code={code}
+              leftCnt={leftCnt}
+              maxVerifyCnt={5}
+              hasCodeError={hasCodeError}
+              leftSecond={leftSecond}
+              isVerified={isVerified}
+              verify={verifyCode}
+              resend={sendCode}
+              onCodeChange={handleChangeCode}
             />
           )}
         </div>

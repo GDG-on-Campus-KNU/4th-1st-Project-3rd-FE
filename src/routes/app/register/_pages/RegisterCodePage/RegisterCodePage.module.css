@@ -1,0 +1,57 @@
+.input-container {
+  display        : flex;
+  justify-content: space-between;
+
+  box-sizing: border-box;
+  width     : 100%;
+  padding   : 0 10px;
+}
+
+
+
+.send-container {
+  display        : flex;
+  gap            : 14px;
+  align-items    : center;
+  justify-content: space-between;
+
+  width : 96px;
+  height: 100%;
+}
+
+.left-time {
+  font-size: 12px;
+  color    : #666;
+}
+
+
+.send-button {
+  box-sizing: border-box;
+  width     : 49px;
+  height    : 38px !important;
+  padding   : 10px 3px !important;
+
+  font-size: 12px !important;
+
+  background-color: #4849e8 !important;
+}
+
+.description-container {
+  padding-left: 10px;
+  font-size   : 14px;
+  font-weight : 500;
+  line-height : 150%;
+}
+
+
+.mail-description {
+  color: #666
+}
+
+.error-message {
+  color: red;
+}
+
+.verified-message {
+  color: #4849e8
+}
