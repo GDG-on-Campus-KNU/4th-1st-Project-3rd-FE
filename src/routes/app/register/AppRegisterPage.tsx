@@ -15,6 +15,7 @@ import useEmailVerify from './_hooks/useEmailVerify';
 import useMBTIInput from './_hooks/useMBTIInput';
 import usePassword from './_hooks/usePassword';
 import RegisterCodePage from './_pages/RegisterCodePage/RegisterCodePage';
+import RegisterCompletePage from './_pages/RegisterCompletePage/RegisterCompletePage';
 import RegisterEmailPage from './_pages/RegisterEmailPage/RegisterEmailPage';
 import RegisterMBTIPage from './_pages/RegisterMBTIPage/RegisterMBTIPage';
 import RegisterPasswordPage from './_pages/RegisterPasswordPage/RegisterPasswordPage';
@@ -176,6 +177,7 @@ export default function AppRegisterPage() {
               changePlanningChar={changePlanningChar}
             />
           )}
+          {nowStep === 5 && <RegisterCompletePage />}
         </div>
 
         <Button

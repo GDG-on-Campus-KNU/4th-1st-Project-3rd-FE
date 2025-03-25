@@ -1,0 +1,30 @@
+.container {
+  display        : flex;
+  flex-direction : column;
+  gap            : 20px;
+  align-items    : center;
+  justify-content: center;
+}
+
+.character-box {
+  position: relative;
+  width   : 175px;
+  height  : 175px;
+
+}
+
+.character {
+  position: absolute;
+
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+
+  object-fit: contain;
+}
+
+.description {
+  font-size  : 24px;
+  font-weight: 600;
+  line-height: 150%;
+}
