@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 
-import SolidStepIndicator from './SolidStepperIndicator';
+import SolidStepIndicator from './SolidStepIndicator';
 
 const meta = {
   title: 'Common/SolidStepIndicator',

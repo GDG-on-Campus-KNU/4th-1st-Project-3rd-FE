@@ -72,7 +72,6 @@ export default function SolidStepIndicator(props: SolidStepIndicatorProps) {
           </div>
         ),
       )}
-      {workingStep}
     </div>
   );
 }
