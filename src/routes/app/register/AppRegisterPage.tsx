@@ -12,8 +12,10 @@ import useNonLoginPage from '@_/hooks/useNonLoginPage';
 
 import styles from './AppRegisterPage.module.css';
 import useEmailVerify from './_hooks/useEmailVerify';
+import usePassword from './_hooks/usePassword';
 import RegisterCodePage from './_pages/RegisterCodePage/RegisterCodePage';
 import RegisterEmailPage from './_pages/RegisterEmailPage/RegisterEmailPage';
+import RegisterPasswordPage from './_pages/RegisterPasswordPage/RegisterPasswordPage';
 
 type Step = 1 | 2 | 3 | 4 | 5;
 const getButtonStr = (step: Step) => {
@@ -59,6 +61,16 @@ export default function AppRegisterPage() {
     handleChangeEmail,
     handleChangeCode,
   } = useEmailVerify();
+  const {
+    password,
+    passwordChecker,
+    passwordErrorMessage,
+    passwordCheckerErrorMessage,
+    hasPasswordError,
+    hasPasswordCheckerError,
+    handleChangePassword,
+    handleChangePasswordChecker,
+  } = usePassword();
 
   const handleGoBackward = useCallback(() => {
     if (nowStep === 1) {
@@ -123,6 +135,18 @@ export default function AppRegisterPage() {
               verify={verifyCode}
               resend={sendCode}
               onCodeChange={handleChangeCode}
+            />
+          )}
+          {nowStep === 3 && (
+            <RegisterPasswordPage
+              password={password}
+              passwordChecker={passwordChecker}
+              passwordErrorMessage={passwordErrorMessage}
+              passwordCheckerErrorMessage={passwordCheckerErrorMessage}
+              hasPasswordError={hasPasswordError}
+              hasPasswordCheckerError={hasPasswordCheckerError}
+              onChangePassword={handleChangePassword}
+              onChangePasswordChecker={handleChangePasswordChecker}
             />
           )}
         </div>
