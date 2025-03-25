@@ -180,7 +180,19 @@ export default function AppRegisterPage() {
 
         <Button
           className={styles.button}
-          disabled={false}
+          isValid={
+            !checkIsButtonDisabled({
+              step: nowStep,
+              isValidEmail: !hasEmailError,
+              isVerified,
+              isValidPassword: !!(
+                password &&
+                !hasPasswordError &&
+                !hasPasswordCheckerError
+              ),
+              isValidMBTI: isMBTICompleted,
+            })
+          }
           onClick={handleGoNextStep}
         >
           {getButtonStr(nowStep)}
