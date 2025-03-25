@@ -84,7 +84,7 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
         <div>
           {hasCodeError && (
             <span className={styles['error-message']}>
-              getErrorMessage(leftCnt, maxVerifyCnt)
+              {getErrorMessage(leftCnt, maxVerifyCnt)}
             </span>
           )}
           {isVerified && (
