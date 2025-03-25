@@ -2,7 +2,6 @@ import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { postFetch } from '@_/fetches/BaseFetches';
-import useChangeHandler from '@_/hooks/useChangeHandler';
 
 const VERIFY_INIT_SECOND = 5 * 60;
 const LEFT_COUNT_INIT = 5;
@@ -16,7 +15,7 @@ export default function useEmailVerify() {
 
   const [isVerified, setIsVerified] = useState(false);
   const [code, setCode] = useState<string>('');
-  const [canCheckCode, setCanVerifyCode] = useState(false);
+  const [canVerifyCode, setCanVerifyCode] = useState(false);
   const [leftSecond, setLeftSecond] = useState(0);
   const [leftCnt, setLeftCnt] = useState(LEFT_COUNT_INIT);
   const [hasCodeError, setHasCodeError] = useState(false);
@@ -43,7 +42,6 @@ export default function useEmailVerify() {
   }, [isValidCode, leftSecond]);
 
   const sendCode = useCallback(async () => {
-    if (isValidCode) return;
     try {
       await postFetch(HTTP_API_END_POINT.sendEmailCode, { body: { email } });
     } catch (_: unknown) {
@@ -54,11 +52,14 @@ export default function useEmailVerify() {
     setIsValidCode(true);
     setLeftCnt(LEFT_COUNT_INIT);
     setLeftSecond(VERIFY_INIT_SECOND);
-  }, [isValidCode, email]);
+    setCanVerifyCode(true);
+    setHasCodeError(false);
+  }, [email]);
 
   const verifyCode = useCallback(async () => {
-    if (!canCheckCode) return;
+    if (!canVerifyCode) return;
     if (leftSecond <= 0) return;
+    if (leftCnt <= 0) return;
     if (code.length !== 4) return;
     try {
       setCanVerifyCode(false);
@@ -73,14 +74,18 @@ export default function useEmailVerify() {
     }
     setHasCodeError(false);
     setIsVerified(true);
-  }, [canCheckCode, leftSecond, code, leftCnt, email]);
+  }, [canVerifyCode, leftSecond, code, leftCnt, email]);
 
   const handleChangeEmail = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.currentTarget.value);
     setHasEmailError(!EMAIL_REGEX.test(e.currentTarget.value));
   }, []);
 
-  const handleChangeCode = useChangeHandler(setCode);
+  const handleChangeCode = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    if (isNaN(Number(e.currentTarget.value))) return;
+    if (e.currentTarget.value.length > 4) return;
+    setCode(e.currentTarget.value);
+  }, []);
 
   return {
     email,
