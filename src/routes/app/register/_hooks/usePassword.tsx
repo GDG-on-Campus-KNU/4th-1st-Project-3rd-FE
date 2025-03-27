@@ -38,16 +38,29 @@ export default function usePassword() {
     (e: ChangeEvent<HTMLInputElement>) => {
       const value = e.currentTarget.value;
       setPassword(value);
-      setPasswordErrorMessage(getPasswordErrorMessage(value));
+      if (value) setPasswordErrorMessage(getPasswordErrorMessage(value));
+      if (!value) setPasswordErrorMessage(null);
+      if (passwordChecker) {
+        setPasswordCheckerErrorMessage(
+          getPasswordCheckerErrorMessage(value, passwordChecker),
+        );
+      }
+      if (!passwordChecker) {
+        setPasswordCheckerErrorMessage(null);
+      }
     },
-    [],
+    [passwordChecker],
   );
   const handleChangePasswordChecker = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      setPasswordChecker(e.currentTarget.value);
-      setPasswordCheckerErrorMessage(
-        getPasswordCheckerErrorMessage(password, e.currentTarget.value),
-      );
+      const value = e.currentTarget.value;
+      setPasswordChecker(value);
+      if (value) {
+        setPasswordCheckerErrorMessage(
+          getPasswordCheckerErrorMessage(password, e.currentTarget.value),
+        );
+      }
+      if (!value) setPasswordCheckerErrorMessage(null);
     },
     [password],
   );
