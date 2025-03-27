@@ -30,6 +30,15 @@ const getButtonMessage = (leftSecond: number, leftCnt: number) => {
   if (leftSecond > 0 && leftCnt > 0) return '인증';
   return '재전송';
 };
+
+const MAX_CODE_LENGTH = 4;
+const isValidButton = (leftSecond: number, leftCnt: number, code: string) => {
+  if (leftSecond > 0 && leftCnt > 0 && code.length === MAX_CODE_LENGTH)
+    return true;
+  if (leftSecond === 0) return true;
+  if (leftCnt === 0) return true;
+  return false;
+};
 export default function RegisterCodePage(props: RegisterCodePageProps) {
   const {
     email,
@@ -69,7 +78,11 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
               }
               <Button
                 onClick={leftCnt && leftSecond ? verify : resend}
-                className={styles['send-button']}
+                className={[
+                  styles['send-button'],
+                  isValidButton(leftSecond, leftCnt, code) ? styles.valid : '',
+                ].join(' ')}
+                isValid={isValidButton(leftSecond, leftCnt, code)}
               >
                 {getButtonMessage(leftSecond, leftCnt)}
               </Button>

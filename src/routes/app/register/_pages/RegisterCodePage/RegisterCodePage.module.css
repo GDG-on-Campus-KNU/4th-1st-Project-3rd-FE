@@ -33,7 +33,12 @@
 
   font-size: 12px !important;
 
+
+}
+
+.valid {
   background-color: #4849e8 !important;
+
 }
 
 .description-container {
