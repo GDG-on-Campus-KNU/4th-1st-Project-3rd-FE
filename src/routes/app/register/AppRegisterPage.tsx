@@ -15,16 +15,15 @@ import useEmailVerify from './_hooks/useEmailVerify';
 import useMBTIInput from './_hooks/useMBTIInput';
 import usePassword from './_hooks/usePassword';
 import RegisterCodePage from './_pages/RegisterCodePage/RegisterCodePage';
-import RegisterCompletePage from './_pages/RegisterCompletePage/RegisterCompletePage';
 import RegisterEmailPage from './_pages/RegisterEmailPage/RegisterEmailPage';
 import RegisterMBTIPage from './_pages/RegisterMBTIPage/RegisterMBTIPage';
 import RegisterPasswordPage from './_pages/RegisterPasswordPage/RegisterPasswordPage';
 
-type Step = 1 | 2 | 3 | 4 | 5;
+type Step = 1 | 2 | 3 | 4;
+const MAX_STEP = 4;
 const getButtonStr = (step: Step) => {
   if (step === 1) return '인증번호 받기';
   if (step === 2) return '확인';
-  if (step === 5) return '로그인 하러가기';
   return '다음으로';
 };
 
@@ -98,7 +97,7 @@ export default function AppRegisterPage() {
     if (nowStep === 1) {
       await sendCode();
       navigate(location.pathname, {
-        state: { step: Math.min(5, nowStep + 1) },
+        state: { step: 2 },
       });
       return;
     }
@@ -106,18 +105,12 @@ export default function AppRegisterPage() {
       await postFetch<RegisterRequestBody>(HTTP_API_END_POINT.register, {
         body: { email, password, mbti: mbti as Mbti },
       });
-      navigate(location.pathname, {
-        state: { step: Math.min(5, nowStep + 1) },
-      });
+      navigate(APP_END_POINT.registerSuccess);
       return;
     }
-    if (nowStep === 5) {
-      navigate(APP_END_POINT.login);
 
-      return;
-    }
     navigate(location.pathname, {
-      state: { step: Math.min(5, nowStep + 1) },
+      state: { step: Math.min(MAX_STEP, nowStep + 1) },
     });
   }, [nowStep, email, password, mbti, navigate, sendCode, location.pathname]);
 
@@ -131,7 +124,7 @@ export default function AppRegisterPage() {
         />
       </header>
       <SolidStepIndicator
-        maxStep={5}
+        maxStep={MAX_STEP}
         nowStep={nowStep}
         className={styles['step-indicator']}
       />
@@ -182,7 +175,6 @@ export default function AppRegisterPage() {
               changePlanningChar={changePlanningChar}
             />
           )}
-          {nowStep === 5 && <RegisterCompletePage />}
         </div>
 
         <Button
