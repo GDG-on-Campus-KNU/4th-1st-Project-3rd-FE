@@ -24,6 +24,7 @@ const MAX_STEP = 4;
 const getButtonStr = (step: Step) => {
   if (step === 1) return '인증번호 받기';
   if (step === 2) return '확인';
+  if (step === MAX_STEP) return '회원가입 완료하기';
   return '다음으로';
 };
 
