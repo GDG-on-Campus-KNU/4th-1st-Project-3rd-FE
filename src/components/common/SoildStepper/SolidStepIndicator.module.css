@@ -33,11 +33,11 @@
 }
 
 .increasing {
-  animation: increasing-working-animation 300ms linear forwards;
+  animation: increasing-working-animation 300ms ease-out forwards;
 }
 
 .before-using {
-  animation: decreasing-working-animation 300ms linear forwards;
+  animation: decreasing-working-animation 300ms ease-out forwards;
 }
 
 @keyframes increasing-working-animation {

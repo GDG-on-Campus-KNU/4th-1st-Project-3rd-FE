@@ -38,19 +38,29 @@ export default function SolidStepIndicator(props: SolidStepIndicatorProps) {
   const lastWorkingStep = useRef<number>(0);
   const isIncreasing = lastWorkingStep.current <= workingStep;
   const intervalId = useRef<ReturnType<typeof setInterval>>(undefined);
-
+  const setTimeoutId = useRef<ReturnType<typeof setTimeout>>(undefined);
+  console.log(nowStep, workingStep);
   useEffect(() => {
     const targetStep = Math.floor(nowStep);
-    intervalId.current = setInterval(() => {
+    function changeWorkingStep() {
       setWorkingStep((prev) => {
+        if (prev === nowStep) return prev;
         lastWorkingStep.current = prev;
         return prev <= targetStep
           ? Math.min(maxStep, prev + 1)
           : Math.max(prev - 1, 0);
       });
+    }
+
+    changeWorkingStep();
+    setTimeoutId.current = setTimeout(() => {
+      intervalId.current = setInterval(changeWorkingStep, WORKING_MS);
     }, WORKING_MS);
 
-    return () => clearInterval(intervalId.current);
+    return () => {
+      clearTimeout(setTimeoutId.current);
+      clearInterval(intervalId.current);
+    };
   }, [nowStep, maxStep]);
 
   useEffect(() => {
