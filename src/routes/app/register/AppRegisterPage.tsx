@@ -1,6 +1,6 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import Button from '@_/components/common/Button/Button';
 import SolidStepIndicator from '@_/components/common/SoildStepper/SolidStepIndicator';
@@ -50,7 +50,7 @@ const checkIsButtonDisabled = ({
 export default function AppRegisterPage() {
   useNonLoginPage();
   const navigate = useNavigate();
-  const [nowStep, setNowStep] = useState<Step>(1);
+  const location = useLocation();
   const {
     email,
     code,
@@ -88,33 +88,38 @@ export default function AppRegisterPage() {
     changePlanningChar,
   } = useMBTIInput();
 
+  const nowStep: Step = location.state?.step || 1;
+
   const handleGoBackward = useCallback(() => {
-    if (nowStep === 1) {
-      navigate(-1);
-      return;
-    }
-    setNowStep((prev) => (prev - 1) as Step);
-  }, [nowStep, navigate]);
+    navigate(-1);
+  }, [navigate]);
 
   const handleGoNextStep = useCallback(async () => {
     if (nowStep === 1) {
       await sendCode();
-      setNowStep(2);
+      navigate(location.pathname, {
+        state: { step: Math.min(5, nowStep + 1) },
+      });
       return;
     }
     if (nowStep === 4) {
       await postFetch<RegisterRequestBody>(HTTP_API_END_POINT.register, {
         body: { email, password, mbti: mbti as Mbti },
       });
-      setNowStep(5);
+      navigate(location.pathname, {
+        state: { step: Math.min(5, nowStep + 1) },
+      });
       return;
     }
     if (nowStep === 5) {
       navigate(APP_END_POINT.login);
+
       return;
     }
-    return setNowStep((prev) => (prev + 1) as Step);
-  }, [nowStep, email, password, mbti, navigate, sendCode]);
+    navigate(location.pathname, {
+      state: { step: Math.min(5, nowStep + 1) },
+    });
+  }, [nowStep, email, password, mbti, navigate, sendCode, location.pathname]);
 
   return (
     <section>
