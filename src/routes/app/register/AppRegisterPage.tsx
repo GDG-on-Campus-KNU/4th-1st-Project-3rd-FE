@@ -190,14 +190,14 @@ export default function AppRegisterPage() {
           isValid={
             !checkIsButtonDisabled({
               step: nowStep,
-              isValidEmail: !hasEmailError,
+              isValidEmail: !!(email && !hasEmailError),
               isVerified,
               isValidPassword: !!(
                 password &&
                 !hasPasswordError &&
                 !hasPasswordCheckerError
               ),
-              isValidMBTI: isMBTICompleted,
+              isValidMBTI: !!(mbti && isMBTICompleted),
             })
           }
           onClick={handleGoNextStep}
