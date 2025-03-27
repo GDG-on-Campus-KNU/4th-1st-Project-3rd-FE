@@ -194,6 +194,7 @@ export default function AppRegisterPage() {
               isVerified,
               isValidPassword: !!(
                 password &&
+                passwordChecker &&
                 !hasPasswordError &&
                 !hasPasswordCheckerError
               ),
