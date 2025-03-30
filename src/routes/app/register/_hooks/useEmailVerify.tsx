@@ -8,6 +8,21 @@ const LEFT_COUNT_INIT = 5;
 
 const EMAIL_REGEX =
   /^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/;
+
+const getCodeErrorMessage = (
+  leftCnt: number,
+  maxVerifyCnt: number,
+  leftSecond: number,
+) => {
+  if (leftSecond === 0)
+    return '유효시간이 지났습니다. 오른쪽 버튼을 눌러 인증메일을 다시 보내주세요.' as const;
+  if (leftCnt === 0)
+    return '인증 횟수를 모두 사용하였습니다\n오른쪽 버튼을 눌러 인증메일을 다시 보내주세요.' as const;
+  if (leftCnt !== LEFT_COUNT_INIT)
+    return `인증번호가 일치하지 않습니다 ${maxVerifyCnt - leftCnt}/${maxVerifyCnt}` as const;
+  return null;
+};
+
 export default function useEmailVerify() {
   const [email, setEmail] = useState('');
   const [hasEmailError, setHasEmailError] = useState(false);
@@ -18,8 +33,12 @@ export default function useEmailVerify() {
   const [canVerifyCode, setCanVerifyCode] = useState(false);
   const [leftSecond, setLeftSecond] = useState(0);
   const [leftCnt, setLeftCnt] = useState(LEFT_COUNT_INIT);
-  const [hasCodeError, setHasCodeError] = useState(false);
-
+  const codeErrorMessage = getCodeErrorMessage(
+    leftCnt,
+    LEFT_COUNT_INIT,
+    leftSecond,
+  );
+  const hasCodeError = !!codeErrorMessage;
   const intervalIdRef = useRef<ReturnType<typeof setInterval>>(undefined);
 
   useEffect(() => {
@@ -53,7 +72,6 @@ export default function useEmailVerify() {
     setLeftCnt(LEFT_COUNT_INIT);
     setLeftSecond(VERIFY_INIT_SECOND);
     setCanVerifyCode(true);
-    setHasCodeError(false);
   }, [email]);
 
   const verifyCode = useCallback(async () => {
@@ -68,11 +86,10 @@ export default function useEmailVerify() {
       });
     } catch (_: unknown) {
       if (leftCnt) setLeftCnt(leftCnt - 1);
+      if (!leftCnt) setLeftSecond(0);
       setCanVerifyCode(true);
-      setHasCodeError(true);
       return;
     }
-    setHasCodeError(false);
     setIsVerified(true);
   }, [canVerifyCode, leftSecond, code, leftCnt, email]);
 
@@ -95,6 +112,7 @@ export default function useEmailVerify() {
     hasEmailError,
     isVerified,
     hasCodeError,
+    codeErrorMessage,
     sendCode,
     verifyCode,
     handleChangeEmail,

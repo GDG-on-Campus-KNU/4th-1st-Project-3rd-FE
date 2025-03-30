@@ -59,6 +59,7 @@ export default function AppRegisterPage() {
     leftSecond,
     isVerified,
     hasCodeError,
+    codeErrorMessage,
     sendCode,
     verifyCode,
     handleChangeEmail,
@@ -145,6 +146,7 @@ export default function AppRegisterPage() {
               leftCnt={leftCnt}
               maxVerifyCnt={5}
               hasCodeError={hasCodeError}
+              codeErrorMessage={codeErrorMessage}
               leftSecond={leftSecond}
               isVerified={isVerified}
               verify={verifyCode}
