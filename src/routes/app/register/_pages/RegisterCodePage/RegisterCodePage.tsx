@@ -68,11 +68,9 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
         rightIcon={
           !isVerified && (
             <div className={styles['send-container']}>
-              {
-                <span className={styles['left-time']}>
-                  {getMMSSBySecond(leftSecond)}
-                </span>
-              }
+              <span className={styles['left-time']}>
+                {leftCnt ? getMMSSBySecond(leftSecond) : null}
+              </span>
               <Button
                 onClick={leftCnt && leftSecond ? verify : resend}
                 className={[

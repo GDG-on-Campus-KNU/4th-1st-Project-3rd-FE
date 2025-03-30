@@ -86,7 +86,6 @@ export default function useEmailVerify() {
       });
     } catch (_: unknown) {
       if (leftCnt) setLeftCnt(leftCnt - 1);
-      if (!leftCnt) setLeftSecond(0);
       setCanVerifyCode(true);
       return;
     }
