@@ -25,3 +25,18 @@
 .login-button {
   margin-top: 23px;
 }
+
+.register-span {
+  font-size : 14px;
+  color     : #666;
+  text-align: center;
+}
+
+.register {
+  cursor         : pointer;
+  text-decoration: underline;
+}
+
+.register:visited {
+  color: inherit;
+}

@@ -1,58 +1,206 @@
-import { useState } from 'react';
+import { useCallback } from 'react';
 
+import { useLocation, useNavigate } from 'react-router-dom';
+
+import Button from '@_/components/common/Button/Button';
+import SolidStepIndicator from '@_/components/common/SoildStepper/SolidStepIndicator';
+import SolidArrowHeadSVG from '@_/components/common/svgs/SolidArrowHeadSVG';
+import APP_END_POINT from '@_/constants/appEndpoint';
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { postFetch } from '@_/fetches/BaseFetches';
 import useNonLoginPage from '@_/hooks/useNonLoginPage';
 
+import styles from './AppRegisterPage.module.css';
+import useEmailVerify from './_hooks/useEmailVerify';
+import useMBTIInput from './_hooks/useMBTIInput';
+import usePassword from './_hooks/usePassword';
+import RegisterCodePage from './_pages/RegisterCodePage/RegisterCodePage';
+import RegisterEmailPage from './_pages/RegisterEmailPage/RegisterEmailPage';
+import RegisterMBTIPage from './_pages/RegisterMBTIPage/RegisterMBTIPage';
+import RegisterPasswordPage from './_pages/RegisterPasswordPage/RegisterPasswordPage';
+
+type Step = 1 | 2 | 3 | 4;
+const MAX_STEP = 4;
+const getButtonStr = (step: Step) => {
+  if (step === 1) return '인증번호 받기';
+  if (step === 2) return '확인';
+  if (step === MAX_STEP) return '회원가입 완료하기';
+  return '다음으로';
+};
+
+const checkIsButtonDisabled = ({
+  step,
+  isValidEmail,
+  isVerified,
+  isValidPassword,
+  isValidMBTI,
+}: {
+  step: Step;
+  isValidEmail: boolean;
+  isVerified: boolean;
+  isValidPassword: boolean;
+  isValidMBTI: boolean;
+}) => {
+  if (step === 1 && !isValidEmail) return true;
+  if (step === 2 && !isVerified) return true;
+  if (step === 3 && !isValidPassword) return true;
+  if (step === 4 && !isValidMBTI) return true;
+  return false;
+};
 export default function AppRegisterPage() {
   useNonLoginPage();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const {
+    email,
+    code,
+    leftCnt,
+    hasEmailError,
+    leftSecond,
+    isVerified,
+    hasCodeError,
+    codeErrorMessage,
+    sendCode,
+    verifyCode,
+    handleChangeEmail,
+    handleChangeCode,
+  } = useEmailVerify();
+  const {
+    password,
+    passwordChecker,
+    passwordErrorMessage,
+    passwordCheckerErrorMessage,
+    hasPasswordError,
+    hasPasswordCheckerError,
+    handleChangePassword,
+    handleChangePasswordChecker,
+  } = usePassword();
 
-  const [isGeneratedCode, setIsGeneratedCode] = useState(false);
-  const [isMailVerified, setIsMailVerified] = useState(false);
-  const [hasMailErrorMessage, setHasMailErrorMessage] = useState(false);
+  const {
+    isMBTICompleted,
+    mbti,
+    energyChar,
+    perspectiveChar,
+    judgeChar,
+    planningChar,
+    changeEnergyChar,
+    changePerspectiveChar,
+    changeJudgeChar,
+    changePlanningChar,
+  } = useMBTIInput();
+
+  const nowStep: Step = location.state?.step || 1;
+
+  const handleGoBackward = useCallback(() => {
+    navigate(-1);
+  }, [navigate]);
+
+  const handleGoNextStep = useCallback(async () => {
+    if (nowStep === 1) {
+      await sendCode();
+      navigate(location.pathname, {
+        state: { step: 2 },
+      });
+      return;
+    }
+    if (nowStep === 4) {
+      await postFetch<RegisterRequestBody>(HTTP_API_END_POINT.register, {
+        body: { email, password, mbti: mbti as Mbti },
+      });
+      navigate(APP_END_POINT.registerSuccess);
+      return;
+    }
+
+    navigate(location.pathname, {
+      state: { step: Math.min(MAX_STEP, nowStep + 1) },
+    });
+  }, [nowStep, email, password, mbti, navigate, sendCode, location.pathname]);
 
   return (
-    <>
-      {!isGeneratedCode && (
-        <button
-          onClick={() =>
-            postFetch(HTTP_API_END_POINT.sendEmailCode).then(() =>
-              setIsGeneratedCode(true),
-            )
+    <section>
+      <header className={styles.header}>
+        <SolidArrowHeadSVG
+          direction="left"
+          onClick={handleGoBackward}
+          className={styles['header-backward-button']}
+        />
+      </header>
+      <SolidStepIndicator
+        maxStep={MAX_STEP}
+        nowStep={nowStep}
+        className={styles['step-indicator']}
+      />
+      <section className={styles['section-layout']}>
+        <div>
+          {nowStep === 1 && (
+            <RegisterEmailPage
+              email={email}
+              hasEmailError={hasEmailError}
+              onEmailChange={handleChangeEmail}
+            />
+          )}
+          {nowStep === 2 && (
+            <RegisterCodePage
+              email={email}
+              code={code}
+              leftCnt={leftCnt}
+              maxVerifyCnt={5}
+              hasCodeError={hasCodeError}
+              codeErrorMessage={codeErrorMessage}
+              leftSecond={leftSecond}
+              isVerified={isVerified}
+              verify={verifyCode}
+              resend={sendCode}
+              onCodeChange={handleChangeCode}
+            />
+          )}
+          {nowStep === 3 && (
+            <RegisterPasswordPage
+              password={password}
+              passwordChecker={passwordChecker}
+              passwordErrorMessage={passwordErrorMessage}
+              passwordCheckerErrorMessage={passwordCheckerErrorMessage}
+              hasPasswordError={hasPasswordError}
+              hasPasswordCheckerError={hasPasswordCheckerError}
+              onChangePassword={handleChangePassword}
+              onChangePasswordChecker={handleChangePasswordChecker}
+            />
+          )}
+          {nowStep === 4 && (
+            <RegisterMBTIPage
+              energyChar={energyChar}
+              perspectiveChar={perspectiveChar}
+              judgeChar={judgeChar}
+              planningChar={planningChar}
+              changeEnergyChar={changeEnergyChar}
+              changePerspectiveChar={changePerspectiveChar}
+              changeJudgeChar={changeJudgeChar}
+              changePlanningChar={changePlanningChar}
+            />
+          )}
+        </div>
+
+        <Button
+          className={styles.button}
+          isValid={
+            !checkIsButtonDisabled({
+              step: nowStep,
+              isValidEmail: !!(email && !hasEmailError),
+              isVerified,
+              isValidPassword: !!(
+                password &&
+                passwordChecker &&
+                !hasPasswordError &&
+                !hasPasswordCheckerError
+              ),
+              isValidMBTI: !!(mbti && isMBTICompleted),
+            })
           }
+          onClick={handleGoNextStep}
         >
-          메일 인증 번호 생성
-        </button>
-      )}
-      {isGeneratedCode && !isMailVerified && (
-        <button
-          onClick={() =>
-            postFetch(HTTP_API_END_POINT.verifyEmail)
-              .then(() => setIsMailVerified(true))
-              .then(() => setHasMailErrorMessage(false))
-              .catch(() => setHasMailErrorMessage(true))
-          }
-        >
-          코드 확인
-        </button>
-      )}
-      {hasMailErrorMessage && (
-        <span style={{ color: 'red' }}>
-          {' '}
-          <br /> 코드가 맞지 않습니다.
-        </span>
-      )}
-      {isMailVerified && (
-        <button
-          onClick={() => {
-            postFetch(HTTP_API_END_POINT.register).then(() =>
-              location.reload(),
-            );
-          }}
-        >
-          회원가입 하기!(누르면 새로고쳐지면서 처음 플로우로 돌아감)
-        </button>
-      )}
-    </>
+          {getButtonStr(nowStep)}
+        </Button>
+      </section>
+    </section>
   );
 }

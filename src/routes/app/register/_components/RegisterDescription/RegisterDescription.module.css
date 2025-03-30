@@ -1,0 +1,17 @@
+.container {
+  margin-bottom: 30px;
+  margin-left  : 10px;
+}
+
+.title {
+  margin-bottom: 4px;
+  font-size    : 24px;
+  font-weight  : 600;
+  line-height  : 150%;
+
+}
+
+.description {
+  font-size  : 16px;
+  line-height: 150%;
+}

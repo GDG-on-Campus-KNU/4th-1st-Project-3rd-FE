@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import Button from '@_/components/common/Button/Button';
 import ControlledInput from '@_/components/common/Input/ControlledInput';
@@ -58,6 +58,12 @@ export default function AppLoginPage() {
         <div className={styles['error-message']}>{errorMessage}</div>
         <Button className={styles['login-button']}>로그인</Button>
       </form>
+      <div className={styles['register-span']}>
+        PERSONA가 처음이에요.{' '}
+        <Link className={styles.register} to={APP_END_POINT.register}>
+          회원가입하기
+        </Link>
+      </div>
     </>
   );
 }

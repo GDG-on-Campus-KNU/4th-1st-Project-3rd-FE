@@ -7,6 +7,7 @@ import AppMainPage from '@_/routes/app/page';
 import AppChatMbtiPage from './chat/mbti/[mbti]/ChatMbtiPage';
 import LoginPage from './login/LoginPage';
 import AppRegisterPage from './register/AppRegisterPage';
+import AppRegisterSuccessPage from './register/success/AppRegisterSuccessPage';
 
 export default function AppRouter() {
   return (
@@ -19,6 +20,10 @@ export default function AppRouter() {
         />
         <Route path={APP_END_POINT.login} element={<LoginPage />} />
         <Route path={APP_END_POINT.register} element={<AppRegisterPage />} />
+        <Route
+          path={APP_END_POINT.registerSuccess}
+          element={<AppRegisterSuccessPage />}
+        />
         {/* <Route path={APP_END_POINT.testHTTP} element={<AppTestHttpPage />} />
         <Route
           path={APP_END_POINT.testWebSocket}

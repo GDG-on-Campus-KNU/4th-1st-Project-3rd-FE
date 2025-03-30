@@ -4,6 +4,8 @@ import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 
 let isAuthed = false;
 export const checkIsAuthed = () => isAuthed === true;
+export const loginInMSW = () => (isAuthed = true);
+export const logoutInMSW = () => (isAuthed = false);
 const LOGIN_POST = http.post(HTTP_API_END_POINT.login, () => {
   if (checkIsAuthed()) {
     return HttpResponse.json(

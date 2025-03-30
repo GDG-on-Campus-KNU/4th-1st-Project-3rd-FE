@@ -4,6 +4,7 @@ const APP_END_POINT = {
   chatMbtiWithSegment: '/chat/mbti/:mbti',
   chatMbti: (mbti: Mbti) => '/chat/mbti/' + mbti.toLowerCase(),
   register: '/register',
+  registerSuccess: '/register/success',
 };
 
 export default APP_END_POINT;
