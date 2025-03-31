@@ -13,13 +13,11 @@ jobs:
       - name: Set up env
         run: echo "VITE_API_BASE_URL=${{ secrets.DEV_API_BASE_URL }}" >> .env
 
-      - name: Cache npm
+      - name: Cache node_modules
         uses: actions/cache@v3
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
+         path: ./node_modules
+         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 
       - name: install npm
         run: npm install
