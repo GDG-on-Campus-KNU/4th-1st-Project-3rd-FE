@@ -6,7 +6,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
-    container: node:20
     steps:
       - name: checkout branch.
         uses: actions/checkout@v2
