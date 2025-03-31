@@ -9,6 +9,9 @@ jobs:
     steps:
       - name: checkout branch.
         uses: actions/checkout@v2
+        
+      - name: Set up env
+        run: echo "VITE_API_BASE_URL=${{ secrets.DEV_API_BASE_URL }}" >> .env
 
       - name: Cache npm
         uses: actions/cache@v3
