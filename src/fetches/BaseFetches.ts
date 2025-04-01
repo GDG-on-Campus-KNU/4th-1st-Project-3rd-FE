@@ -45,10 +45,14 @@ function isEmptyBodyRequestInit(
 }
 
 const defaultHeaders = { 'Content-Type': 'application/json' };
-function getAddedDefaultHeader(option: RequestInit): RequestInit {
+function getAddedDefault(option: RequestInit): RequestInit {
   const { headers, ...restOption } = option;
   if (!headers) return { ...restOption, headers: defaultHeaders };
-  return { ...restOption, headers: { ...defaultHeaders, ...headers } };
+  return {
+    ...restOption,
+    credentials: 'include',
+    headers: { ...defaultHeaders, ...headers },
+  };
 }
 
 async function baseFetch(
@@ -56,12 +60,12 @@ async function baseFetch(
   option: CustomRequestInit,
 ): Promise<Response> {
   if (isEmptyBodyRequestInit(option)) {
-    return fetch(url, getAddedDefaultHeader(option));
+    return fetch(url, getAddedDefault(option));
   }
   const { body, ...restOption } = option;
   const optionResult: RequestInit = restOption;
   optionResult.body = JSON.stringify(body);
-  return fetch(url, getAddedDefaultHeader(optionResult));
+  return fetch(url, getAddedDefault(optionResult));
 }
 
 const handleDefaultResponseError: ResponseErrorHandler = (
