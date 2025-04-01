@@ -29,6 +29,7 @@ export default function AppChatMbtiPage() {
   const contentRef = useRef<HTMLDivElement>(null);
   const messageTextAreaRef = useRef<HTMLDivElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
+  const [sendingMessage, setSendingMessage] = useState<string | null>(null);
 
   const handleValueChange = useCallback(() => {
     if (!contentRef.current) return;
@@ -69,9 +70,12 @@ export default function AppChatMbtiPage() {
 
   const handleSubmit = useCallback(
     async (value: string) => {
+      setSendingMessage(value);
       postFetch<ChatMbtiRequestBody>(HTTP_API_END_POINT.mbtiChatPost(mbti), {
         body: { content: value },
-      });
+      })
+        .catch(() => alert('메세지 송신에 실패하였습니다..'))
+        .finally(() => setSendingMessage(null));
     },
     [mbti],
   );
@@ -104,6 +108,9 @@ export default function AppChatMbtiPage() {
               </Fragment>
             );
           })}
+          {sendingMessage && (
+            <ChatBubble content={sendingMessage} isUserChat={true} />
+          )}
           <div ref={endRef} />
         </div>
         <div className={styles['text-area']} ref={messageTextAreaRef}>
