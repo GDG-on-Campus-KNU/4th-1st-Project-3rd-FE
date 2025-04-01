@@ -39,7 +39,6 @@ export default function SolidStepIndicator(props: SolidStepIndicatorProps) {
   const isIncreasing = lastWorkingStep.current <= workingStep;
   const intervalId = useRef<ReturnType<typeof setInterval>>(undefined);
   const setTimeoutId = useRef<ReturnType<typeof setTimeout>>(undefined);
-  console.log(nowStep, workingStep);
   useEffect(() => {
     const targetStep = Math.floor(nowStep);
     function changeWorkingStep() {
