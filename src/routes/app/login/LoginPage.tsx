@@ -23,7 +23,6 @@ export default function AppLoginPage() {
     try {
       await postFetch<LoginRequestBody>(HTTP_API_END_POINT.login, {
         body: { email, password },
-        headers: { credentials: 'include' },
       });
     } catch (_: unknown) {
       setErrorMessage('아이디 혹은 비밀번호가 틀렸습니다');
