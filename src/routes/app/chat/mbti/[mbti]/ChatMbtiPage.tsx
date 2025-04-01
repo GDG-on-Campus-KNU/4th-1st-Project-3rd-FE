@@ -74,7 +74,7 @@ export default function AppChatMbtiPage() {
       postFetch<ChatMbtiRequestBody>(HTTP_API_END_POINT.mbtiChatPost(mbti), {
         body: { content: value },
       })
-        .catch(() => alert('메세지 송신에 실패하였습니다..'))
+        .catch(() => alert('메세지 발신에 실패하였습니다..'))
         .finally(() => setSendingMessage(null));
     },
     [mbti],
@@ -118,6 +118,7 @@ export default function AppChatMbtiPage() {
             onSubmit={handleSubmit}
             onValueChange={handleValueChange}
             maxTextAreaHeight={70}
+            canSend={!sendingMessage && !messages.at(-1)?.isUserChat}
           />
         </div>
       </div>
