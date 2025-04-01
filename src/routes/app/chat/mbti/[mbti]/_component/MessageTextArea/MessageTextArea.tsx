@@ -10,6 +10,7 @@ export interface MessageTextAreaProps
   onValueChange?: (str?: string) => void;
   textLimit?: number;
   maxTextAreaHeight?: number;
+  canSend?: boolean;
 }
 
 const getStatus = (stringLength: number, textLimit: number) => {
@@ -20,6 +21,19 @@ const getStatus = (stringLength: number, textLimit: number) => {
   return 'proper-message';
 };
 
+const getSendStatus = (
+  stringLength: number,
+  textLimit: number,
+  canSend: boolean,
+) => {
+  if (!canSend) return 'can-not-send';
+  if (stringLength === 0) return 'can-not-send';
+  if (stringLength > textLimit) {
+    return 'can-not-send';
+  }
+  return 'can-send';
+};
+
 export default function MessageTextArea(props: MessageTextAreaProps) {
   const {
     onSubmit,
@@ -28,6 +42,7 @@ export default function MessageTextArea(props: MessageTextAreaProps) {
     maxTextAreaHeight = Infinity,
     className,
     style,
+    canSend = true,
     ...restProps
   } = props;
   const [value, setValue] = useState('');
@@ -103,7 +118,13 @@ export default function MessageTextArea(props: MessageTextAreaProps) {
         <span
           className={styles['send-counter']}
         >{`${valueLength}/${textLimit}`}</span>
-        <button className={styles['send-button']} type="submit">
+        <button
+          className={[
+            styles['send-button'],
+            styles[getSendStatus(valueLength, textLimit, canSend)],
+          ].join(' ')}
+          type="submit"
+        >
           <SolidArrowSVG direction="up" />
         </button>
       </div>

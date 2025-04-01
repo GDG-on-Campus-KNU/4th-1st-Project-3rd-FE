@@ -29,6 +29,7 @@ export default function AppChatMbtiPage() {
   const contentRef = useRef<HTMLDivElement>(null);
   const messageTextAreaRef = useRef<HTMLDivElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
+  const [sendingMessage, setSendingMessage] = useState<string | null>(null);
 
   const handleValueChange = useCallback(() => {
     if (!contentRef.current) return;
@@ -42,14 +43,21 @@ export default function AppChatMbtiPage() {
   }, [handleValueChange]);
 
   useEffect(() => {
+    let isFetching = false;
     async function messageUpdate() {
-      const { messageResponses } = await getFetch<ChatMbtiResponseBody>(
-        HTTP_API_END_POINT.mbtiChatGet(mbti, messages.at(-1)?.order || 0),
-      );
+      if (isFetching) return;
+      isFetching = true;
+      try {
+        const { messageResponses } = await getFetch<ChatMbtiResponseBody>(
+          HTTP_API_END_POINT.mbtiChatGet(mbti, messages.at(-1)?.order || 0),
+        );
 
-      setMessages((prev) =>
-        messageResponses.length === 0 ? prev : [...prev, ...messageResponses],
-      );
+        setMessages((prev) =>
+          messageResponses.length === 0 ? prev : [...prev, ...messageResponses],
+        );
+      } finally {
+        isFetching = false;
+      }
     }
 
     const timeoutId = setInterval(messageUpdate, 100);
@@ -62,9 +70,12 @@ export default function AppChatMbtiPage() {
 
   const handleSubmit = useCallback(
     async (value: string) => {
+      setSendingMessage(value);
       postFetch<ChatMbtiRequestBody>(HTTP_API_END_POINT.mbtiChatPost(mbti), {
         body: { content: value },
-      });
+      })
+        .catch(() => alert('메세지 발신에 실패하였습니다..'))
+        .finally(() => setSendingMessage(null));
     },
     [mbti],
   );
@@ -97,6 +108,9 @@ export default function AppChatMbtiPage() {
               </Fragment>
             );
           })}
+          {sendingMessage && (
+            <ChatBubble content={sendingMessage} isUserChat={true} />
+          )}
           <div ref={endRef} />
         </div>
         <div className={styles['text-area']} ref={messageTextAreaRef}>
@@ -104,6 +118,7 @@ export default function AppChatMbtiPage() {
             onSubmit={handleSubmit}
             onValueChange={handleValueChange}
             maxTextAreaHeight={70}
+            canSend={!sendingMessage && !messages.at(-1)?.isUserChat}
           />
         </div>
       </div>
