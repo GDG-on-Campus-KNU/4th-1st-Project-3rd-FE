@@ -83,10 +83,15 @@ async function normalizedFetch<ResponseType>(
     handleDefaultResponseError(response);
   }
 
-  const json = (await response.json()) as ResponseType extends EmptyResponse
-    ? EmptyResponse
-    : BaseResponse<ResponseType>;
-  return json.data;
+  try {
+    const json = (await response.json()) as ResponseType extends EmptyResponse
+      ? EmptyResponse
+      : BaseResponse<ResponseType>;
+    return json.data;
+  } catch (_: unknown) {
+    // TODO: 이거 response타입 안나오게 변경
+    return {} as ResponseType;
+  }
 }
 
 export async function getFetch<ResponseType>(
