@@ -65,16 +65,11 @@
 }
 
 
-.proper-message .send-button {
+.send-button.can-send {
   background-color: #4949e9;
 }
 
-.empty-message .send-button {
-  cursor          : default;
-  background-color: #c3c3c3;
-}
-
-.over-message .send-button {
+.send-button.can-not-send {
   cursor          : default;
   background-color: #c3c3c3;
 }
