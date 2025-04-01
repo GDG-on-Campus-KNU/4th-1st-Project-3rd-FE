@@ -42,14 +42,21 @@ export default function AppChatMbtiPage() {
   }, [handleValueChange]);
 
   useEffect(() => {
+    let isFetching = false;
     async function messageUpdate() {
-      const { messageResponses } = await getFetch<ChatMbtiResponseBody>(
-        HTTP_API_END_POINT.mbtiChatGet(mbti, messages.at(-1)?.order || 0),
-      );
+      if (isFetching) return;
+      isFetching = true;
+      try {
+        const { messageResponses } = await getFetch<ChatMbtiResponseBody>(
+          HTTP_API_END_POINT.mbtiChatGet(mbti, messages.at(-1)?.order || 0),
+        );
 
-      setMessages((prev) =>
-        messageResponses.length === 0 ? prev : [...prev, ...messageResponses],
-      );
+        setMessages((prev) =>
+          messageResponses.length === 0 ? prev : [...prev, ...messageResponses],
+        );
+      } finally {
+        isFetching = false;
+      }
     }
 
     const timeoutId = setInterval(messageUpdate, 100);
