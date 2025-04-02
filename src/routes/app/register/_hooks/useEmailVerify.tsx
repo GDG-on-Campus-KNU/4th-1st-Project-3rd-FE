@@ -85,7 +85,7 @@ export default function useEmailVerify() {
     try {
       setCanVerifyCode(false);
       await postFetch<verifyEmailRequestBody>(HTTP_API_END_POINT.verifyEmail, {
-        body: { email, code: Number(code) },
+        body: { email, code },
       });
     } catch (_: unknown) {
       if (leftCnt) setLeftCnt(leftCnt - 1);
