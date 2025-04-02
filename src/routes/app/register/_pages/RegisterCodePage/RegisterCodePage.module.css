@@ -50,9 +50,13 @@
 
 
 .mail-description {
-  display    : block;
+  display: block;
+
+  box-sizing : border-box;
+  height     : 40px;
   padding-top: 10px;
-  color      : #666
+
+  color: #666
 }
 
 .error-message {
