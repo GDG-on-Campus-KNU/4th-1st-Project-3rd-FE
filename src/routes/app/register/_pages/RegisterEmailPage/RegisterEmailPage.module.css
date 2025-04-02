@@ -1,4 +1,9 @@
 .error-message {
+  display: block;
+
+  box-sizing : border-box;
+  height     : 40px;
+  margin-top : 10px;
   margin-left: 10px;
 
   font-size  : 14px;

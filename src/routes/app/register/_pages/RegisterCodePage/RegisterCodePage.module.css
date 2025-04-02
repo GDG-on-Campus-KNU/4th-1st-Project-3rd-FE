@@ -50,13 +50,33 @@
 
 
 .mail-description {
+  display: block;
+
+  box-sizing : border-box;
+  height     : 20px;
+  padding-top: 10px;
+
   color: #666
 }
 
 .error-message {
-  color: red;
+  display: block;
+
+  box-sizing : border-box;
+  height     : 40px;
+  padding-top: 10px;
+
+  color      : red;
+  word-break : keep-all;
+  white-space: pre-line;
 }
 
 .verified-message {
+  display: block;
+
+  box-sizing : border-box;
+  height     : 20px;
+  padding-top: 10px;
+
   color: #4849e8
 }

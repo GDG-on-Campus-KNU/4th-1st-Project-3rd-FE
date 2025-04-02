@@ -65,6 +65,7 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
         placeholder="인증번호 4자리를 입력하세요"
         isError={hasCodeError}
         disabled={isVerified}
+        type="number"
         rightIcon={
           !isVerified && (
             <div className={styles['send-container']}>
@@ -90,12 +91,12 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
           메일이 안 왔을 경우, 스팸함을 확인해주세요.
         </span>
         <div>
-          {hasCodeError && (
-            <span className={styles['error-message']}>{codeErrorMessage}</span>
-          )}
-          {isVerified && (
-            <span className={styles['verified-message']}>인증완료</span>
-          )}
+          <span className={styles['error-message']}>
+            {hasCodeError && codeErrorMessage}
+            <span className={styles['verified-message']}>
+              {isVerified && '인증완료'}
+            </span>
+          </span>
         </div>
       </div>
     </>
