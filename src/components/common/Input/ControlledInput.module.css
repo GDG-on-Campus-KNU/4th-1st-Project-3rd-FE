@@ -16,7 +16,16 @@
 
 input[type="password"] {
   -webkit-text-security: none;
+}
 
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  appearance: none;
+}
+
+/* 파이어폭스에서의 초기화 방법 */
+input[type="number"] {
+  appearance: textfield;
 }
 
 .input:focus {
