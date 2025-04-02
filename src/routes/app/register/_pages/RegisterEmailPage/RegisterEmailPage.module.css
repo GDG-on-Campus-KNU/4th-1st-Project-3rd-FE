@@ -1,4 +1,7 @@
 .error-message {
+  display: block;
+
+  margin-top : 10px;
   margin-left: 10px;
 
   font-size  : 14px;
