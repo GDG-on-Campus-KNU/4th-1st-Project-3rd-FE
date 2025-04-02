@@ -63,10 +63,12 @@
   display: block;
 
   box-sizing : border-box;
-  height     : 20px;
+  height     : 40px;
   padding-top: 10px;
 
-  color: red;
+  color      : red;
+  word-break : keep-all;
+  white-space: pre-line;
 }
 
 .verified-message {

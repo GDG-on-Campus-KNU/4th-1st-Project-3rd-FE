@@ -93,9 +93,9 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
         <div>
           <span className={styles['error-message']}>
             {hasCodeError && codeErrorMessage}
-          </span>
-          <span className={styles['verified-message']}>
-            {isVerified && '인증완료'}
+            <span className={styles['verified-message']}>
+              {isVerified && '인증완료'}
+            </span>
           </span>
         </div>
       </div>
