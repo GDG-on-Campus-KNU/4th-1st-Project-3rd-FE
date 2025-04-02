@@ -12,6 +12,8 @@
 
   height       : 4px;
   border-radius: 10px;
+
+  background-color: #d9d9d9;
 }
 
 .step-indicator {
