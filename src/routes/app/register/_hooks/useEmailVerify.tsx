@@ -13,7 +13,9 @@ const getCodeErrorMessage = (
   leftCnt: number,
   maxVerifyCnt: number,
   leftSecond: number,
+  isVerified: boolean,
 ) => {
+  if (isVerified) return null;
   if (leftSecond === 0)
     return '유효시간이 지났습니다. 오른쪽 버튼을 눌러 인증메일을 다시 보내주세요.' as const;
   if (leftCnt === 0)
@@ -37,6 +39,7 @@ export default function useEmailVerify() {
     leftCnt,
     LEFT_COUNT_INIT,
     leftSecond,
+    isVerified,
   );
   const hasCodeError = !!codeErrorMessage;
   const intervalIdRef = useRef<ReturnType<typeof setInterval>>(undefined);
@@ -90,6 +93,7 @@ export default function useEmailVerify() {
       return;
     }
     setIsVerified(true);
+    setHasEmailError(false);
   }, [canVerifyCode, leftSecond, code, leftCnt, email]);
 
   const handleChangeEmail = useCallback((e: ChangeEvent<HTMLInputElement>) => {
