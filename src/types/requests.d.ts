@@ -9,7 +9,7 @@ interface LoginRequestBody {
 
 interface verifyEmailRequestBody {
   email: string;
-  code: number;
+  code: string;
 }
 
 interface RegisterRequestBody {
