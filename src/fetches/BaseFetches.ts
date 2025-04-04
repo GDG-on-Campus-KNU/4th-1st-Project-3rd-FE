@@ -47,7 +47,8 @@ function isEmptyBodyRequestInit(
 const defaultHeaders = { 'Content-Type': 'application/json' };
 function getAddedDefault(option: RequestInit): RequestInit {
   const { headers, ...restOption } = option;
-  if (!headers) return { ...restOption, headers: defaultHeaders };
+  if (!headers)
+    return { ...restOption, credentials: 'include', headers: defaultHeaders };
   return {
     ...restOption,
     credentials: 'include',
