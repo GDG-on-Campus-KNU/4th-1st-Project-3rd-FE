@@ -16,13 +16,7 @@ export default function MURouter() {
           path={APP_END_POINT.chatMbtiWithSegment}
           element={<MuChatMbtiPage />}
         />
-        <Route path={APP_END_POINT.login} element={<MULoginPage />} />
         <Route path={APP_END_POINT.register} element={<MULoginPage />} />
-        {/* <Route path={APP_END_POINT.testHTTP} element={<MUTestHttpPage />} />
-        <Route
-          path={APP_END_POINT.testWebSocket}
-          element={<MUTestWebsocketPage />}
-        /> */}
       </Routes>
     </MUMainLayout>
   );
