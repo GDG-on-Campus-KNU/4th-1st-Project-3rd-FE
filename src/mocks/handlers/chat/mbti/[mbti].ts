@@ -16,14 +16,14 @@ export const GET = http.get(
   httpAuthWrapper(({ request }) => {
     const url = new URL(request.url);
     const params = url.searchParams;
-    const lastOrder = Number(params.get('lastOrder'));
+    const startOrder = Number(params.get('startOrder'));
 
-    if (isNaN(lastOrder))
+    if (isNaN(startOrder))
       return HttpResponse.json(
-        { errorMessage: 'lastOrder가 올바르지 않음음' },
+        { errorMessage: 'startOrder가 올바르지 않음음' },
         { status: 400 },
       );
-    const result = list.filter((msg) => msg.order > lastOrder);
+    const result = list.filter((msg) => msg.order > startOrder);
 
     return HttpResponse.json<ChatMbtiResponse>({
       data: { messageResponses: result },

@@ -11,8 +11,8 @@ const HTTP_PURE_STRING_API_END_POINT = {
 } as const;
 
 const HTTP_PURE_FUNCTION_API_END_POINT = {
-  mbtiChatGet: (mbti: Mbti, lastOrder: number) =>
-    '/chat/mbti/' + mbti + '?' + 'lastOrder=' + lastOrder,
+  mbtiChatGet: (mbti: Mbti, startOrder: number) =>
+    '/chat/mbti/' + mbti + '?' + 'startOrder=' + startOrder,
   mbtiChatPost: (mbti: Mbti) => '/chat/mbti/' + mbti,
   mockMbtiChat: (mbti: Mbti) => '/mock/chat/mbti/' + mbti,
 } as const;
