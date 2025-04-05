@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { postFetch } from '@_/fetches/BaseFetches';
 
-import styles from './LoginPage.module.css';
+import styles from './MURegisterPage.module.css';
 
 type EmailResponse = {
   isMailValid: boolean;
