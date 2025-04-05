@@ -5,7 +5,7 @@ import MUMainLayout from '@_/routes/mu/layout';
 import MUMainPage from '@_/routes/mu/page';
 
 import MuChatMbtiPage from './chat/mbti/[mbti]/page';
-import MULoginPage from './login/LoginPage';
+import MURegisterPage from './register/MURegisterPage';
 
 export default function MURouter() {
   return (
@@ -16,7 +16,7 @@ export default function MURouter() {
           path={APP_END_POINT.chatMbtiWithSegment}
           element={<MuChatMbtiPage />}
         />
-        <Route path={APP_END_POINT.register} element={<MULoginPage />} />
+        <Route path={APP_END_POINT.register} element={<MURegisterPage />} />
       </Routes>
     </MUMainLayout>
   );

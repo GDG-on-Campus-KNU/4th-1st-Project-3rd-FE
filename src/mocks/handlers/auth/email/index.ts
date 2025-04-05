@@ -2,7 +2,7 @@ import { HttpResponse, http } from 'msw';
 
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 
-let isMailValid = false;
+let isMailValid = true;
 let hasMailSession = false;
 export const checkHasMailSession = () => hasMailSession;
 const POST_SEND_EMAIL = http.post(HTTP_API_END_POINT.sendEmailCode, () => {
