@@ -18,7 +18,13 @@ interface MessageResponse {
 type ChatMbtiResponseBody = {
   messageResponses: MessageResponse[];
 };
+
+type ChatMbtiOpenGetResponseBody = {
+  closedMbti: number;
+};
+
 type ChatMbtiResponse = BaseResponse<ChatMbtiResponseBody>;
+type ChatMbtiOpenGetResponse = BaseResponse<ChatMbtiOpenGetResponseBody>;
 
 type CheckIsAuthedBody = { isAuthed: boolean };
 type CheckIsAuthedResponse = BaseResponse<CheckIsAuthedBody>;
