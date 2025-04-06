@@ -8,14 +8,23 @@ const getOrder = (() => {
   let nowOrder = 1;
   return () => nowOrder++;
 })();
-const list: MessageResponse[] = [];
 // let statusCode: StatusCode = 200;
+const mbtiChatMap: Map<Mbti, MessageResponse[]> = new Map();
+
+const getChatList = (urlStr: string): MessageResponse[] => {
+  const url = new URL(urlStr);
+  const mbti: Mbti = url.pathname.split('/').at(-1) as Mbti;
+  const list = mbtiChatMap.get(mbti) ?? [];
+  if (!list.length) mbtiChatMap.set(mbti, list);
+  return list;
+};
 
 export const GET = http.get(
   HTTP_API_END_POINT.mbtiChatWildCard,
   httpAuthWrapper(({ request }) => {
     const url = new URL(request.url);
     const params = url.searchParams;
+    const list = getChatList(request.url);
     const startOrder = Number(params.get('startOrder'));
 
     if (isNaN(startOrder))
@@ -35,7 +44,7 @@ export const POST = http.post(
   HTTP_API_END_POINT.mbtiChatWildCard,
   httpAuthWrapper(async ({ request }) => {
     const { content } = (await request.json()) as ChatMbtiRequestBody;
-
+    const list = getChatList(request.url);
     const timeStringRaw = new Date().toISOString();
     const dotIndex = timeStringRaw.indexOf('.');
 
@@ -57,6 +66,8 @@ export const MOCK_TEST_POST = http.post(
 
   async ({ request }) => {
     const { content } = (await request.json()) as ChatMbtiRequestBody;
+
+    const list = getChatList(request.url);
 
     const timeStringRaw = new Date().toISOString();
     const dotIndex = timeStringRaw.indexOf('.');
