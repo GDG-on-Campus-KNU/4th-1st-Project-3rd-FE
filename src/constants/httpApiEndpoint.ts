@@ -4,7 +4,7 @@ const HTTP_PURE_STRING_API_END_POINT = {
   mbtiChatCloseWildCard: '/chat/mbti/*/close',
   mbtiChatOpenPost: '/chat/mbti/open',
   mbtiChatOpenGet: '/chat/mbti/open',
-  recentMbtiChat: '/chat/mbti/resent',
+  recentMbtiChat: '/chat/mbti/recent',
   mockMbtiChatWildCard: '/mock/chat/mbti/*',
   checkIsAuthed: '/user/check-session',
   login: '/auth/login',
