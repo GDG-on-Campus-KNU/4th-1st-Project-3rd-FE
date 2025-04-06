@@ -16,12 +16,14 @@ const HTTP_PURE_STRING_API_END_POINT = {
 } as const;
 
 const HTTP_PURE_FUNCTION_API_END_POINT = {
-  mbtiChatGet: (mbti: Mbti, startOrder: number) =>
+  mbtiChatGet: (mbti: Mbti | '*', startOrder: number) =>
     '/chat/mbti/' + mbti.toLowerCase() + '?' + 'startOrder=' + startOrder,
-  mbtiChatPost: (mbti: Mbti) => '/chat/mbti/' + mbti.toLowerCase(),
-  mbtiChatInit: (mbti: Mbti) => '/chat/mbti/' + mbti.toLowerCase() + '/init',
-  mbtiChatClose: (mbti: Mbti) => '/chat/mbti/' + mbti.toLowerCase() + '/close',
-  mockMbtiChat: (mbti: Mbti) => '/mock/chat/mbti/' + mbti.toLowerCase(),
+  mbtiChatPost: (mbti: Mbti | '*') => '/chat/mbti/' + mbti.toLowerCase(),
+  mbtiChatInit: (mbti: Mbti | '*') =>
+    '/chat/mbti/' + mbti.toLowerCase() + '/init',
+  mbtiChatClose: (mbti: Mbti | '*') =>
+    '/chat/mbti/' + mbti.toLowerCase() + '/close',
+  mockMbtiChat: (mbti: Mbti | '*') => '/mock/chat/mbti/' + mbti.toLowerCase(),
 } as const;
 
 // {test:import.meta.env.VITE_API_BASE_URL + '/test',...}
