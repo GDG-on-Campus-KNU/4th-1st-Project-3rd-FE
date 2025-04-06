@@ -65,7 +65,7 @@ export const POST = http.post(
   }),
 );
 
-export const POST_MBTI_OPEN = http.post(
+const GET_MBTI_OPEN = http.get(
   HTTP_API_END_POINT.mbtiChatOpenGet,
   httpAuthWrapper(() => {
     const resultBit = [...mbtiChatMap.keys()].reduce(
@@ -103,4 +103,4 @@ export const MOCK_TEST_POST = http.post(
   },
 );
 
-export default [GET, POST, MOCK_TEST_POST];
+export default [GET, POST, GET_MBTI_OPEN, MOCK_TEST_POST];
