@@ -2,7 +2,7 @@ import { HttpResponse, http } from 'msw';
 
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 
-import httpAuthWrapper from '../../auth/httpAuthWrapper';
+import httpAuthWrapper from '../../../auth/httpAuthWrapper';
 
 const getOrder = (() => {
   let nowOrder = 1;
