@@ -1,6 +1,7 @@
 import { HttpResponse, http } from 'msw';
 
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
+import getMbtiBit from '@_/utils/getMBTIBit';
 
 import httpAuthWrapper from '../../../auth/httpAuthWrapper';
 
@@ -61,6 +62,20 @@ export const POST = http.post(
       time: timeString,
     });
     return HttpResponse.json();
+  }),
+);
+
+export const POST_MBTI_OPEN = http.post(
+  HTTP_API_END_POINT.mbtiChatOpenGet,
+  httpAuthWrapper(() => {
+    const resultBit = [...mbtiChatMap.keys()].reduce(
+      (bit, mbti) => bit & getMbtiBit(mbti),
+      0,
+    );
+
+    return HttpResponse.json<ChatMbtiOpenGetResponse>({
+      data: { closedMbti: resultBit },
+    });
   }),
 );
 
