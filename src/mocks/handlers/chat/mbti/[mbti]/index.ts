@@ -11,7 +11,7 @@ const getOrder = (() => {
 // let statusCode: StatusCode = 200;
 const mbtiChatMap: Map<Mbti, MessageResponse[]> = new Map();
 
-const getChatList = (urlStr: string): MessageResponse[] => {
+export const getChatList = (urlStr: string): MessageResponse[] => {
   const url = new URL(urlStr);
   const mbti: Mbti = url.pathname.split('/').at(-1) as Mbti;
   const list = mbtiChatMap.get(mbti) ?? [];
