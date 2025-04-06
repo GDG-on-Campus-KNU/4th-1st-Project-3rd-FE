@@ -23,7 +23,12 @@ type ChatMbtiOpenGetResponseBody = {
   closedMbti: number;
 };
 
+type ChatMbtiRecentResponseBody = {
+  list: { mbti: Mbti; lastMessage: string | null }[];
+};
+
 type ChatMbtiResponse = BaseResponse<ChatMbtiResponseBody>;
+type ChatMbtiRecentResponse = BaseResponse<ChatMbtiRecentResponseBody>;
 type ChatMbtiOpenGetResponse = BaseResponse<ChatMbtiOpenGetResponseBody>;
 
 type CheckIsAuthedBody = { isAuthed: boolean };
