@@ -79,6 +79,16 @@ const GET_MBTI_OPEN = http.get(
   }),
 );
 
+const POST_MBTI_OPEN = http.post(
+  HTTP_API_END_POINT.mbtiChatOpenPost,
+  httpAuthWrapper(async ({ request }) => {
+    const { mbti } = (await request.json()) as ChatMbtiOpenPostRequestBody;
+    if (mbtiChatMap.has(mbti)) throw new Error();
+    mbtiChatMap.set(mbti, []);
+    return HttpResponse.json({});
+  }),
+);
+
 export const MOCK_TEST_POST = http.post(
   HTTP_API_END_POINT.mockMbtiChatWildCard,
 
@@ -103,4 +113,4 @@ export const MOCK_TEST_POST = http.post(
   },
 );
 
-export default [GET, POST, GET_MBTI_OPEN, MOCK_TEST_POST];
+export default [GET, POST, GET_MBTI_OPEN, POST_MBTI_OPEN, MOCK_TEST_POST];
