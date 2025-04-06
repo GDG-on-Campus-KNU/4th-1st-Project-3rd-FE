@@ -89,6 +89,25 @@ const POST_MBTI_OPEN = http.post(
   }),
 );
 
+const DELETE_INIT_MBTI_CHAT = http.delete(
+  HTTP_API_END_POINT.mbtiChatInit('*'),
+  ({ request }) => {
+    const mbti = getMbtiByUrlStr(request.url);
+    if (!mbtiChatMap.has(mbti)) throw new Error();
+    mbtiChatMap.set(mbti, []);
+    return HttpResponse.json({});
+  },
+);
+
+const DELETE_CLOSE_MBTI_CHAT = http.delete(
+  HTTP_API_END_POINT.mbtiChatClose('*'),
+  ({ request }) => {
+    const mbti = getMbtiByUrlStr(request.url);
+    if (!mbtiChatMap.has(mbti)) throw new Error();
+    mbtiChatMap.delete(mbti);
+    return HttpResponse.json({});
+  },
+);
 export const MOCK_TEST_POST = http.post(
   HTTP_API_END_POINT.mockMbtiChatWildCard,
 
@@ -113,4 +132,12 @@ export const MOCK_TEST_POST = http.post(
   },
 );
 
-export default [GET, POST, GET_MBTI_OPEN, POST_MBTI_OPEN, MOCK_TEST_POST];
+export default [
+  GET,
+  POST,
+  GET_MBTI_OPEN,
+  POST_MBTI_OPEN,
+  DELETE_INIT_MBTI_CHAT,
+  DELETE_CLOSE_MBTI_CHAT,
+  MOCK_TEST_POST,
+];
