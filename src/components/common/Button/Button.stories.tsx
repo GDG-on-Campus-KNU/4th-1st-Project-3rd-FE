@@ -2,10 +2,16 @@ import { Meta, StoryObj } from '@storybook/react';
 
 import Button, { ButtonProps } from './Button';
 
-const TmpElement = (props: Pick<ButtonProps, 'isValid' | 'children'>) => {
-  const { children, isValid } = props;
+const TmpElement = (
+  props: Pick<ButtonProps, 'isValid' | 'isLoading' | 'children'>,
+) => {
+  const { children, isLoading, isValid } = props;
   return (
-    <Button isValid={isValid} onClick={() => alert('click!')}>
+    <Button
+      isValid={isValid}
+      isLoading={isLoading}
+      onClick={() => alert('click!')}
+    >
       {children}
     </Button>
   );
@@ -15,6 +21,7 @@ const meta = {
   title: 'Common/Button',
   args: {
     isValid: true,
+    isLoading: false,
     children: '내용',
   },
   component: TmpElement,

@@ -13,20 +13,28 @@ export interface ButtonProps
     HTMLButtonElement
   > {
   isValid?: boolean;
+  isLoading?: boolean;
 }
 
+const getStyle = (isValid?: boolean, isLoading?: boolean) => {
+  if (isValid === false) return 'invalid';
+  if (isLoading) return 'loading';
+  return 'valid';
+};
 export default function Button(props: ButtonProps) {
-  const { isValid, children, className, onClick, ...restProps } = props;
+  const { isValid, isLoading, children, className, onClick, ...restProps } =
+    props;
   const handleClick = useCallback(
     (e: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => {
-      if (isValid !== false && onClick) onClick(e);
+      if (isValid !== false && !isLoading && onClick) onClick(e);
     },
-    [onClick, isValid],
+    [onClick, isValid, isLoading],
   );
+
   return (
     <button
       className={[
-        styles[isValid !== false ? 'valid' : 'invalid'],
+        styles[getStyle(isValid, isLoading)],
         styles.button,
         className,
       ].join(' ')}
