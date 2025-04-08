@@ -2,6 +2,10 @@ interface ChatMbtiRequestBody {
   content: string;
 }
 
+interface ChatMbtiOpenPostRequestBody {
+  mbti: Mbti;
+}
+
 interface LoginRequestBody {
   email: string;
   password: string;
