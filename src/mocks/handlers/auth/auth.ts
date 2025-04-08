@@ -1,12 +1,13 @@
-import { HttpResponse, http } from 'msw';
+import { HttpResponse } from 'msw';
 
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
+import customHttp from '@_/mocks/customhttp';
 
 let isAuthed = false;
 export const checkIsAuthed = () => isAuthed === true;
 export const loginInMSW = () => (isAuthed = true);
 export const logoutInMSW = () => (isAuthed = false);
-const LOGIN_POST = http.post(HTTP_API_END_POINT.login, () => {
+const LOGIN_POST = customHttp.post(HTTP_API_END_POINT.login, () => {
   if (checkIsAuthed()) {
     return HttpResponse.json(
       { errorMessage: '이미 로그인되어 있음' },
@@ -19,7 +20,7 @@ const LOGIN_POST = http.post(HTTP_API_END_POINT.login, () => {
   });
 });
 
-const LOGOUT_POST = http.post(HTTP_API_END_POINT.logout, () => {
+const LOGOUT_POST = customHttp.post(HTTP_API_END_POINT.logout, () => {
   if (!isAuthed) {
     return HttpResponse.json(
       { errorMessage: '로그인 되어있지 않음음' },
@@ -30,7 +31,7 @@ const LOGOUT_POST = http.post(HTTP_API_END_POINT.logout, () => {
   return new HttpResponse(JSON.stringify({}));
 });
 
-const CHECK_IS_AUTHED_GET = http.get(
+const CHECK_IS_AUTHED_GET = customHttp.get(
   HTTP_API_END_POINT.checkIsAuthed,
   ({ request }) => {
     return HttpResponse.json(

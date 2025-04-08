@@ -1,17 +1,21 @@
-import { HttpResponse, http } from 'msw';
+import { HttpResponse } from 'msw';
 
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
+import customHttp from '@_/mocks/customhttp';
 
 let isMailValid = true;
 let hasMailSession = false;
 export const checkHasMailSession = () => hasMailSession;
-const POST_SEND_EMAIL = http.post(HTTP_API_END_POINT.sendEmailCode, () => {
-  return new HttpResponse(JSON.stringify({}), {
-    status: 200,
-  });
-});
+const POST_SEND_EMAIL = customHttp.post(
+  HTTP_API_END_POINT.sendEmailCode,
+  () => {
+    return new HttpResponse(JSON.stringify({}), {
+      status: 200,
+    });
+  },
+);
 
-const POST_VERIFY_MAIL = http.post(HTTP_API_END_POINT.verifyEmail, () => {
+const POST_VERIFY_MAIL = customHttp.post(HTTP_API_END_POINT.verifyEmail, () => {
   if (!isMailValid)
     return new HttpResponse(JSON.stringify({ errorCode: 'E001' }), {
       status: 401,
@@ -22,7 +26,7 @@ const POST_VERIFY_MAIL = http.post(HTTP_API_END_POINT.verifyEmail, () => {
   });
 });
 
-const GET_CHECK_VERIFY_SERVER_OPEN = http.get(
+const GET_CHECK_VERIFY_SERVER_OPEN = customHttp.get(
   HTTP_API_END_POINT.mockCheckVerifyEmail,
   () => {
     return new HttpResponse(
@@ -36,7 +40,7 @@ const GET_CHECK_VERIFY_SERVER_OPEN = http.get(
   },
 );
 
-const POST_CHECK_VERIFY_SERVER = http.post(
+const POST_CHECK_VERIFY_SERVER = customHttp.post(
   HTTP_API_END_POINT.mockCheckVerifyEmail,
   () => {
     isMailValid = !isMailValid;

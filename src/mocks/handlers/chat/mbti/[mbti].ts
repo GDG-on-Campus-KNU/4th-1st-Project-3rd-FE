@@ -1,6 +1,7 @@
-import { HttpResponse, http } from 'msw';
+import { HttpResponse } from 'msw';
 
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
+import customHttp from '@_/mocks/customhttp';
 
 import httpAuthWrapper from '../../auth/httpAuthWrapper';
 
@@ -11,7 +12,7 @@ const getOrder = (() => {
 const list: MessageResponse[] = [];
 // let statusCode: StatusCode = 200;
 
-export const GET = http.get(
+export const GET = customHttp.get(
   HTTP_API_END_POINT.mbtiChatWildCard,
   httpAuthWrapper(({ request }) => {
     const url = new URL(request.url);
@@ -31,7 +32,7 @@ export const GET = http.get(
   }),
 );
 
-export const POST = http.post(
+export const POST = customHttp.post(
   HTTP_API_END_POINT.mbtiChatWildCard,
   httpAuthWrapper(async ({ request }) => {
     const { content } = (await request.json()) as ChatMbtiRequestBody;
@@ -52,7 +53,7 @@ export const POST = http.post(
   }),
 );
 
-export const MOCK_TEST_POST = http.post(
+export const MOCK_TEST_POST = customHttp.post(
   HTTP_API_END_POINT.mockMbtiChatWildCard,
 
   async ({ request }) => {
