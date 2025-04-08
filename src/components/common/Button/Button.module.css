@@ -13,11 +13,15 @@
 .valid {
   border          : 1px solid #4849e833;
   background-color: #4949E9;
-
 }
 
 .invalid {
   border          : 1px solid #60606019;
   background-color: #dedede;
+}
+
+.loading {
+  border          : 1px solid #4849e833;
+  background-color: #8d8deb;
 
 }
