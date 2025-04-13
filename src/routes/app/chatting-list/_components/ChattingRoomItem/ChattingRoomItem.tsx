@@ -98,6 +98,16 @@ export function ChattingRoomItem({
     swipeLastTouchX.current = null;
   }, [isSwiped]);
 
+  const handleRefresh = useCallback(() => {
+    onRefresh();
+    setIsSwiped(false);
+  }, [onRefresh]);
+
+  const handleDelete = useCallback(() => {
+    onDelete();
+    setIsSwiped(false);
+  }, [onDelete]);
+
   return (
     <div
       className={[styles['chatting-room-container'], className].join(' ')}
@@ -134,13 +144,13 @@ export function ChattingRoomItem({
       <div className={styles['chat-actions']} ref={buttonContainerRef}>
         <button
           className={[styles['chat-actions-button'], styles.refresh].join(' ')}
-          onClick={onRefresh}
+          onClick={handleRefresh}
         >
           <RefreshSVG />
         </button>
         <button
           className={[styles['chat-actions-button'], styles.delete].join(' ')}
-          onClick={onDelete}
+          onClick={handleDelete}
         >
           <TrashCanSVG />
         </button>
