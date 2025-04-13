@@ -8,6 +8,7 @@ import {
 
 import RefreshSVG from '@_/components/common/svgs/RefreshSVG';
 import TrashCanSVG from '@_/components/common/svgs/TrashCanSVG';
+import SONASvg from '@_/components/common/svgs/sona/SONASvg';
 import type { Mbti } from '@_/types/type';
 
 import styles from './ChattingRoomItem.module.css';
@@ -128,9 +129,11 @@ export function ChattingRoomItem({
         }}
       >
         <div className={styles['profile-image']}>
-          <img
-            src={`/images/mbti/${mbti.toLowerCase()}.png`}
-            alt={`${mbti} 프로필`}
+          <SONASvg
+            className={styles['profile-image-svg']}
+            type={mbti}
+            width={36}
+            height={36}
           />
         </div>
         <div className={styles['chat-info']}>
