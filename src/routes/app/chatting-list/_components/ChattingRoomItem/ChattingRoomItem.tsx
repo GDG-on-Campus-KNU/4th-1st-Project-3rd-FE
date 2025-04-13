@@ -49,7 +49,6 @@ export function ChattingRoomItem({
   const swipeLastTouchX = useRef<number | null>(null);
   const touchStarted = useRef(false);
   const [isSwiped, setIsSwiped] = useState(false);
-  console.log(isSwiped);
 
   const swiperRef = useRef<HTMLDivElement>(null);
   const buttonContainerRef = useRef<HTMLDivElement>(null);
