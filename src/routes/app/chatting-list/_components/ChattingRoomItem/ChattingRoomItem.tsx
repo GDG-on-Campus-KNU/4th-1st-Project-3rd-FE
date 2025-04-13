@@ -85,14 +85,14 @@ export function ChattingRoomItem({
     if (!swiperRef.current) return;
     if (swipeStartedTouchX.current === null) return;
     if (swipeLastTouchX.current === null) return;
-    swiperRef.current.style.right = '';
     const BUTTONS_WIDTH = buttonContainerRef.current?.offsetWidth || 0;
+    swiperRef.current.style.right = `${isSwiped ? BUTTONS_WIDTH : 0}px`;
     const moveDistance = getMovedDistance(
       swipeStartedTouchX.current,
       swipeLastTouchX.current,
       isSwiped,
     );
-    setIsSwiped((prev) => (moveDistance > BUTTONS_WIDTH / 2 ? !prev : prev));
+    setIsSwiped((prev) => (moveDistance > BUTTONS_WIDTH / 3 ? !prev : prev));
 
     swipeStartedTouchX.current = null;
     swipeLastTouchX.current = null;
