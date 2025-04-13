@@ -6,6 +6,8 @@ import {
   useState,
 } from 'react';
 
+import RefreshSVG from '@_/components/common/svgs/RefreshSVG';
+import TrashCanSVG from '@_/components/common/svgs/TrashCanSVG';
 import type { Mbti } from '@_/types/type';
 
 import styles from './ChattingRoomItem.module.css';
@@ -130,11 +132,17 @@ export function ChattingRoomItem({
         </div>
       </div>
       <div className={styles['chat-actions']} ref={buttonContainerRef}>
-        <button onClick={onRefresh}>
-          <img src="/icons/refresh.svg" alt="새로고침" />
+        <button
+          className={[styles['chat-actions-button'], styles.refresh].join(' ')}
+          onClick={onRefresh}
+        >
+          <RefreshSVG />
         </button>
-        <button onClick={onDelete}>
-          <img src="/icons/delete.svg" alt="삭제" />
+        <button
+          className={[styles['chat-actions-button'], styles.delete].join(' ')}
+          onClick={onDelete}
+        >
+          <TrashCanSVG />
         </button>
       </div>
     </div>
