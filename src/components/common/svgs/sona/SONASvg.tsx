@@ -14,7 +14,6 @@ import ISFJSonaSvg from './mbti/ISFJSonaSvg';
 import ISFPSonaSvg from './mbti/ISFPSonaSvg';
 import ISTJSonaSvg from './mbti/ISTJSonaSvg';
 import ISTPSonaSvg from './mbti/ISTPSonaSvg';
-import { Mbti } from '@_/types/type';
 import { SVGComponentProp } from '@_/types/props';
 
 export default function SONASvg(props: SVGComponentProp & { type: Mbti }) {
