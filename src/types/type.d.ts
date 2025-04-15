@@ -5,3 +5,9 @@ type StatusCode =
     : never;
 
 type Mbti = `${'I' | 'E'}${'N' | 'S'}${'F' | 'T'}${'P' | 'J'}`;
+
+type ChattingPreview = {
+  mbti: Mbti;
+  lastMessage: string | null;
+  isViewed: boolean;
+};
