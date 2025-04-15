@@ -9,7 +9,6 @@ import {
 import RefreshSVG from '@_/components/common/svgs/RefreshSVG';
 import TrashCanSVG from '@_/components/common/svgs/TrashCanSVG';
 import SONASvg from '@_/components/common/svgs/sona/SONASvg';
-import type { Mbti } from '@_/types/type';
 
 import styles from './ChattingRoomItem.module.css';
 
@@ -115,6 +114,7 @@ export function ChattingRoomItem({
       style={style}
       {...restProps}
     >
+      <SONASvg type="INFJ" />
       <div
         className={styles['chatting-room']}
         onClick={onChattingRoomClick}
