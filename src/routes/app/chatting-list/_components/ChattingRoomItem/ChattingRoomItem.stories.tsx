@@ -1,17 +1,40 @@
+import { useState } from 'react';
+
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { ChattingRoomItem } from './ChattingRoomItem';
+import { ChattingRoomItem, ChattingRoomItemProps } from './ChattingRoomItem';
 
+const Tmp = (
+  props: Omit<
+    ChattingRoomItemProps,
+    | 'isSwiped'
+    | 'setIsSwiped'
+    | 'onChattingRoomClick'
+    | 'onRefresh'
+    | 'onDelete'
+  >,
+) => {
+  const [isSwiped, setIsSwiped] = useState(false);
+  return (
+    <div style={{ width: '100%', height: '100%' }}>
+      <ChattingRoomItem
+        {...props}
+        isSwiped={isSwiped}
+        setIsSwiped={setIsSwiped}
+        onChattingRoomClick={() => alert('채팅방 클릭!')}
+        onRefresh={() => alert('새로고침!')}
+        onDelete={() => alert('삭제!')}
+      />
+    </div>
+  );
+};
 const meta = {
   title: 'Chat/ChattingRoomItem',
-  component: ChattingRoomItem,
+  component: Tmp,
   args: {
     mbti: 'ENFJ',
     lastMessage: '안녕하세요! 오늘 하루는 어떠셨나요?',
     isViewed: false,
-    onChattingRoomClick: () => alert('채팅방 클릭!'),
-    onRefresh: () => alert('새로고침!'),
-    onDelete: () => alert('삭제!'),
   },
   argTypes: {
     mbti: {
@@ -53,7 +76,7 @@ const meta = {
       description: '추가 스타일',
     },
   },
-} satisfies Meta<typeof ChattingRoomItem>;
+} satisfies Meta<typeof Tmp>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

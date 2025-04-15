@@ -1,10 +1,4 @@
-import {
-  type HTMLProps,
-  TouchEvent,
-  useCallback,
-  useRef,
-  useState,
-} from 'react';
+import { type HTMLProps, TouchEvent, useCallback, useRef } from 'react';
 
 import RefreshSVG from '@_/components/common/svgs/RefreshSVG';
 import TrashCanSVG from '@_/components/common/svgs/TrashCanSVG';
@@ -16,6 +10,8 @@ export interface ChattingRoomItemProps extends HTMLProps<HTMLDivElement> {
   mbti: Mbti;
   lastMessage: string | null;
   isViewed: boolean;
+  isSwiped: boolean;
+  setIsSwiped: (isSwiped: boolean | ((prev: boolean) => boolean)) => void;
   onRefresh: () => void;
   onDelete: () => void;
   onChattingRoomClick: () => void;
@@ -39,18 +35,19 @@ const getMovedDistance = (
 export function ChattingRoomItem({
   mbti,
   lastMessage,
+  isSwiped,
   isViewed,
   className,
   style,
   onRefresh,
   onDelete,
   onChattingRoomClick,
+  setIsSwiped,
   ...restProps
 }: ChattingRoomItemProps) {
   const swipeStartedTouchX = useRef<number | null>(null);
   const swipeLastTouchX = useRef<number | null>(null);
   const touchStarted = useRef(false);
-  const [isSwiped, setIsSwiped] = useState(false);
 
   const swiperRef = useRef<HTMLDivElement>(null);
   const buttonContainerRef = useRef<HTMLDivElement>(null);
@@ -96,17 +93,17 @@ export function ChattingRoomItem({
 
     swipeStartedTouchX.current = null;
     swipeLastTouchX.current = null;
-  }, [isSwiped]);
+  }, [isSwiped, setIsSwiped]);
 
   const handleRefresh = useCallback(() => {
     onRefresh();
     setIsSwiped(false);
-  }, [onRefresh]);
+  }, [onRefresh, setIsSwiped]);
 
   const handleDelete = useCallback(() => {
     onDelete();
     setIsSwiped(false);
-  }, [onDelete]);
+  }, [onDelete, setIsSwiped]);
 
   return (
     <div
@@ -114,7 +111,6 @@ export function ChattingRoomItem({
       style={style}
       {...restProps}
     >
-      <SONASvg type="INFJ" />
       <div
         className={styles['chatting-room']}
         onClick={onChattingRoomClick}
