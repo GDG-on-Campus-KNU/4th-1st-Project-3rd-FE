@@ -67,6 +67,7 @@ export function ChattingRoomItem({
 
   const handleTouchStart = useCallback((e: TouchEvent<HTMLDivElement>) => {
     touchStarted.current = true;
+    canMoveRef.current = true;
     swipeStartedTouchX.current = getTouchEventOffsetXPosition(e);
   }, []);
 
@@ -82,6 +83,7 @@ export function ChattingRoomItem({
           canMoveRef.current = true;
           return;
         }
+        if (swipeStartedTouchX.current === null) return;
         const moveDistance = getMovedDistance(
           swipeStartedTouchX.current,
           swipeLastTouchX.current,
@@ -110,10 +112,9 @@ export function ChattingRoomItem({
       swipeLastTouchX.current,
       isSwiped,
     );
-
     setIsSwiped((prev) => {
-      const nextIsSwiped = moveDistance > BUTTONS_WIDTH / 2.5 ? !prev : prev;
-      const isSameLast = nextIsSwiped === prev;
+      const isSameLast = moveDistance <= 40;
+      const nextIsSwiped = isSameLast ? prev : !prev;
       if (!swiperRef.current) return nextIsSwiped;
       if (isSameLast) {
         swiperRef.current.style.right = `${nextIsSwiped ? BUTTONS_WIDTH : 0}px`;
