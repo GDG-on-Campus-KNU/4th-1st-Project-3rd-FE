@@ -142,7 +142,7 @@ export function ChattingRoomItem({
     >
       <div
         className={styles['chatting-room']}
-        onClick={onChattingRoomClick}
+        onClick={isSwiped ? undefined : onChattingRoomClick}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -167,13 +167,13 @@ export function ChattingRoomItem({
       <div className={styles['chat-actions']} ref={buttonContainerRef}>
         <button
           className={[styles['chat-actions-button'], styles.refresh].join(' ')}
-          onClick={handleRefresh}
+          onClick={isSwiped ? handleRefresh : undefined}
         >
           <RefreshSVG />
         </button>
         <button
           className={[styles['chat-actions-button'], styles.delete].join(' ')}
-          onClick={handleDelete}
+          onClick={isSwiped ? handleDelete : undefined}
         >
           <TrashCanSVG />
         </button>
