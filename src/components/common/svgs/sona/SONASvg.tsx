@@ -15,8 +15,11 @@ import ISFPSonaSvg from './mbti/ISFPSonaSvg';
 import ISTJSonaSvg from './mbti/ISTJSonaSvg';
 import ISTPSonaSvg from './mbti/ISTPSonaSvg';
 import { SVGComponentProp } from '@_/types/props';
+import SleepSonaSvg from './etc/SleepSonaSvg';
 
-export default function SONASvg(props: SVGComponentProp & { type: Mbti }) {
+export default function SONASvg(
+  props: SVGComponentProp & { type: Mbti | 'sleep' },
+) {
   const { type, ...restProps } = props;
 
   switch (type) {
@@ -52,6 +55,8 @@ export default function SONASvg(props: SVGComponentProp & { type: Mbti }) {
       return <ISTJSonaSvg {...restProps} />;
     case 'ISTP':
       return <ISTPSonaSvg {...restProps} />;
+    case 'sleep':
+      return <SleepSonaSvg {...restProps} />;
     default:
       return null;
   }
