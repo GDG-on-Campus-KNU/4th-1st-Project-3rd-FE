@@ -1,4 +1,10 @@
-import { type HTMLProps, TouchEvent, useCallback, useRef } from 'react';
+import {
+  type HTMLProps,
+  TouchEvent,
+  useCallback,
+  useEffect,
+  useRef,
+} from 'react';
 
 import RefreshSVG from '@_/components/common/svgs/RefreshSVG';
 import TrashCanSVG from '@_/components/common/svgs/TrashCanSVG';
@@ -51,6 +57,13 @@ export function ChattingRoomItem({
 
   const swiperRef = useRef<HTMLDivElement>(null);
   const buttonContainerRef = useRef<HTMLDivElement>(null);
+  const canMoveRef = useRef(true);
+
+  useEffect(() => {
+    if (swiperRef.current) {
+      swiperRef.current.style.right = `${isSwiped ? buttonContainerRef.current?.offsetWidth : 0}px`;
+    }
+  }, [isSwiped]);
 
   const handleTouchStart = useCallback((e: TouchEvent<HTMLDivElement>) => {
     touchStarted.current = true;
@@ -59,21 +72,30 @@ export function ChattingRoomItem({
 
   const handleTouchMove = useCallback(
     (e: TouchEvent<HTMLDivElement>) => {
-      if (!swiperRef.current) return;
+      if (!canMoveRef.current) return;
       if (swipeStartedTouchX.current === null) return;
-      swipeLastTouchX.current = e.touches[e.touches.length - 1].clientX;
-      const moveDistance = getMovedDistance(
-        swipeStartedTouchX.current,
-        swipeLastTouchX.current,
-        isSwiped,
-      );
-      const BUTTONS_WIDTH = buttonContainerRef.current?.offsetWidth || 0;
+      canMoveRef.current = false;
 
-      swiperRef.current.style.right = `${
-        isSwiped
-          ? Math.max(Math.min(BUTTONS_WIDTH - moveDistance, BUTTONS_WIDTH), 0)
-          : Math.min(Math.max(moveDistance, 0), BUTTONS_WIDTH)
-      }px`;
+      swipeLastTouchX.current = e.touches[e.touches.length - 1].clientX;
+      requestAnimationFrame(() => {
+        if (!swiperRef.current) {
+          canMoveRef.current = true;
+          return;
+        }
+        const moveDistance = getMovedDistance(
+          swipeStartedTouchX.current,
+          swipeLastTouchX.current,
+          isSwiped,
+        );
+        const BUTTONS_WIDTH = buttonContainerRef.current?.offsetWidth || 0;
+
+        swiperRef.current.style.right = `${
+          isSwiped
+            ? Math.max(Math.min(BUTTONS_WIDTH - moveDistance, BUTTONS_WIDTH), 0)
+            : Math.min(Math.max(moveDistance, 0), BUTTONS_WIDTH)
+        }px`;
+        canMoveRef.current = true;
+      });
     },
     [isSwiped],
   );
@@ -83,13 +105,21 @@ export function ChattingRoomItem({
     if (swipeStartedTouchX.current === null) return;
     if (swipeLastTouchX.current === null) return;
     const BUTTONS_WIDTH = buttonContainerRef.current?.offsetWidth || 0;
-    swiperRef.current.style.right = `${isSwiped ? BUTTONS_WIDTH : 0}px`;
     const moveDistance = getMovedDistance(
       swipeStartedTouchX.current,
       swipeLastTouchX.current,
       isSwiped,
     );
-    setIsSwiped((prev) => (moveDistance > BUTTONS_WIDTH / 3 ? !prev : prev));
+
+    setIsSwiped((prev) => {
+      const nextIsSwiped = moveDistance > BUTTONS_WIDTH / 2.5 ? !prev : prev;
+      const isSameLast = nextIsSwiped === prev;
+      if (!swiperRef.current) return nextIsSwiped;
+      if (isSameLast) {
+        swiperRef.current.style.right = `${nextIsSwiped ? BUTTONS_WIDTH : 0}px`;
+      }
+      return nextIsSwiped;
+    });
 
     swipeStartedTouchX.current = null;
     swipeLastTouchX.current = null;
@@ -104,7 +134,6 @@ export function ChattingRoomItem({
     onDelete();
     setIsSwiped(false);
   }, [onDelete, setIsSwiped]);
-
   return (
     <div
       className={[styles['chatting-room-container'], className].join(' ')}
@@ -118,11 +147,6 @@ export function ChattingRoomItem({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         ref={swiperRef}
-        style={{
-          right: isSwiped
-            ? `${buttonContainerRef.current?.offsetWidth || 0}px`
-            : undefined,
-        }}
       >
         <div className={styles['profile-image']}>
           <SONASvg
