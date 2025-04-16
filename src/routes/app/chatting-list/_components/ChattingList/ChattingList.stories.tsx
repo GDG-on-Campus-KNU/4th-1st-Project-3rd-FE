@@ -14,6 +14,13 @@ const meta = {
     deleteChat: { action: 'deleteChat' },
     onChattingRoomClick: { action: 'onChattingRoomClick' },
   },
+  decorators: [
+    (Story) => (
+      <div style={{ width: 'calc(100vw - 32px)', boxSizing: 'border-box' }}>
+        <Story />
+      </div>
+    ),
+  ],
 } satisfies Meta<typeof ChattingList>;
 
 export default meta;

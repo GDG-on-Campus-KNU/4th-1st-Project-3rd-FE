@@ -37,11 +37,7 @@ export default function ChattingList(props: ChattingListProps) {
   );
 
   return (
-    <div
-      style={{
-        width: '80vw',
-      }}
-    >
+    <div>
       {chattingPreviews.map((chattingPreview) => (
         <ChattingRoomItem
           key={chattingPreview.mbti}
