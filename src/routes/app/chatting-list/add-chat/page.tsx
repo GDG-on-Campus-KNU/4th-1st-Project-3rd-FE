@@ -72,7 +72,7 @@ export default function AppAddChatPage() {
         <SolidArrowHeadSVG
           direction="left"
           className={styles.headerLeft}
-          onClick={() => navigate(-1)}
+          onClick={() => navigate(APP_END_POINT.chattingList)}
         />
         <h1 className={styles['header-title']}>채팅방 추가하기</h1>
       </header>
