@@ -58,7 +58,7 @@ export const GET = customHttp.get(
 );
 
 const recentGet = () => {
-  const list = [...mbtiChatMap]
+  const data = [...mbtiChatMap]
     .sort(([aMbti, aMessages], [bMbti, bMessages]) => {
       const aLastISO = aMessages.at(-1)?.time;
       const bLastISO = bMessages.at(-1)?.time;
@@ -78,14 +78,12 @@ const recentGet = () => {
           messages.at(-1)?.isUserChat === false),
     }));
   return HttpResponse.json<ChatMbtiRecentResponse>({
-    data: {
-      list,
-    },
+    data,
   });
 };
 
 const openGet = () => {
-  const resultBit = MBTI_LIST.filter((mbti) => !mbtiChatMap.has(mbti)).reduce(
+  const resultBit = MBTI_LIST.filter((mbti) => mbtiChatMap.has(mbti)).reduce(
     (bit, mbti) => bit | getMbtiBit(mbti),
     0,
   );

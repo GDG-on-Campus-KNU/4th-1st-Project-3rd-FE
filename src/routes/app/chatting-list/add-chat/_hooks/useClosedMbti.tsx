@@ -13,7 +13,7 @@ export default function useClosedMbti() {
       const { closedMbti } = await getFetch<ChatMbtiOpenGetResponseBody>(
         HTTP_API_END_POINT.mbtiChatOpenGet,
       );
-      setClosedMbti(getTargetMbtiBit(closedMbti));
+      setClosedMbti(getTargetMbtiBit(~closedMbti));
       setIsFirstLoading(false);
     };
     fetchClosedMbti();

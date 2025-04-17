@@ -84,11 +84,11 @@ export default function AppChattingListPage() {
     async function updateChattingList() {
       if (isFetching) return;
       isFetching = true;
-      const { list } = await getFetch<ChatMbtiRecentResponseBody>(
+      const data = await getFetch<ChatMbtiRecentResponseBody>(
         HTTP_API_END_POINT.recentMbtiChat,
       );
 
-      setChattingList(list);
+      setChattingList(data);
       isFetching = false;
       setIsFirstLoading(false);
     }
