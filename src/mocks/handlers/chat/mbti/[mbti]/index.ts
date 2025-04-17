@@ -1,9 +1,9 @@
-import { HttpResponse, http } from 'msw';
-
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
+import { HttpResponse } from 'msw';
+import { MBTI_LIST } from '@_/constants/mbti';
+import customHttp from '@_/mocks/customhttp';
 import getDateByISO8601 from '@_/utils/getDateByISO8601';
 import getMbtiBit from '@_/utils/getMBTIBit';
-
 import httpAuthWrapper from '../../../auth/httpAuthWrapper';
 
 const getOrder = (() => {
@@ -11,22 +11,45 @@ const getOrder = (() => {
   return () => nowOrder++;
 })();
 // let statusCode: StatusCode = 200;
-const mbtiChatMap: Map<Mbti, MessageResponse[]> = new Map();
+const mbtiChatMap: Map<Mbti, (MessageResponse & { isViewed: boolean })[]> =
+  new Map();
+mbtiChatMap.set('INFP', []);
+mbtiChatMap.set('INTP', []);
+mbtiChatMap.set('ENFP', []);
+mbtiChatMap.set('ENTP', []);
+mbtiChatMap.set('ENFJ', []);
+mbtiChatMap.set('ENTJ', []);
+mbtiChatMap.set('ISFP', []);
+mbtiChatMap.set('ESTP', []);
+mbtiChatMap.set('ESTJ', []);
+mbtiChatMap.set('ISFJ', []);
+mbtiChatMap.set('ISTP', []);
+mbtiChatMap.set('ISTJ', []);
+mbtiChatMap.set('ESFP', []);
+mbtiChatMap.set('ESFJ', []);
 
 const getMbtiByUrlStr = (urlStr: string) => {
   const url = new URL(urlStr);
-  return url.pathname.split('/').at(-1) as Mbti;
+  return url.pathname.split('/').at(-1)?.toUpperCase() as Mbti;
 };
-const getChatList = (urlStr: string): MessageResponse[] => {
+const getChatList = (
+  urlStr: string,
+): (MessageResponse & { isViewed: boolean })[] => {
   const mbti = getMbtiByUrlStr(urlStr);
   const list = mbtiChatMap.get(mbti);
   if (!list) throw new Error();
   return list;
 };
 
-export const GET = http.get(
+export const GET = customHttp.get(
   HTTP_API_END_POINT.mbtiChatWildCard,
   httpAuthWrapper(({ request }) => {
+    if (request.url.startsWith(HTTP_API_END_POINT.recentMbtiChat)) {
+      return recentGet();
+    }
+    if (request.url.startsWith(HTTP_API_END_POINT.mbtiChatOpenGet)) {
+      return openGet();
+    }
     const url = new URL(request.url);
     const params = url.searchParams;
     const list = getChatList(request.url);
@@ -38,35 +61,16 @@ export const GET = http.get(
         { status: 400 },
       );
     const result = list.filter((msg) => msg.order > startOrder);
-
+    result.forEach((msg) => {
+      msg.isViewed = true;
+    });
     return HttpResponse.json<ChatMbtiResponse>({
       data: { messageResponses: result },
     });
   }),
 );
 
-export const POST = http.post(
-  HTTP_API_END_POINT.mbtiChatWildCard,
-  httpAuthWrapper(async ({ request }) => {
-    const { content } = (await request.json()) as ChatMbtiRequestBody;
-    const list = getChatList(request.url);
-    const timeStringRaw = new Date().toISOString();
-    const dotIndex = timeStringRaw.indexOf('.');
-
-    const timeString =
-      dotIndex === -1 ? timeStringRaw : timeStringRaw.slice(0, dotIndex);
-
-    list.push({
-      content,
-      isUserChat: true,
-      order: getOrder(),
-      time: timeString,
-    });
-    return HttpResponse.json();
-  }),
-);
-
-const GET_CHAT_RECENT = http.get(HTTP_API_END_POINT.recentMbtiChat, () => {
+const recentGet = () => {
   const list = [...mbtiChatMap]
     .sort(([aMbti, aMessages], [bMbti, bMessages]) => {
       const aLastISO = aMessages.at(-1)?.time;
@@ -81,59 +85,88 @@ const GET_CHAT_RECENT = http.get(HTTP_API_END_POINT.recentMbtiChat, () => {
     .map(([mbti, messages]) => ({
       mbti,
       lastMessage: messages.at(-1)?.content || null,
+      isViewed: messages.at(-1)?.isViewed || true,
     }));
   return HttpResponse.json<ChatMbtiRecentResponse>({
     data: {
       list,
     },
   });
-});
+};
 
-const GET_MBTI_OPEN = http.get(
-  HTTP_API_END_POINT.mbtiChatOpenGet,
-  httpAuthWrapper(() => {
-    const resultBit = [...mbtiChatMap.keys()].reduce(
-      (bit, mbti) => bit & getMbtiBit(mbti),
-      0,
-    );
+const openGet = () => {
+  const resultBit = MBTI_LIST.filter((mbti) => !mbtiChatMap.has(mbti)).reduce(
+    (bit, mbti) => bit | getMbtiBit(mbti),
+    0,
+  );
 
-    return HttpResponse.json<ChatMbtiOpenGetResponse>({
-      data: { closedMbti: resultBit },
-    });
-  }),
-);
+  return HttpResponse.json<ChatMbtiOpenGetResponse>({
+    data: { closedMbti: resultBit },
+  });
+};
 
-const POST_MBTI_OPEN = http.post(
-  HTTP_API_END_POINT.mbtiChatOpenPost,
+export const POST = customHttp.post(
+  import.meta.env.VITE_API_BASE_URL + '/chat/mbti/*',
   httpAuthWrapper(async ({ request }) => {
-    const { mbti } = (await request.json()) as ChatMbtiOpenPostRequestBody;
-    if (mbtiChatMap.has(mbti)) throw new Error();
-    mbtiChatMap.set(mbti, []);
-    return HttpResponse.json({});
+    const param = request.url.split('/').at(-1);
+    if (param === 'open')
+      return handlePostOpen(
+        ((await request.json()) as ChatMbtiOpenPostRequestBody).mbti,
+      );
+
+    const { content } = (await request.json()) as ChatMbtiRequestBody;
+    const list = getChatList(request.url);
+    const timeStringRaw = new Date().toISOString();
+    const dotIndex = timeStringRaw.indexOf('.');
+
+    const timeString =
+      dotIndex === -1 ? timeStringRaw : timeStringRaw.slice(0, dotIndex);
+
+    list.push({
+      content,
+      isUserChat: true,
+      order: getOrder(),
+      time: timeString,
+      isViewed: false,
+    });
+    return HttpResponse.json();
   }),
 );
 
-const DELETE_INIT_MBTI_CHAT = http.delete(
-  HTTP_API_END_POINT.mbtiChatInit('*'),
+const handlePostOpen = (mbti: Mbti) => {
+  if (mbtiChatMap.has(mbti)) throw new Error();
+  mbtiChatMap.set(mbti, []);
+  return HttpResponse.json({});
+};
+
+const DELETE = customHttp.delete(
+  import.meta.env.VITE_API_BASE_URL + '/chat/mbti/*',
   ({ request }) => {
-    const mbti = getMbtiByUrlStr(request.url);
-    if (!mbtiChatMap.has(mbti)) throw new Error();
-    mbtiChatMap.set(mbti, []);
-    return HttpResponse.json({});
+    const parsedUrl = request.url
+      .replace(import.meta.env.VITE_API_BASE_URL + '/chat/mbti/', '')
+      .split('/');
+    const [mbti, ...restPathArr] = parsedUrl;
+    const path = restPathArr.join('/');
+    console.log(mbti, path);
+    if (path === 'init') return handleDeleteInit(mbti.toUpperCase() as Mbti);
+    if (path === 'close') return handleDeleteClose(mbti.toUpperCase() as Mbti);
+    throw new Error();
   },
 );
 
-const DELETE_CLOSE_MBTI_CHAT = http.delete(
-  HTTP_API_END_POINT.mbtiChatClose('*'),
-  ({ request }) => {
-    const mbti = getMbtiByUrlStr(request.url);
-    if (!mbtiChatMap.has(mbti)) throw new Error();
-    mbtiChatMap.delete(mbti);
-    return HttpResponse.json({});
-  },
-);
+const handleDeleteClose = (mbti: Mbti) => {
+  if (!mbtiChatMap.has(mbti)) throw new Error();
+  mbtiChatMap.delete(mbti);
+  return HttpResponse.json({});
+};
 
-export const MOCK_TEST_POST = http.post(
+const handleDeleteInit = (mbti: Mbti) => {
+  if (!mbtiChatMap.has(mbti)) throw new Error();
+  mbtiChatMap.set(mbti, []);
+  return HttpResponse.json({});
+};
+
+export const MOCK_TEST_POST = customHttp.post(
   HTTP_API_END_POINT.mockMbtiChatWildCard,
 
   async ({ request }) => {
@@ -152,18 +185,10 @@ export const MOCK_TEST_POST = http.post(
       isUserChat: false,
       order: getOrder(),
       time: timeString,
+      isViewed: false,
     });
     return HttpResponse.json({});
   },
 );
 
-export default [
-  GET,
-  POST,
-  GET_MBTI_OPEN,
-  GET_CHAT_RECENT,
-  POST_MBTI_OPEN,
-  DELETE_INIT_MBTI_CHAT,
-  DELETE_CLOSE_MBTI_CHAT,
-  MOCK_TEST_POST,
-];
+export default [GET, POST, DELETE, MOCK_TEST_POST];
