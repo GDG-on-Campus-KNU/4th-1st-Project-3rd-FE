@@ -24,7 +24,7 @@ type ChatMbtiOpenGetResponseBody = {
 };
 
 type ChatMbtiRecentResponseBody = {
-  list: { mbti: Mbti; lastMessage: string | null }[];
+  list: ChattingPreview[];
 };
 
 type ChatMbtiResponse = BaseResponse<ChatMbtiResponseBody>;
