@@ -91,3 +91,32 @@
   color      : #000;
   text-align : center;
 }
+
+
+.button-container {
+  display        : flex;
+  gap            : 10px;
+  justify-content: space-between;
+
+  width     : 100%;
+  margin-top: 20px;
+}
+
+
+.button-wrapper {
+  flex: 1;
+}
+
+.modal-title {
+  font-size  : 20px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align : center;
+}
+
+.modal-description {
+  font-size  : 14px;
+  line-height: 1.5;
+  color      : #606060;
+  text-align : center;
+}

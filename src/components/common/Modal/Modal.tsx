@@ -9,10 +9,11 @@ export interface ModalProps {
 
 export function Modal({ children, onClose }: ModalProps) {
   useEffect(() => {
+    const beforeParentOverFlow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = beforeParentOverFlow;
     };
   }, []);
 
