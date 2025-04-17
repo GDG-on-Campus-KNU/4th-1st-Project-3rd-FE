@@ -23,9 +23,7 @@ type ChatMbtiOpenGetResponseBody = {
   closedMbti: number;
 };
 
-type ChatMbtiRecentResponseBody = {
-  list: ChattingPreview[];
-};
+type ChatMbtiRecentResponseBody = ChattingPreview[];
 
 type ChatMbtiResponse = BaseResponse<ChatMbtiResponseBody>;
 type ChatMbtiRecentResponse = BaseResponse<ChatMbtiRecentResponseBody>;
