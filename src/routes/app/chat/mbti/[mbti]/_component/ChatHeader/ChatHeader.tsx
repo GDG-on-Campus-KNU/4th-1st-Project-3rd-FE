@@ -1,22 +1,15 @@
 import { HTMLProps } from 'react';
-
-import HamburgerSVG from '@_/components/common/svgs/HamburgerSVG';
-import useImageOnError from '@_/hooks/useImageOnError';
-
+import SONASvg from '@_/components/common/svgs/sona/SONASvg';
+import SolidArrowHeadSVG from '@_/components/common/svgs/SolidArrowHeadSVG';
 import styles from './ChatHeader.module.css';
 
 export interface ChatHeaderProps extends HTMLProps<HTMLElement> {
   onMenuClick: () => void;
-  title: string;
-  profileSrc?: string;
+  mbti: Mbti;
 }
 
-const WRONG_SRC = '/wrong';
-
 export default function ChatHeader(props: ChatHeaderProps) {
-  const { onMenuClick, title, profileSrc, className, style, ...restProps } =
-    props;
-  const imageOnError = useImageOnError();
+  const { onMenuClick, mbti, className, style, ...restProps } = props;
 
   return (
     <header
@@ -24,19 +17,18 @@ export default function ChatHeader(props: ChatHeaderProps) {
       style={style}
       {...restProps}
     >
-      <HamburgerSVG
+      <SolidArrowHeadSVG
+        direction="left"
         className={styles.menu}
         width={24}
         height={24}
         onClick={onMenuClick}
       />
       <div className={styles.profile}>
-        <img
-          className={styles['profile-img']}
-          src={profileSrc || WRONG_SRC}
-          onError={imageOnError}
-        />
-        <span className={styles['profile-name']}>{title}</span>
+        <div className={styles['profile-img']}>
+          <SONASvg type={mbti} width={36} height={36} />
+        </div>
+        <span className={styles['profile-name']}>{mbti}</span>
       </div>
     </header>
   );
