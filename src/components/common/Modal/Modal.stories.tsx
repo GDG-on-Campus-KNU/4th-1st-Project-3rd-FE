@@ -5,7 +5,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Modal } from './Modal';
 
 const ModalWithHooks = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [_, setIsOpen] = useState(false);
 
   return (
     <div>
@@ -24,7 +24,7 @@ const ModalWithHooks = () => {
 };
 
 const LongContentModal = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [_, setIsOpen] = useState(false);
 
   return (
     <div>
