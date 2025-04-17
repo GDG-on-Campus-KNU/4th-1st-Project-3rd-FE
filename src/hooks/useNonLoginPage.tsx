@@ -14,7 +14,7 @@ export default function useNonLoginPage() {
         HTTP_API_END_POINT.checkIsAuthed,
       );
 
-      if (isAuthed) navigate(APP_END_POINT.chatMbti('ISFJ'));
+      if (isAuthed) navigate(APP_END_POINT.chattingList);
     }
     checkIsAuthed();
   }, [navigate]);
