@@ -13,20 +13,6 @@ const getOrder = (() => {
 // let statusCode: StatusCode = 200;
 const mbtiChatMap: Map<Mbti, (MessageResponse & { isViewed: boolean })[]> =
   new Map();
-mbtiChatMap.set('INFP', []);
-mbtiChatMap.set('INTP', []);
-mbtiChatMap.set('ENFP', []);
-mbtiChatMap.set('ENTP', []);
-mbtiChatMap.set('ENFJ', []);
-mbtiChatMap.set('ENTJ', []);
-mbtiChatMap.set('ISFP', []);
-mbtiChatMap.set('ESTP', []);
-mbtiChatMap.set('ESTJ', []);
-mbtiChatMap.set('ISFJ', []);
-mbtiChatMap.set('ISTP', []);
-mbtiChatMap.set('ISTJ', []);
-mbtiChatMap.set('ESFP', []);
-mbtiChatMap.set('ESFJ', []);
 
 const getMbtiByUrlStr = (urlStr: string) => {
   const url = new URL(urlStr);
