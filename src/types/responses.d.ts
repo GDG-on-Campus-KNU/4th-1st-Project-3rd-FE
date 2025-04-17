@@ -15,9 +15,7 @@ interface MessageResponse {
   time: string;
 }
 
-type ChatMbtiResponseBody = {
-  messageResponses: MessageResponse[];
-};
+type ChatMbtiResponseBody = MessageResponse[];
 
 type ChatMbtiOpenGetResponseBody = {
   closedMbti: number;

@@ -52,7 +52,7 @@ export const GET = customHttp.get(
     const result = list.filter((msg) => msg.order > startOrder);
 
     return HttpResponse.json<ChatMbtiResponse>({
-      data: { messageResponses: result },
+      data: result,
     });
   }),
 );
