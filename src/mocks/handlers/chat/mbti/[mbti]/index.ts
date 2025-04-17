@@ -60,10 +60,11 @@ export const GET = customHttp.get(
         { errorMessage: 'startOrder가 올바르지 않음음' },
         { status: 400 },
       );
-    const result = list.filter((msg) => msg.order > startOrder);
-    result.forEach((msg) => {
+    list.forEach((msg) => {
       msg.isViewed = true;
     });
+    const result = list.filter((msg) => msg.order > startOrder);
+
     return HttpResponse.json<ChatMbtiResponse>({
       data: { messageResponses: result },
     });
@@ -85,7 +86,10 @@ const recentGet = () => {
     .map(([mbti, messages]) => ({
       mbti,
       lastMessage: messages.at(-1)?.content || null,
-      isViewed: messages.at(-1)?.isViewed || true,
+      isViewed:
+        messages.length === 0 ||
+        (messages.at(-1)?.isViewed === true &&
+          messages.at(-1)?.isUserChat === false),
     }));
   return HttpResponse.json<ChatMbtiRecentResponse>({
     data: {
@@ -127,7 +131,7 @@ export const POST = customHttp.post(
       isUserChat: true,
       order: getOrder(),
       time: timeString,
-      isViewed: false,
+      isViewed: true,
     });
     return HttpResponse.json();
   }),
@@ -147,7 +151,6 @@ const DELETE = customHttp.delete(
       .split('/');
     const [mbti, ...restPathArr] = parsedUrl;
     const path = restPathArr.join('/');
-    console.log(mbti, path);
     if (path === 'init') return handleDeleteInit(mbti.toUpperCase() as Mbti);
     if (path === 'close') return handleDeleteClose(mbti.toUpperCase() as Mbti);
     throw new Error();
