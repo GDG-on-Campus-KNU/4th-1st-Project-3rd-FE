@@ -48,7 +48,7 @@ export default function AppChatMbtiPage() {
       if (isFetching) return;
       isFetching = true;
       try {
-        const { messageResponses } = await getFetch<ChatMbtiResponseBody>(
+        const messageResponses = await getFetch<ChatMbtiResponseBody>(
           HTTP_API_END_POINT.mbtiChatGet(mbti, messages.at(-1)?.order || 0),
         );
 
