@@ -1,0 +1,122 @@
+.header {
+  box-sizing: border-box;
+  height    : 60px;
+  padding   : 22px;
+}
+
+.section {
+  position  : relative;
+  height    : 100vh;
+  max-height: calc(100vh - 60px);
+  padding   : 0 10px;
+}
+
+.add-button {
+  display        : flex;
+  gap            : 8px;
+  align-items    : center;
+  justify-content: center;
+
+  box-sizing   : border-box;
+  width        : 100%;
+  margin       : 10px 0;
+  padding      : 10px 16px;
+  border       : 1px solid #DEDEDE;
+  border-radius: 10px;
+
+  background: none;
+}
+
+.add-button-description {
+  margin: 0;
+
+  font-size  : 18px;
+  line-height: 1.2;
+  color      : #666;
+  text-align : center
+}
+
+.plus-icon {
+  width      : 24px;
+  height     : 24px;
+  line-height: 100%;
+}
+
+.empty-container {
+  position : relative;
+  top      : 50%;
+  left     : 50%;
+  transform: translate(-50%, calc(-50% - 60px));
+
+  display        : flex;
+  flex-direction : column;
+  align-items    : center;
+  justify-content: center;
+
+  width : 100%;
+  height: 180px;
+}
+
+.sona-container {
+  position: relative;
+}
+
+.blur {
+  position: absolute;
+  z-index : 1;
+  top     : 0;
+  left    : 0;
+
+  width : 100%;
+  height: 100%;
+
+  background: radial-gradient(circle, #7ea3ff 0%, transparent 100%);
+  filter    : blur(30px);
+}
+
+
+.sona {
+  position: relative;
+  z-index : 2;
+  width   : 127px;
+  height  : 121px;
+}
+
+.sona-text {
+  padding-top: 10px;
+
+  font-size  : 20px;
+  font-weight: 500;
+  line-height: 1.2;
+  color      : #000;
+  text-align : center;
+}
+
+
+.button-container {
+  display        : flex;
+  gap            : 10px;
+  justify-content: space-between;
+
+  width     : 100%;
+  margin-top: 20px;
+}
+
+
+.button-wrapper {
+  flex: 1;
+}
+
+.modal-title {
+  font-size  : 20px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align : center;
+}
+
+.modal-description {
+  font-size  : 14px;
+  line-height: 1.5;
+  color      : #606060;
+  text-align : center;
+}

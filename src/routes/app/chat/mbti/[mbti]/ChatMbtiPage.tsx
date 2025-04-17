@@ -6,25 +6,25 @@ import {
   useRef,
   useState,
 } from 'react';
-
-import { useSearchParams } from 'react-router-dom';
-
-import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { getFetch, postFetch } from '@_/fetches/BaseFetches';
-import checkIsSameDay from '@_/utils/checkIsSameDay';
-import getDateByISO8601 from '@_/utils/getDateByISO8601';
 
-import styles from './ChatMbtiPage.module.css';
 import ChatBubble from './_component/ChatBubble/ChatBubble';
 import ChatDayDiv from './_component/ChatDayDiv/ChatDayDiv';
 import ChatHeader from './_component/ChatHeader/ChatHeader';
+import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import MessageTextArea from './_component/MessageTextArea/MessageTextArea';
+import checkIsSameDay from '@_/utils/checkIsSameDay';
+import getDateByISO8601 from '@_/utils/getDateByISO8601';
+import styles from './ChatMbtiPage.module.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function AppChatMbtiPage() {
+  const navigate = useNavigate();
+
   const [messages, setMessages] = useState<MessageResponse[]>([]);
-  const [searchParams] = useSearchParams();
   const mbti: Mbti =
-    (searchParams.get('mbti')?.toUpperCase() as Mbti) || 'ISFJ';
+    (window.location.pathname.split('/').at(-1)?.toUpperCase() as Mbti) ||
+    'ISFJ';
   const headerRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const messageTextAreaRef = useRef<HTMLDivElement>(null);
@@ -87,7 +87,11 @@ export default function AppChatMbtiPage() {
   // }, []);
   return (
     <>
-      <ChatHeader onMenuClick={() => {}} title={mbti} ref={headerRef} />
+      <ChatHeader
+        mbti={mbti}
+        onMenuClick={() => navigate(-1)}
+        ref={headerRef}
+      />
       <div className={styles['under-header']}>
         <div className={styles['content-box']} ref={contentRef}>
           {messages.map((message, index) => {

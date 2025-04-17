@@ -29,10 +29,16 @@
 }
 
 .profile-img {
+  overflow: hidden;
+
   width        : 36px;
   height       : 36px;
+  border       : 1px solid #dedede;
   border-radius: 100%;
-  object-fit   : cover;
+
+  object-fit      : cover;
+  background-color: #fff;
+
 }
 
 .profile-name {

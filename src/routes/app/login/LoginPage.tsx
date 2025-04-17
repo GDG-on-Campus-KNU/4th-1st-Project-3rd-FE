@@ -1,15 +1,13 @@
-import { useState } from 'react';
-
 import { Link, useNavigate } from 'react-router-dom';
 
+import APP_END_POINT from '@_/constants/appEndpoint';
 import Button from '@_/components/common/Button/Button';
 import ControlledInput from '@_/components/common/Input/ControlledInput';
-import APP_END_POINT from '@_/constants/appEndpoint';
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { postFetch } from '@_/fetches/BaseFetches';
-import useNonLoginPage from '@_/hooks/useNonLoginPage';
-
 import styles from './LoginPage.module.css';
+import useNonLoginPage from '@_/hooks/useNonLoginPage';
+import { useState } from 'react';
 
 export default function AppLoginPage() {
   useNonLoginPage();
@@ -28,7 +26,7 @@ export default function AppLoginPage() {
       setErrorMessage('아이디 혹은 비밀번호가 틀렸습니다');
       return;
     }
-    navigate(APP_END_POINT.chatMbti('ISFJ'));
+    navigate(APP_END_POINT.chattingList);
   };
 
   return (

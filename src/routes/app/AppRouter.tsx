@@ -1,13 +1,14 @@
 import { Route, Routes } from 'react-router-dom';
 
 import APP_END_POINT from '@_/constants/appEndpoint';
-import MainLayout from '@_/routes/app/layout';
-import AppMainPage from '@_/routes/app/page';
-
+import AppAddChatPage from './chatting-list/add-chat/page';
 import AppChatMbtiPage from './chat/mbti/[mbti]/ChatMbtiPage';
-import LoginPage from './login/LoginPage';
+import AppChattingListPage from './chatting-list/AppChattingListPage';
+import AppMainPage from '@_/routes/app/page';
 import AppRegisterPage from './register/AppRegisterPage';
 import AppRegisterSuccessPage from './register/success/AppRegisterSuccessPage';
+import LoginPage from './login/LoginPage';
+import MainLayout from '@_/routes/app/layout';
 
 export default function AppRouter() {
   return (
@@ -23,6 +24,14 @@ export default function AppRouter() {
         <Route
           path={APP_END_POINT.registerSuccess}
           element={<AppRegisterSuccessPage />}
+        />
+        <Route
+          path={APP_END_POINT.chattingList}
+          element={<AppChattingListPage />}
+        />
+        <Route
+          path={APP_END_POINT.chattingListAdd}
+          element={<AppAddChatPage />}
         />
         {/* <Route path={APP_END_POINT.testHTTP} element={<AppTestHttpPage />} />
         <Route
