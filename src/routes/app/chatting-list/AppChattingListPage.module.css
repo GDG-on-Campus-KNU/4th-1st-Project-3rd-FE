@@ -5,10 +5,12 @@
 }
 
 .section {
-  position  : relative;
+  position: relative;
+
+  box-sizing: border-box;
   height    : 100vh;
   max-height: calc(100vh - 60px);
-  padding   : 0 10px;
+  padding   : 10px;
 }
 
 .add-button {
@@ -19,7 +21,6 @@
 
   box-sizing   : border-box;
   width        : 100%;
-  margin       : 10px 0;
   padding      : 10px 16px;
   border       : 1px solid #DEDEDE;
   border-radius: 10px;
