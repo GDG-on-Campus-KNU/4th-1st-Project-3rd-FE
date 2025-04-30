@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useLayoutEffect, useRef } from 'react';
 
 import styles from './Modal.module.css';
 
@@ -8,12 +8,16 @@ export interface ModalProps {
 }
 
 export function Modal({ children, onClose }: ModalProps) {
-  useEffect(() => {
-    const beforeParentOverFlow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+  const backdropRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    if (!backdropRef.current) return;
+    const parentElement = backdropRef.current.parentElement;
+    if (!parentElement) return;
+    const beforeParentOverFlow = parentElement.style.overflow;
+    parentElement.style.overflow = 'hidden';
 
     return () => {
-      document.body.style.overflow = beforeParentOverFlow;
+      parentElement.style.overflow = beforeParentOverFlow;
     };
   }, []);
 
@@ -24,7 +28,11 @@ export function Modal({ children, onClose }: ModalProps) {
   };
 
   return (
-    <div className={styles.backdrop} onClick={handleBackdropClick}>
+    <div
+      className={styles.backdrop}
+      onClick={handleBackdropClick}
+      ref={backdropRef}
+    >
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         {children}
       </div>
