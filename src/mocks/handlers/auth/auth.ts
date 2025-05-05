@@ -56,4 +56,15 @@ const EMAIL_GET = customHttp.get(HTTP_API_END_POINT.getEmail, () =>
   ),
 );
 
-export default [LOGIN_POST, LOGOUT_POST, CHECK_IS_AUTHED_GET, EMAIL_GET];
+const CANCEL_POST = customHttp.post(HTTP_API_END_POINT.cancelAccount, () => {
+  isAuthed = false;
+  return new HttpResponse(JSON.stringify({}));
+});
+
+export default [
+  LOGIN_POST,
+  LOGOUT_POST,
+  CHECK_IS_AUTHED_GET,
+  EMAIL_GET,
+  CANCEL_POST,
+];
