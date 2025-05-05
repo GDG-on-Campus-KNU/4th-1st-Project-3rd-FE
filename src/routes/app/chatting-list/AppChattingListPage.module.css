@@ -54,7 +54,7 @@
 
   background-color: #60606088;
 
-  animation: dimmer-animation .3s ease-out forwards;
+  animation: dimmer-animation .2s ease-out forwards;
 }
 
 @keyframes dimmer-animation {
