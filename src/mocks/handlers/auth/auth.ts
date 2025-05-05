@@ -45,4 +45,15 @@ const CHECK_IS_AUTHED_GET = customHttp.get(
   },
 );
 
-export default [LOGIN_POST, LOGOUT_POST, CHECK_IS_AUTHED_GET];
+const EMAIL_GET = customHttp.get(HTTP_API_END_POINT.getEmail, () =>
+  HttpResponse.json<GetEmailResponse>(
+    {
+      data: {
+        email: 'test@test.com',
+      },
+    },
+    { status: 200 },
+  ),
+);
+
+export default [LOGIN_POST, LOGOUT_POST, CHECK_IS_AUTHED_GET, EMAIL_GET];
