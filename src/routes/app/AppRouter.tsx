@@ -2,8 +2,8 @@ import { Route, Routes } from 'react-router-dom';
 
 import APP_END_POINT from '@_/constants/appEndpoint';
 import NetworkErrorBoundary from '@_/fetches/NetworkErrorBoundary';
+import AppMainPage from '@_/routes/app/MainPage';
 import MainLayout from '@_/routes/app/layout';
-import AppMainPage from '@_/routes/app/page';
 
 import NormalErrorBoundary from './NormalErrorBoundary';
 import AppCancelPage from './cancel/AppCancelPage';
