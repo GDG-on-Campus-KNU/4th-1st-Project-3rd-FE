@@ -2,6 +2,7 @@ import { SVGComponentProp } from '@_/types/props';
 
 import SadSonaSvg from './etc/SadSonaSvg';
 import SleepSonaSvg from './etc/SleepSonaSvg';
+import TalkSonaSvg from './etc/TalkSonaSvg';
 import ENFJSonaSvg from './mbti/ENFJSonaSvg';
 import ENFPSonaSvg from './mbti/ENFPSonaSvg';
 import ENTJSonaSvg from './mbti/ENTJSonaSvg';
@@ -20,7 +21,7 @@ import ISTJSonaSvg from './mbti/ISTJSonaSvg';
 import ISTPSonaSvg from './mbti/ISTPSonaSvg';
 
 export default function SONASvg(
-  props: SVGComponentProp & { type: Mbti | 'sleep' | 'sad' },
+  props: SVGComponentProp & { type: Mbti | 'sleep' | 'sad' | 'talk' },
 ) {
   const { type, ...restProps } = props;
 
@@ -61,6 +62,8 @@ export default function SONASvg(
       return <SleepSonaSvg {...restProps} />;
     case 'sad':
       return <SadSonaSvg {...restProps} />;
+    case 'talk':
+      return <TalkSonaSvg {...restProps} />;
     default:
       return null;
   }

@@ -4,7 +4,7 @@ import SONASvg from '../svgs/sona/SONASvg';
 import styles from './SonaWithBlur.module.css';
 
 interface SonaWithBlurProps extends SVGComponentProp {
-  type: 'sleep' | 'sad' | Mbti;
+  type: 'sleep' | 'sad' | 'talk' | Mbti;
   blurMultiple?: number;
 }
 
