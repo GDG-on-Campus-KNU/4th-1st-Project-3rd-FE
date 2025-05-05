@@ -1,0 +1,38 @@
+.content {
+  margin    : 108px 10px 0;
+  text-align: center;
+}
+
+.main-description {
+  margin-top : 30px;
+  font-size  : 24px;
+  font-weight: 600;
+  line-height: 120%;
+}
+
+.sub-description {
+  font-size  : 16px;
+  line-height: 150%;
+}
+
+.button {
+  margin-top: 54px;
+}
+
+
+.register-span {
+  margin-top: 20px;
+  font-size : 14px;
+  color     : #666;
+  text-align: center;
+}
+
+.register {
+  cursor         : pointer;
+  color          : inherit;
+  text-decoration: underline;
+}
+
+.register:visited {
+  color: inherit;
+}

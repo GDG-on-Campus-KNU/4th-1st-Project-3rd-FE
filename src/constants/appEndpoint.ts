@@ -7,6 +7,7 @@ const APP_END_POINT = {
   registerSuccess: '/register/success',
   chattingList: '/chatting-list',
   chattingListAdd: '/chatting-list/add',
+  cancel: '/cancel',
 };
 
 export default APP_END_POINT;

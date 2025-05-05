@@ -2,10 +2,11 @@ import { Route, Routes } from 'react-router-dom';
 
 import APP_END_POINT from '@_/constants/appEndpoint';
 import NetworkErrorBoundary from '@_/fetches/NetworkErrorBoundary';
+import AppMainPage from '@_/routes/app/MainPage';
 import MainLayout from '@_/routes/app/layout';
-import AppMainPage from '@_/routes/app/page';
 
 import NormalErrorBoundary from './NormalErrorBoundary';
+import AppCancelPage from './cancel/AppCancelPage';
 import AppChatMbtiPage from './chat/mbti/[mbti]/ChatMbtiPage';
 import AppChattingListPage from './chatting-list/AppChattingListPage';
 import AppAddChatPage from './chatting-list/add-chat/page';
@@ -41,6 +42,7 @@ export default function AppRouter() {
               path={APP_END_POINT.chattingListAdd}
               element={<AppAddChatPage />}
             />
+            <Route path={APP_END_POINT.cancel} element={<AppCancelPage />} />
           </Routes>
         </NetworkErrorBoundary>
       </NormalErrorBoundary>

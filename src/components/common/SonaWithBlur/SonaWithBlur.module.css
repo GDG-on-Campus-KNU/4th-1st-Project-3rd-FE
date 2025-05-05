@@ -16,9 +16,6 @@
   left     : 50%;
   transform: translate(-50%, -50%);
 
-  width : 100%;
-  height: 100%;
-
   background: radial-gradient(circle, #7ea3ff 0%, transparent 100%);
   filter    : blur(30px);
 }

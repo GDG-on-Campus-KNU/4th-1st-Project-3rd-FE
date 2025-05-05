@@ -10,6 +10,14 @@
   color      : white;
 }
 
+.thin {
+  display        : flex;
+  align-items    : center;
+  justify-content: center;
+  height         : 43px;
+
+}
+
 .valid {
   border          : 1px solid #4849e833;
   background-color: #4949E9;
