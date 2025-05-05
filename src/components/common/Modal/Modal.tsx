@@ -4,10 +4,11 @@ import styles from './Modal.module.css';
 
 export interface ModalProps {
   children: ReactNode;
+  dimmerColor?: string;
   onClose: () => void;
 }
 
-export function Modal({ children, onClose }: ModalProps) {
+export function Modal({ children, dimmerColor, onClose }: ModalProps) {
   const backdropRef = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     if (!backdropRef.current) return;
@@ -32,6 +33,7 @@ export function Modal({ children, onClose }: ModalProps) {
       className={styles.backdrop}
       onClick={handleBackdropClick}
       ref={backdropRef}
+      style={{ backgroundColor: dimmerColor || `rgb(0 0 0 / 40%)` }}
     >
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         {children}
