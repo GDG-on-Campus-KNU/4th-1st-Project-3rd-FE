@@ -149,6 +149,7 @@ export default function AppChattingListPage() {
         )}
         <header className={styles.header}>
           <HamburgerSVG onClick={handleHamburgerClick} />
+          채팅
         </header>
         <section className={styles.section}>
           <button className={styles['add-button']} onClick={handleAddClick}>

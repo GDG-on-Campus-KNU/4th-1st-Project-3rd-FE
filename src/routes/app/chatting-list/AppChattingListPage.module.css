@@ -68,9 +68,16 @@
 }
 
 .header {
+  display    : flex;
+  gap        : 15px;
+  align-items: center;
+
   box-sizing: border-box;
   height    : 60px;
   padding   : 22px;
+
+  font-size  : 20px;
+  font-weight: 600;
 }
 
 .section {
