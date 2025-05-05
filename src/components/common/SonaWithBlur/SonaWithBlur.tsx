@@ -1,20 +1,26 @@
-import SONASvg from '../svgs/sona/SONASvg';
 import { SVGComponentProp } from '@_/types/props';
+
+import SONASvg from '../svgs/sona/SONASvg';
 import styles from './SonaWithBlur.module.css';
 
 interface SonaWithBlurProps extends SVGComponentProp {
-  type: 'sleep' | Mbti;
-  width?: number;
-  height?: number;
+  type: 'sleep' | 'sad' | Mbti;
+  blurMultiple?: number;
 }
 
 export default function SonaWithBlur(props: SonaWithBlurProps) {
-  const { type = 'sleep', ...restProps } = props;
+  const { type = 'sleep', blurMultiple = 1, ...restProps } = props;
 
   return (
     <div className={styles['empty-container']}>
       <div className={styles['sona-container']}>
-        <div className={styles.blur} />
+        <div
+          className={styles.blur}
+          style={{
+            width: 100 * blurMultiple + '%',
+            height: 100 * blurMultiple + '%',
+          }}
+        />
         <SONASvg type={type} className={styles.sona} {...restProps} />
       </div>
     </div>
