@@ -89,6 +89,7 @@ export default function AppChattingListPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSidebarOpened, setIsSidebarOpened] = useState(false);
   const [isSidebarMoved, setIsSidebarMoved] = useState(false);
+  const mainContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let isFetching = false;
@@ -107,6 +108,18 @@ export default function AppChattingListPage() {
     return () => clearInterval(intervalId.current);
   }, []);
 
+  useEffect(() => {
+    if (!isSidebarOpened) return;
+    if (!mainContainerRef.current) return;
+    const el = mainContainerRef.current;
+    const originOverflow = el.style.overflow;
+    mainContainerRef.current.style.overflow = 'hidden';
+
+    return () => {
+      el.style.overflow = originOverflow;
+    };
+  }, [isSidebarOpened]);
+
   const handleAddClick = () => {
     navigate(APP_END_POINT.chattingListAdd);
   };
@@ -121,6 +134,7 @@ export default function AppChattingListPage() {
         styles.container,
         getSideBarStyle(isSidebarMoved, isSidebarOpened),
       ].join(' ')}
+      ref={mainContainerRef}
     >
       <ChattingRoomSidebar
         email={'이메일 바꿔야함'}
