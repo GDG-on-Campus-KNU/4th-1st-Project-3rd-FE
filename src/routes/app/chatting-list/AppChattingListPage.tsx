@@ -10,6 +10,7 @@ import SONASvg from '@_/components/common/svgs/sona/SONASvg';
 import APP_END_POINT from '@_/constants/appEndpoint';
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { deleteFetch, getFetch } from '@_/fetches/BaseFetches';
+import useEmail from '@_/hooks/useEmail';
 
 import styles from './AppChattingListPage.module.css';
 import ChattingList from './_components/ChattingList/ChattingList';
@@ -89,6 +90,7 @@ export default function AppChattingListPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSidebarOpened, setIsSidebarOpened] = useState(false);
   const [isSidebarMoved, setIsSidebarMoved] = useState(false);
+  const { email } = useEmail();
   const mainContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -136,11 +138,7 @@ export default function AppChattingListPage() {
       ].join(' ')}
       ref={mainContainerRef}
     >
-      <ChattingRoomSidebar
-        email={'이메일 바꿔야함'}
-        logout={() => {}}
-        cancel={() => {}}
-      />
+      <ChattingRoomSidebar email={email} logout={() => {}} cancel={() => {}} />
 
       <div className={styles['main-container']}>
         {isSidebarOpened && (
