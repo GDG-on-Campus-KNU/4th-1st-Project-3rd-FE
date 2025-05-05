@@ -1,16 +1,19 @@
-import { deleteFetch, getFetch } from '@_/fetches/BaseFetches';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-import APP_END_POINT from '@_/constants/appEndpoint';
-import Button from '@_/components/common/Button/Button';
-import ChattingList from './_components/ChattingList/ChattingList';
-import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
-import HamburgerSVG from '@_/components/common/svgs/HamburgerSVG';
-import { Modal } from '@_/components/common/Modal/Modal';
-import SONASvg from '@_/components/common/svgs/sona/SONASvg';
-import SolidPlusSVG from '@_/components/common/svgs/SolidPlusSVG';
-import styles from './AppChattingListPage.module.css';
 import { useNavigate } from 'react-router-dom';
+
+import Button from '@_/components/common/Button/Button';
+import { Modal } from '@_/components/common/Modal/Modal';
+import HamburgerSVG from '@_/components/common/svgs/HamburgerSVG';
+import SolidPlusSVG from '@_/components/common/svgs/SolidPlusSVG';
+import SONASvg from '@_/components/common/svgs/sona/SONASvg';
+import APP_END_POINT from '@_/constants/appEndpoint';
+import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
+import { deleteFetch, getFetch } from '@_/fetches/BaseFetches';
+
+import styles from './AppChattingListPage.module.css';
+import ChattingList from './_components/ChattingList/ChattingList';
+import ChattingRoomSidebar from './_components/ChattingRoomSidebar/ChattingRoomSidebar';
 
 const ModalContent = ({
   mbti,
@@ -70,6 +73,12 @@ const ModalContent = ({
   );
 };
 
+const getSideBarStyle = (isMoved: boolean, isOpen: boolean) => {
+  if (!isMoved) return styles.init;
+  if (isOpen) return styles.open;
+  return styles.close;
+};
+
 export default function AppChattingListPage() {
   const [chattingList, setChattingList] = useState<ChattingPreview[]>([]);
   const [isLoading, setIsFirstLoading] = useState(true);
@@ -78,6 +87,8 @@ export default function AppChattingListPage() {
   const [lastMbti, setLastMbti] = useState<Mbti | null>(null);
   const [lastType, setLastType] = useState<'close' | 'reset' | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSidebarOpened, setIsSidebarOpened] = useState(false);
+  const [isSidebarMoved, setIsSidebarMoved] = useState(false);
 
   useEffect(() => {
     let isFetching = false;
@@ -100,57 +111,80 @@ export default function AppChattingListPage() {
     navigate(APP_END_POINT.chattingListAdd);
   };
 
+  const handleHamburgerClick = useCallback(() => {
+    setIsSidebarMoved(true);
+    setIsSidebarOpened((prev) => !prev);
+  }, []);
   return (
-    <>
-      <header className={styles.header}>
-        <HamburgerSVG />
-      </header>
-      <section className={styles.section}>
-        <button className={styles['add-button']} onClick={handleAddClick}>
-          <p className={styles['add-button-description']}>채팅방 추가하기</p>
-          <SolidPlusSVG className={styles['plus-icon']} />
-        </button>
-        {!isLoading && chattingList.length === 0 && (
-          <div className={styles['empty-container']}>
-            <div className={styles['sona-container']}>
-              <div className={styles.blur} />
-              <SONASvg type="sleep" className={styles.sona} />
+    <div
+      className={[
+        styles.container,
+        getSideBarStyle(isSidebarMoved, isSidebarOpened),
+      ].join(' ')}
+    >
+      <ChattingRoomSidebar
+        email={'이메일 바꿔야함'}
+        logout={() => {}}
+        cancel={() => {}}
+      />
+
+      <div className={styles['main-container']}>
+        {isSidebarOpened && (
+          <div
+            className={styles.dimmer}
+            onClick={() => setIsSidebarOpened(false)}
+          />
+        )}
+        <header className={styles.header}>
+          <HamburgerSVG onClick={handleHamburgerClick} />
+        </header>
+        <section className={styles.section}>
+          <button className={styles['add-button']} onClick={handleAddClick}>
+            <p className={styles['add-button-description']}>채팅방 추가하기</p>
+            <SolidPlusSVG className={styles['plus-icon']} />
+          </button>
+          {!isLoading && chattingList.length === 0 && (
+            <div className={styles['empty-container']}>
+              <div className={styles['sona-container']}>
+                <div className={styles.blur} />
+                <SONASvg type="sleep" className={styles.sona} />
+              </div>
+              <p className={styles['sona-text']}>
+                채팅방을 추가하여 SONA와 함께
+                <br />
+                MBTI채팅을 시작하세요!
+              </p>
             </div>
-            <p className={styles['sona-text']}>
-              채팅방을 추가하여 SONA와 함께
-              <br />
-              MBTI채팅을 시작하세요!
-            </p>
-          </div>
+          )}
+          {!isLoading && chattingList.length > 0 && (
+            <ChattingList
+              chattingPreviews={chattingList}
+              onChattingRoomClick={(mbti) =>
+                navigate(APP_END_POINT.chatMbti(mbti))
+              }
+              initChat={(mbti) => {
+                setLastMbti(mbti);
+                setLastType('reset');
+                setIsModalOpen(true);
+              }}
+              deleteChat={(mbti) => {
+                setLastMbti(mbti);
+                setLastType('close');
+                setIsModalOpen(true);
+              }}
+            />
+          )}
+        </section>
+        {isModalOpen && lastMbti && lastType && (
+          <Modal onClose={() => setIsModalOpen(false)}>
+            <ModalContent
+              mbti={lastMbti}
+              type={lastType}
+              onClose={() => setIsModalOpen(false)}
+            />
+          </Modal>
         )}
-        {!isLoading && chattingList.length > 0 && (
-          <ChattingList
-            chattingPreviews={chattingList}
-            onChattingRoomClick={(mbti) =>
-              navigate(APP_END_POINT.chatMbti(mbti))
-            }
-            initChat={(mbti) => {
-              setLastMbti(mbti);
-              setLastType('reset');
-              setIsModalOpen(true);
-            }}
-            deleteChat={(mbti) => {
-              setLastMbti(mbti);
-              setLastType('close');
-              setIsModalOpen(true);
-            }}
-          />
-        )}
-      </section>
-      {isModalOpen && lastMbti && lastType && (
-        <Modal onClose={() => setIsModalOpen(false)}>
-          <ModalContent
-            mbti={lastMbti}
-            type={lastType}
-            onClose={() => setIsModalOpen(false)}
-          />
-        </Modal>
-      )}
-    </>
+      </div>
+    </div>
   );
 }
