@@ -1,0 +1,55 @@
+.sidebar {
+  display        : flex;
+  flex-direction : column;
+  justify-content: space-between;
+
+  box-sizing: border-box;
+  width     : 70%;
+  max-width : calc(600px * 0.7);
+  height    : 100vh;
+
+  background-color: #f1f1f1;
+}
+
+.header {
+  display        : flex;
+  align-items    : center;
+  justify-content: space-between;
+
+  box-sizing: border-box;
+  height    : 56px;
+  padding   : 10px;
+
+  font-size: 14px;
+  color    : #666;
+}
+
+
+.bottom-box {
+  display    : flex;
+  gap        : 10px;
+  align-items: center;
+
+  box-sizing: border-box;
+  width     : 100%;
+  height    : 56px;
+  padding   : 10px 20px;
+
+  font-size  : 18px;
+  font-weight: 600
+}
+
+.svg {
+  box-sizing: border-box;
+  width     : 36px;
+  height    : 36px;
+  padding   : 6px;
+}
+
+.red {
+  color: #ff321b;
+}
+
+.grey {
+  color: #666;
+}
