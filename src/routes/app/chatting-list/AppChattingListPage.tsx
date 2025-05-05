@@ -197,7 +197,7 @@ export default function AppChattingListPage() {
         <ChattingRoomSidebar
           email={email}
           logout={() => setIsLogoutModalOpen(true)}
-          cancel={() => {}}
+          cancel={() => navigate(APP_END_POINT.cancel)}
         />
 
         <div className={styles['main-container']}>
