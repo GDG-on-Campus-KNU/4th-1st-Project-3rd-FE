@@ -45,6 +45,7 @@ const ChatManageModalContent = ({
               color: '#fff',
               border: 'none',
             }}
+            thin
           >
             그만두기
           </Button>
@@ -65,6 +66,7 @@ const ChatManageModalContent = ({
               color: '#fff',
               border: 'none',
             }}
+            thin
           >
             {type === 'close' ? '삭제하기' : '리셋하기'}
           </Button>
@@ -94,6 +96,8 @@ const LogoutModalContent = ({
               color: '#fff',
               border: 'none',
             }}
+            className={styles.button}
+            thin
           >
             뒤로가기
           </Button>
@@ -106,6 +110,7 @@ const LogoutModalContent = ({
               color: '#fff',
               border: 'none',
             }}
+            thin
           >
             로그아웃
           </Button>

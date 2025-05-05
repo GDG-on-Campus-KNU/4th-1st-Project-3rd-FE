@@ -1,15 +1,18 @@
-import APP_END_POINT from '@_/constants/appEndpoint';
-import Button from '@_/components/common/Button/Button';
-import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
-import MbtiList from './_components/MbtiList/MbtiList';
-import { Modal } from '@_/components/common/Modal/Modal';
-import SolidArrowHeadSVG from '@_/components/common/svgs/SolidArrowHeadSVG';
-import SonaWithBlur from '@_/components/common/SonaWithBlur/SonaWithBlur';
-import { postFetch } from '@_/fetches/BaseFetches';
-import styles from './page.module.css';
-import useClosedMbti from './_hooks/useClosedMbti';
-import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+
+import { useNavigate } from 'react-router-dom';
+
+import Button from '@_/components/common/Button/Button';
+import { Modal } from '@_/components/common/Modal/Modal';
+import SonaWithBlur from '@_/components/common/SonaWithBlur/SonaWithBlur';
+import SolidArrowHeadSVG from '@_/components/common/svgs/SolidArrowHeadSVG';
+import APP_END_POINT from '@_/constants/appEndpoint';
+import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
+import { postFetch } from '@_/fetches/BaseFetches';
+
+import MbtiList from './_components/MbtiList/MbtiList';
+import useClosedMbti from './_hooks/useClosedMbti';
+import styles from './page.module.css';
 
 const ModalContent = ({
   mbti,
@@ -34,6 +37,7 @@ const ModalContent = ({
               color: '#fff',
               border: 'none',
             }}
+            thin
           >
             그만두기
           </Button>
@@ -51,6 +55,7 @@ const ModalContent = ({
             style={{
               border: 'none',
             }}
+            thin
           >
             추가하기
           </Button>
