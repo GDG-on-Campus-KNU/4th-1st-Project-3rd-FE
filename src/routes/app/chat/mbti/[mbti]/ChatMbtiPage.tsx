@@ -76,7 +76,7 @@ export default function AppChatMbtiPage() {
     if (lastMessage.isUserChat) {
       const id = setTimeout(
         () => setIsShownWaitingDot(true),
-        hasChattedThisMount ? 800 : 0,
+        hasChattedThisMount ? 600 : 0,
       );
       return () => clearTimeout(id);
     }
