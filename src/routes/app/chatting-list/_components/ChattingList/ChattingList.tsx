@@ -43,7 +43,9 @@ export default function ChattingList(props: ChattingListProps) {
           key={chattingPreview.mbti}
           mbti={chattingPreview.mbti}
           lastMessage={chattingPreview.lastMessage}
-          isViewed={chattingPreview.isViewed}
+          isViewed={
+            chattingPreview.lastMessage === null || chattingPreview.isViewed
+          }
           isSwiped={checkIsSwiped(chattingPreview.mbti)}
           setIsSwiped={getSetSwiped(chattingPreview.mbti)}
           onRefresh={() => initChat(chattingPreview.mbti)}
