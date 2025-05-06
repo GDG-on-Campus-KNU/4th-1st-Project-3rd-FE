@@ -12,7 +12,7 @@ export default function PeopleCancelSVG(props: SVGComponentProp) {
       xmlns="http://www.w3.org/2000/svg"
       {...restProps}
     >
-      <g clip-path="url(#clip0_620_6064)">
+      <g clipPath="url(#clip0_620_6064)">
         <path
           d="M8.57101 8.57122C10.7013 8.57122 12.4282 6.84432 12.4282 4.71408C12.4282 2.58384 10.7013 0.856934 8.57101 0.856934C6.44077 0.856934 4.71387 2.58384 4.71387 4.71408C4.71387 6.84432 6.44077 8.57122 8.57101 8.57122Z"
           stroke={color || '#FF321B'}
