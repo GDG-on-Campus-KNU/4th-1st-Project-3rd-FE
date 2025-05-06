@@ -34,7 +34,7 @@ export default function ChattingRoomSidebar(props: ChattingRoomSidebarProps) {
           className={[styles['bottom-box'], styles.red].join(' ')}
           onClick={cancel}
         >
-          <PeopleCancelSVG className={styles.svg} />
+          <PeopleCancelSVG className={styles.svg} onClick={cancel} />
           <span>회원탈퇴</span>
         </div>
       </div>
