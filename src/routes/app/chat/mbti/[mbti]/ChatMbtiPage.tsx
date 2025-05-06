@@ -86,7 +86,7 @@ export default function AppChatMbtiPage() {
 
   useLayoutEffect(() => {
     endRef.current?.scrollIntoView();
-  }, [messages]);
+  }, [messages, isShownWaitingDot]);
 
   const handleSubmit = useCallback(
     async (value: string) => {
