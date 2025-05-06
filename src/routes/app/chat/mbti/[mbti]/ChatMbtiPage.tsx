@@ -21,6 +21,8 @@ import ChatDayDiv from './_component/ChatDayDiv/ChatDayDiv';
 import ChatHeader from './_component/ChatHeader/ChatHeader';
 import MessageTextArea from './_component/MessageTextArea/MessageTextArea';
 
+type SendingPhase = 'posting' | 'wait-update' | 'complete';
+
 export default function AppChatMbtiPage() {
   const navigate = useNavigate();
 
@@ -35,6 +37,7 @@ export default function AppChatMbtiPage() {
   const [sendingMessage, setSendingMessage] = useState<string | null>(null);
   const [isShownWaitingDot, setIsShownWaitingDot] = useState(false);
   const [hasChattedThisMount, setHasChattedThisMount] = useState(false);
+  const [sendingPhase, setSendingPhase] = useState<SendingPhase>('complete');
 
   const handleValueChange = useCallback(() => {
     if (!contentRef.current) return;
@@ -56,6 +59,11 @@ export default function AppChatMbtiPage() {
         const messageResponses = await getFetch<ChatMbtiResponseBody>(
           HTTP_API_END_POINT.mbtiChatGet(mbti, messages.at(-1)?.order || 0),
         );
+
+        if (messageResponses.at(-1)?.isUserChat) {
+          setSendingMessage(null);
+          setSendingPhase('complete');
+        }
 
         setMessages((prev) =>
           messageResponses.length === 0 ? prev : [...prev, ...messageResponses],
@@ -91,12 +99,18 @@ export default function AppChatMbtiPage() {
   const handleSubmit = useCallback(
     async (value: string) => {
       setSendingMessage(value);
+      setSendingPhase('posting');
       postFetch<ChatMbtiRequestBody>(HTTP_API_END_POINT.mbtiChatPost(mbti), {
         body: { content: value },
       })
-        .catch(() => alert('메세지 발신에 실패하였습니다..'))
-        .finally(() => {
+        .then(() => setSendingPhase('wait-update'))
+        .catch(() => {
+          alert('메세지 발신에 실패하였습니다..');
+
           setSendingMessage(null);
+          setSendingPhase('complete');
+        })
+        .finally(() => {
           setHasChattedThisMount(true);
         });
     },
@@ -135,7 +149,7 @@ export default function AppChatMbtiPage() {
               </Fragment>
             );
           })}
-          {sendingMessage && (
+          {sendingPhase !== 'complete' && (
             <ChatBubble content={sendingMessage} isUserChat={true} />
           )}
           {isShownWaitingDot && messages.at(-1)?.isUserChat && (
