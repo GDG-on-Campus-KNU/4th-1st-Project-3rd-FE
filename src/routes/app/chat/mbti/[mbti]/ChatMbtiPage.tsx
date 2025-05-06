@@ -6,17 +6,22 @@ import {
   useRef,
   useState,
 } from 'react';
-import { getFetch, postFetch } from '@_/fetches/BaseFetches';
 
+import { useNavigate } from 'react-router-dom';
+
+import WaitingDot from '@_/components/common/WaitingDot/WaitingDot';
+import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
+import { getFetch, postFetch } from '@_/fetches/BaseFetches';
+import checkIsSameDay from '@_/utils/checkIsSameDay';
+import getDateByISO8601 from '@_/utils/getDateByISO8601';
+
+import styles from './ChatMbtiPage.module.css';
 import ChatBubble from './_component/ChatBubble/ChatBubble';
 import ChatDayDiv from './_component/ChatDayDiv/ChatDayDiv';
 import ChatHeader from './_component/ChatHeader/ChatHeader';
-import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import MessageTextArea from './_component/MessageTextArea/MessageTextArea';
-import checkIsSameDay from '@_/utils/checkIsSameDay';
-import getDateByISO8601 from '@_/utils/getDateByISO8601';
-import styles from './ChatMbtiPage.module.css';
-import { useNavigate } from 'react-router-dom';
+
+type SendingPhase = 'posting' | 'wait-update' | 'complete';
 
 export default function AppChatMbtiPage() {
   const navigate = useNavigate();
@@ -30,6 +35,9 @@ export default function AppChatMbtiPage() {
   const messageTextAreaRef = useRef<HTMLDivElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const [sendingMessage, setSendingMessage] = useState<string | null>(null);
+  const [isShownWaitingDot, setIsShownWaitingDot] = useState(false);
+  const [hasChattedThisMount, setHasChattedThisMount] = useState(false);
+  const [sendingPhase, setSendingPhase] = useState<SendingPhase>('complete');
 
   const handleValueChange = useCallback(() => {
     if (!contentRef.current) return;
@@ -52,6 +60,11 @@ export default function AppChatMbtiPage() {
           HTTP_API_END_POINT.mbtiChatGet(mbti, messages.at(-1)?.order || 0),
         );
 
+        if (messageResponses.at(-1)?.isUserChat) {
+          setSendingMessage(null);
+          setSendingPhase('complete');
+        }
+
         setMessages((prev) =>
           messageResponses.length === 0 ? prev : [...prev, ...messageResponses],
         );
@@ -64,18 +77,42 @@ export default function AppChatMbtiPage() {
     return () => clearInterval(timeoutId);
   }, [messages, mbti]);
 
+  useEffect(() => {
+    const lastMessage = messages.at(-1);
+    if (!lastMessage) return;
+
+    if (lastMessage.isUserChat) {
+      const id = setTimeout(
+        () => setIsShownWaitingDot(true),
+        hasChattedThisMount ? 600 : 0,
+      );
+      return () => clearTimeout(id);
+    }
+
+    setIsShownWaitingDot(false);
+  }, [messages, hasChattedThisMount]);
+
   useLayoutEffect(() => {
     endRef.current?.scrollIntoView();
-  }, [messages]);
+  }, [messages, isShownWaitingDot]);
 
   const handleSubmit = useCallback(
     async (value: string) => {
       setSendingMessage(value);
+      setSendingPhase('posting');
       postFetch<ChatMbtiRequestBody>(HTTP_API_END_POINT.mbtiChatPost(mbti), {
         body: { content: value },
       })
-        .catch(() => alert('메세지 발신에 실패하였습니다..'))
-        .finally(() => setSendingMessage(null));
+        .then(() => setSendingPhase('wait-update'))
+        .catch(() => {
+          alert('메세지 발신에 실패하였습니다..');
+
+          setSendingMessage(null);
+          setSendingPhase('complete');
+        })
+        .finally(() => {
+          setHasChattedThisMount(true);
+        });
     },
     [mbti],
   );
@@ -112,8 +149,11 @@ export default function AppChatMbtiPage() {
               </Fragment>
             );
           })}
-          {sendingMessage && (
+          {sendingPhase !== 'complete' && (
             <ChatBubble content={sendingMessage} isUserChat={true} />
+          )}
+          {isShownWaitingDot && messages.at(-1)?.isUserChat && (
+            <ChatBubble content={<WaitingDot />} isUserChat={false} />
           )}
           <div ref={endRef} />
         </div>

@@ -8,7 +8,7 @@ const HTTP_PURE_STRING_API_END_POINT = {
   mockMbtiChatWildCard: '/mock/chat/mbti/*',
   checkIsAuthed: '/user/check-session',
   getEmail: '/user/email',
-  cancelAccount: '/user/cancel',
+  cancelAccount: '/user',
   login: '/auth/login',
   logout: '/auth/logout',
   sendEmailCode: '/auth/email/code',
