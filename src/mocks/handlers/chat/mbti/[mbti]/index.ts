@@ -1,15 +1,13 @@
-import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { HttpResponse } from 'msw';
+
+import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { MBTI_LIST } from '@_/constants/mbti';
 import customHttp from '@_/mocks/customhttp';
 import getDateByISO8601 from '@_/utils/getDateByISO8601';
 import getMbtiBit from '@_/utils/getMBTIBit';
+
 import httpAuthWrapper from '../../../auth/httpAuthWrapper';
 
-const getOrder = (() => {
-  let nowOrder = 1;
-  return () => nowOrder++;
-})();
 // let statusCode: StatusCode = 200;
 const mbtiChatMap: Map<Mbti, (MessageResponse & { isViewed: boolean })[]> =
   new Map();
@@ -39,17 +37,17 @@ export const GET = customHttp.get(
     const url = new URL(request.url);
     const params = url.searchParams;
     const list = getChatList(request.url);
-    const startOrder = Number(params.get('startOrder'));
+    const lastTimestamp = params.get('lastTimestamp') as string;
+    const lastDate = new Date(lastTimestamp);
 
-    if (isNaN(startOrder))
-      return HttpResponse.json(
-        { errorMessage: 'startOrder가 올바르지 않음음' },
-        { status: 400 },
-      );
     list.forEach((msg) => {
       msg.isViewed = true;
     });
-    const result = list.filter((msg) => msg.order > startOrder);
+
+    const result = list.filter((msg) => {
+      const targetDate = new Date(msg.time);
+      return targetDate > lastDate;
+    });
 
     return HttpResponse.json<ChatMbtiResponse>({
       data: result,
@@ -113,7 +111,6 @@ export const POST = customHttp.post(
     list.push({
       content,
       isUserChat: true,
-      order: getOrder(),
       time: timeString,
       isViewed: true,
     });
@@ -170,7 +167,6 @@ export const MOCK_TEST_POST = customHttp.post(
     list.push({
       content,
       isUserChat: false,
-      order: getOrder(),
       time: timeString,
       isViewed: false,
     });

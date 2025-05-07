@@ -48,9 +48,7 @@ const CHECK_IS_AUTHED_GET = customHttp.get(
 const EMAIL_GET = customHttp.get(HTTP_API_END_POINT.getEmail, () =>
   HttpResponse.json<GetEmailResponse>(
     {
-      data: {
-        email: 'test@test.com',
-      },
+      data: 'test@test.com',
     },
     { status: 200 },
   ),

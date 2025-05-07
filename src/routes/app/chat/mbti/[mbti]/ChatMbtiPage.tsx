@@ -57,7 +57,10 @@ export default function AppChatMbtiPage() {
       isFetching = true;
       try {
         const messageResponses = await getFetch<ChatMbtiResponseBody>(
-          HTTP_API_END_POINT.mbtiChatGet(mbti, messages.at(-1)?.order || 0),
+          HTTP_API_END_POINT.mbtiChatGet(
+            mbti,
+            messages.at(-1)?.time || '2001-05-17T13:23:53',
+          ),
         );
 
         if (messageResponses.at(-1)?.isUserChat) {
@@ -139,7 +142,7 @@ export default function AppChatMbtiPage() {
             const nowDate = getDateByISO8601(message.time);
             const isSameDay = lastDate && checkIsSameDay(nowDate, lastDate);
             return (
-              <Fragment key={message.order}>
+              <Fragment key={message.time}>
                 {!isSameDay && <ChatDayDiv timeISO={message.time} />}
                 <ChatBubble
                   content={message.content}
