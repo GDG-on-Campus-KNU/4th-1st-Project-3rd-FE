@@ -6,17 +6,19 @@ import {
   useRef,
   useState,
 } from 'react';
-import { getFetch, postFetch } from '@_/fetches/BaseFetches';
 
+import { useNavigate } from 'react-router-dom';
+
+import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
+import { getFetch, postFetch } from '@_/fetches/BaseFetches';
+import checkIsSameDay from '@_/utils/checkIsSameDay';
+import getDateByISO8601 from '@_/utils/getDateByISO8601';
+
+import styles from './ChatMbtiPage.module.css';
 import ChatBubble from './_component/ChatBubble/ChatBubble';
 import ChatDayDiv from './_component/ChatDayDiv/ChatDayDiv';
 import ChatHeader from './_component/ChatHeader/ChatHeader';
-import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import MessageTextArea from './_component/MessageTextArea/MessageTextArea';
-import checkIsSameDay from '@_/utils/checkIsSameDay';
-import getDateByISO8601 from '@_/utils/getDateByISO8601';
-import styles from './ChatMbtiPage.module.css';
-import { useNavigate } from 'react-router-dom';
 
 export default function AppChatMbtiPage() {
   const navigate = useNavigate();
@@ -49,7 +51,10 @@ export default function AppChatMbtiPage() {
       isFetching = true;
       try {
         const messageResponses = await getFetch<ChatMbtiResponseBody>(
-          HTTP_API_END_POINT.mbtiChatGet(mbti, messages.at(-1)?.order || 0),
+          HTTP_API_END_POINT.mbtiChatGet(
+            mbti,
+            messages.at(-1)?.time || '2001-05-17T13:23:53',
+          ),
         );
 
         setMessages((prev) =>
@@ -102,7 +107,7 @@ export default function AppChatMbtiPage() {
             const nowDate = getDateByISO8601(message.time);
             const isSameDay = lastDate && checkIsSameDay(nowDate, lastDate);
             return (
-              <Fragment key={message.order}>
+              <Fragment key={message.time}>
                 {!isSameDay && <ChatDayDiv timeISO={message.time} />}
                 <ChatBubble
                   content={message.content}

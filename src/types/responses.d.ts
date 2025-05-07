@@ -10,7 +10,6 @@ type ResponseInMocking<T = MessageResponse> = BaseResponse<T> & {
 
 interface MessageResponse {
   content: string;
-  order: number;
   isUserChat: boolean;
   time: string;
 }

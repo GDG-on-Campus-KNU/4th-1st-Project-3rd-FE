@@ -18,8 +18,8 @@ const HTTP_PURE_STRING_API_END_POINT = {
 } as const;
 
 const HTTP_PURE_FUNCTION_API_END_POINT = {
-  mbtiChatGet: (mbti: Mbti | '*', startOrder: number) =>
-    '/chat/mbti/' + mbti.toLowerCase() + '?' + 'startOrder=' + startOrder,
+  mbtiChatGet: (mbti: Mbti | '*', lastTimestamp: string) =>
+    '/chat/mbti/' + mbti.toLowerCase() + '?' + 'lastTimestamp=' + lastTimestamp,
   mbtiChatPost: (mbti: Mbti | '*') => '/chat/mbti/' + mbti.toLowerCase(),
   mbtiChatInit: (mbti: Mbti | '*') =>
     '/chat/mbti/' + mbti.toLowerCase() + '/init',
