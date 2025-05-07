@@ -19,11 +19,15 @@ import ChattingRoomSidebar from './_components/ChattingRoomSidebar/ChattingRoomS
 const ChatManageModalContent = ({
   mbti,
   type,
+  isLoading,
   onClose,
+  setIsLoading,
 }: {
   mbti: Mbti;
   type: 'close' | 'reset';
+  isLoading: boolean;
   onClose: () => void;
+  setIsLoading: (boolean: boolean) => void;
 }) => {
   return (
     <div>
@@ -53,20 +57,34 @@ const ChatManageModalContent = ({
         <div className={styles['button-wrapper']}>
           <Button
             onClick={async () => {
-              if (type === 'close') {
-                await deleteFetch(HTTP_API_END_POINT.mbtiChatClose(mbti));
-              } else {
-                await deleteFetch(HTTP_API_END_POINT.mbtiChatInit(mbti));
+              setIsLoading(true);
+              try {
+                if (type === 'close') {
+                  await deleteFetch(HTTP_API_END_POINT.mbtiChatClose(mbti));
+                } else {
+                  await deleteFetch(HTTP_API_END_POINT.mbtiChatInit(mbti));
+                }
+              } catch (_) {
+                setIsLoading(false);
+                alert(
+                  `${type === 'close' ? '삭제하기' : '리셋하기'}에 실패하였습니다..`,
+                );
               }
+              setIsLoading(false);
 
               onClose();
             }}
-            style={{
-              backgroundColor: '#ff321b',
-              color: '#fff',
-              border: 'none',
-            }}
+            style={
+              isLoading
+                ? {}
+                : {
+                    backgroundColor: '#ff321b',
+                    color: '#fff',
+                    border: 'none',
+                  }
+            }
             thin
+            isLoading={isLoading}
           >
             {type === 'close' ? '삭제하기' : '리셋하기'}
           </Button>
@@ -152,6 +170,7 @@ export default function AppChattingListPage() {
   const { email, resetEmail } = useEmail();
   const mainContainerRef = useRef<HTMLDivElement>(null);
   const [isLogoutSending, setIsLogoutSending] = useState(false);
+  const [isChattingModifying, setIsChattingModifying] = useState(false);
 
   useEffect(() => {
     let isFetching = false;
@@ -276,6 +295,8 @@ export default function AppChattingListPage() {
               <ChatManageModalContent
                 mbti={lastMbti}
                 type={lastType}
+                isLoading={isChattingModifying}
+                setIsLoading={setIsChattingModifying}
                 onClose={() => setIsChatManageModalOpen(false)}
               />
             </Modal>
