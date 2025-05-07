@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -93,6 +93,8 @@ export default function AppRegisterPage() {
 
   const nowStep: Step = location.state?.step || 1;
 
+  const [isRegisterSending, setIsRegisterSending] = useState(false);
+
   const handleGoBackward = useCallback(() => {
     navigate(-1);
   }, [navigate]);
@@ -106,9 +108,10 @@ export default function AppRegisterPage() {
       return;
     }
     if (nowStep === 4) {
+      setIsRegisterSending(true);
       await postFetch<RegisterRequestBody>(HTTP_API_END_POINT.register, {
         body: { email, password, mbti: mbti as Mbti },
-      });
+      }).finally(() => setIsRegisterSending(false));
       navigate(APP_END_POINT.registerSuccess);
       return;
     }
@@ -118,7 +121,8 @@ export default function AppRegisterPage() {
     });
   }, [nowStep, email, password, mbti, navigate, sendCode, location.pathname]);
 
-  const isLoading = nowStep === 1 && isEmailSending;
+  const isLoading =
+    (nowStep === 1 && isEmailSending) || (nowStep === 4 && isRegisterSending);
   return (
     <section>
       <header className={styles.header}>
@@ -173,6 +177,7 @@ export default function AppRegisterPage() {
           )}
           {nowStep === 4 && (
             <RegisterMBTIPage
+              canChange={!isRegisterSending}
               energyChar={energyChar}
               perspectiveChar={perspectiveChar}
               judgeChar={judgeChar}

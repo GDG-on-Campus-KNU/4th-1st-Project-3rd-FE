@@ -3,6 +3,7 @@ import RegisterDescription from '../../_components/RegisterDescription/RegisterD
 import styles from './RegisterMBTIPage.module.css';
 
 interface RegisterMBTIPageProps {
+  canChange: boolean;
   energyChar: 'I' | 'E' | null;
   perspectiveChar: 'N' | 'S' | null;
   judgeChar: 'F' | 'T' | null;
@@ -13,8 +14,11 @@ interface RegisterMBTIPageProps {
   changePlanningChar: (value: 'J' | 'P') => void;
 }
 
+const noop = () => {};
+
 export default function RegisterMBTIPage(props: RegisterMBTIPageProps) {
   const {
+    canChange,
     energyChar,
     perspectiveChar,
     judgeChar,
@@ -37,28 +41,28 @@ export default function RegisterMBTIPage(props: RegisterMBTIPageProps) {
           downValue="I"
           nowValue={energyChar}
           description="에너지방향"
-          onToggle={changeEnergyChar}
+          onToggle={canChange ? changeEnergyChar : noop}
         />
         <CharToggler
           upValue="S"
           downValue="N"
           nowValue={perspectiveChar}
           description="인식"
-          onToggle={changePerspectiveChar}
+          onToggle={canChange ? changePerspectiveChar : noop}
         />
         <CharToggler
           upValue="T"
           downValue="F"
           nowValue={judgeChar}
           description="판단"
-          onToggle={changeJudgeChar}
+          onToggle={canChange ? changeJudgeChar : noop}
         />
         <CharToggler
           upValue="J"
           downValue="P"
           nowValue={planningChar}
           description="계획성"
-          onToggle={changePlanningChar}
+          onToggle={canChange ? changePlanningChar : noop}
         />
       </div>
     </>
