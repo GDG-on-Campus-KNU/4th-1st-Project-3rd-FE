@@ -134,6 +134,7 @@ export default function AppChatMbtiPage() {
   // TODO: POST가 바로 응답오면 이거 없앨 것,
   useLayoutEffect(() => {
     setSendingPhase('complete');
+    setSendingMessage(null);
   }, [messages]);
 
   return (
