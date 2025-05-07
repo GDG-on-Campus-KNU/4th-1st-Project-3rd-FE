@@ -14,6 +14,7 @@ import useEmail from '@_/hooks/useEmail';
 
 import styles from './AppChattingListPage.module.css';
 import ChattingList from './_components/ChattingList/ChattingList';
+import ChattingListSkeleton from './_components/ChattingListSkeleton/ChattingListSkeleton';
 import ChattingRoomSidebar from './_components/ChattingRoomSidebar/ChattingRoomSidebar';
 
 const ChatManageModalContent = ({
@@ -165,7 +166,7 @@ const getSideBarStyle = (isMoved: boolean, isOpen: boolean) => {
 
 export default function AppChattingListPage() {
   const [chattingList, setChattingList] = useState<ChattingPreview[]>([]);
-  const [isLoading, setIsFirstLoading] = useState(true);
+  const [isFirstLoading, setIsFirstLoading] = useState(true);
   const intervalId = useRef<ReturnType<typeof setInterval>>(undefined);
   const navigate = useNavigate();
   const [lastMbti, setLastMbti] = useState<Mbti | null>(null);
@@ -266,7 +267,7 @@ export default function AppChattingListPage() {
               </p>
               <SolidPlusSVG className={styles['plus-icon']} />
             </button>
-            {!isLoading && chattingList.length === 0 && (
+            {!isFirstLoading && chattingList.length === 0 && (
               <div className={styles['empty-container']}>
                 <div className={styles['sona-container']}>
                   <div className={styles.blur} />
@@ -279,7 +280,8 @@ export default function AppChattingListPage() {
                 </p>
               </div>
             )}
-            {!isLoading && chattingList.length > 0 && (
+            {isFirstLoading && <ChattingListSkeleton />}
+            {!isFirstLoading && chattingList.length > 0 && (
               <ChattingList
                 chattingPreviews={chattingList}
                 onChattingRoomClick={(mbti) =>
