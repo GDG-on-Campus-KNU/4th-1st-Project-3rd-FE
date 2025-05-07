@@ -1,0 +1,112 @@
+.dot-container {
+  display        : flex;
+  gap            : 2.4px;
+  align-items    : center;
+  justify-content: center;
+
+  width : 60px;
+  height: 30px;
+}
+
+.dot {
+  will-change  : transform;
+  position     : relative;
+  border-radius: 100%;
+
+}
+
+
+.left {
+  animation: dot-animation-left 540ms infinite linear;
+
+}
+
+.middle {
+  animation: dot-animation-center 540ms infinite linear;
+
+}
+
+.right {
+  animation: dot-animation-right 540ms infinite linear;
+
+}
+
+@keyframes dot-animation-left {
+  0% {
+    top: 0;
+  }
+
+  16% {
+    top: 0;
+  }
+
+  33% {
+    top: 0;
+  }
+
+  50% {
+    top: 10%;
+  }
+
+  66% {
+    top: 0;
+  }
+
+
+  84% {
+    top: -10%;
+  }
+
+  100% {
+    top: 0;
+  }
+
+}
+
+@keyframes dot-animation-center {
+  0% {
+    top: 0;
+  }
+
+  16% {
+    top: 0;
+  }
+
+  32% {
+    top: 10%;
+  }
+
+  50% {
+    top: 0%;
+  }
+
+  66% {
+    top: -10%;
+  }
+
+  84% {
+    top: 0;
+  }
+}
+
+@keyframes dot-animation-right {
+  0% {
+    top: 0;
+  }
+
+  16% {
+    top: 10%;
+  }
+
+  32% {
+    top: 0%
+  }
+
+  50% {
+    top: -10%;
+  }
+
+  66% {
+    top: 0;
+  }
+}

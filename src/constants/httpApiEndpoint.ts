@@ -19,12 +19,10 @@ const HTTP_PURE_STRING_API_END_POINT = {
 
 const HTTP_PURE_FUNCTION_API_END_POINT = {
   mbtiChatGet: (mbti: Mbti | '*', lastTimestamp: string) =>
-    '/chat/mbti/' + mbti.toLowerCase() + '?' + 'lastTimestamp=' + lastTimestamp,
-  mbtiChatPost: (mbti: Mbti | '*') => '/chat/mbti/' + mbti.toLowerCase(),
-  mbtiChatInit: (mbti: Mbti | '*') =>
-    '/chat/mbti/' + mbti.toLowerCase() + '/init',
-  mbtiChatClose: (mbti: Mbti | '*') =>
-    '/chat/mbti/' + mbti.toLowerCase() + '/close',
+    '/chat/mbti/' + mbti + '?' + 'lastTimestamp=' + lastTimestamp,
+  mbtiChatPost: (mbti: Mbti | '*') => '/chat/mbti/' + mbti,
+  mbtiChatInit: (mbti: Mbti | '*') => '/chat/mbti/' + mbti + '/init',
+  mbtiChatClose: (mbti: Mbti | '*') => '/chat/mbti/' + mbti + '/close',
   mockMbtiChat: (mbti: Mbti | '*') => '/mock/chat/mbti/' + mbti.toLowerCase(),
 } as const;
 
