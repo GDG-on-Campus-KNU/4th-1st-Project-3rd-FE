@@ -56,6 +56,7 @@ export default function AppRegisterPage() {
     code,
     leftCnt,
     hasEmailError,
+    isEmailSending,
     leftSecond,
     isVerified,
     hasCodeError,
@@ -116,6 +117,7 @@ export default function AppRegisterPage() {
     });
   }, [nowStep, email, password, mbti, navigate, sendCode, location.pathname]);
 
+  const isLoading = nowStep === 1 && isEmailSending;
   return (
     <section>
       <header className={styles.header}>
@@ -137,6 +139,7 @@ export default function AppRegisterPage() {
               email={email}
               hasEmailError={hasEmailError}
               onEmailChange={handleChangeEmail}
+              isEmailSending={isEmailSending}
             />
           )}
           {nowStep === 2 && (
@@ -182,6 +185,7 @@ export default function AppRegisterPage() {
 
         <Button
           className={styles.button}
+          isLoading={isLoading}
           isValid={
             !checkIsButtonDisabled({
               step: nowStep,

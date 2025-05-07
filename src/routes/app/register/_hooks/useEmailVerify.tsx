@@ -27,6 +27,7 @@ const getCodeErrorMessage = (
 
 export default function useEmailVerify() {
   const [email, setEmail] = useState('');
+  const [isEmailSending, setIsEmailSending] = useState(false);
   const [hasEmailError, setHasEmailError] = useState(false);
   const [isValidCode, setIsValidCode] = useState(false);
 
@@ -64,12 +65,15 @@ export default function useEmailVerify() {
   }, [isValidCode, leftSecond]);
 
   const sendCode = useCallback(async () => {
+    setIsEmailSending(true);
     try {
       await postFetch(HTTP_API_END_POINT.sendEmailCode, { body: { email } });
     } catch (_: unknown) {
       setHasEmailError(true);
+      setIsEmailSending(false);
       return;
     }
+    setIsEmailSending(false);
     setHasEmailError(false);
     setIsValidCode(true);
     setLeftCnt(LEFT_COUNT_INIT);
@@ -113,6 +117,7 @@ export default function useEmailVerify() {
     leftCnt,
     leftSecond,
     hasEmailError,
+    isEmailSending,
     isVerified,
     hasCodeError,
     codeErrorMessage,
