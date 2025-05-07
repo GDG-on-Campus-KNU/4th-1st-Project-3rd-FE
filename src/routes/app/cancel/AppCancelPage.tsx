@@ -8,7 +8,7 @@ import SonaWithBlur from '@_/components/common/SonaWithBlur/SonaWithBlur';
 import SolidArrowHeadSVG from '@_/components/common/svgs/SolidArrowHeadSVG';
 import APP_END_POINT from '@_/constants/appEndpoint';
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
-import { postFetch } from '@_/fetches/BaseFetches';
+import { deleteFetch } from '@_/fetches/BaseFetches';
 import useEmail from '@_/hooks/useEmail';
 
 import styles from './AppCancelPage.module.css';
@@ -21,7 +21,7 @@ export default function AppCancelPage() {
   const canCancel = email === typedEmail;
 
   const handleCancel = useCallback(async () => {
-    await postFetch(HTTP_API_END_POINT.cancelAccount);
+    await deleteFetch(HTTP_API_END_POINT.cancelAccount);
     resetEmail();
     navigate(APP_END_POINT.main);
   }, [navigate, resetEmail]);
