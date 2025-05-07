@@ -10,6 +10,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 import WaitingDot from '@_/components/common/WaitingDot/WaitingDot';
+import APP_END_POINT from '@_/constants/appEndpoint';
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { getFetch, postFetch } from '@_/fetches/BaseFetches';
 import checkIsSameDay from '@_/utils/checkIsSameDay';
@@ -134,13 +135,14 @@ export default function AppChatMbtiPage() {
   // TODO: POST가 바로 응답오면 이거 없앨 것,
   useLayoutEffect(() => {
     setSendingPhase('complete');
+    setSendingMessage(null);
   }, [messages]);
 
   return (
     <>
       <ChatHeader
         mbti={mbti}
-        onMenuClick={() => navigate(-1)}
+        onMenuClick={() => navigate(APP_END_POINT.chattingList)}
         ref={headerRef}
       />
       <div className={styles['under-header']}>

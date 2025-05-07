@@ -14,16 +14,23 @@ import useEmail from '@_/hooks/useEmail';
 
 import styles from './AppChattingListPage.module.css';
 import ChattingList from './_components/ChattingList/ChattingList';
+import ChattingListSkeleton from './_components/ChattingListSkeleton/ChattingListSkeleton';
 import ChattingRoomSidebar from './_components/ChattingRoomSidebar/ChattingRoomSidebar';
 
 const ChatManageModalContent = ({
   mbti,
   type,
+  isLoading,
   onClose,
+  afterModify,
+  setIsLoading,
 }: {
   mbti: Mbti;
   type: 'close' | 'reset';
+  isLoading: boolean;
   onClose: () => void;
+  afterModify: { current: (() => void) | undefined };
+  setIsLoading: (boolean: boolean) => void;
 }) => {
   return (
     <div>
@@ -40,12 +47,17 @@ const ChatManageModalContent = ({
         <div className={styles['button-wrapper']}>
           <Button
             onClick={onClose}
-            style={{
-              backgroundColor: '#dedede',
-              color: '#fff',
-              border: 'none',
-            }}
+            style={
+              isLoading
+                ? {}
+                : {
+                    backgroundColor: '#dedede',
+                    color: '#fff',
+                    border: 'none',
+                  }
+            }
             thin
+            isLoading={isLoading}
           >
             그만두기
           </Button>
@@ -53,20 +65,34 @@ const ChatManageModalContent = ({
         <div className={styles['button-wrapper']}>
           <Button
             onClick={async () => {
-              if (type === 'close') {
-                await deleteFetch(HTTP_API_END_POINT.mbtiChatClose(mbti));
-              } else {
-                await deleteFetch(HTTP_API_END_POINT.mbtiChatInit(mbti));
+              setIsLoading(true);
+              try {
+                if (type === 'close') {
+                  await deleteFetch(HTTP_API_END_POINT.mbtiChatClose(mbti));
+                } else {
+                  await deleteFetch(HTTP_API_END_POINT.mbtiChatInit(mbti));
+                }
+              } catch (_) {
+                setIsLoading(false);
+                alert(
+                  `${type === 'close' ? '삭제하기' : '리셋하기'}에 실패하였습니다..`,
+                );
               }
-
+              setIsLoading(false);
+              afterModify.current?.();
               onClose();
             }}
-            style={{
-              backgroundColor: '#ff321b',
-              color: '#fff',
-              border: 'none',
-            }}
+            style={
+              isLoading
+                ? {}
+                : {
+                    backgroundColor: '#ff321b',
+                    color: '#fff',
+                    border: 'none',
+                  }
+            }
             thin
+            isLoading={isLoading}
           >
             {type === 'close' ? '삭제하기' : '리셋하기'}
           </Button>
@@ -79,9 +105,11 @@ const ChatManageModalContent = ({
 const LogoutModalContent = ({
   onClose,
   onLogout,
+  isLoading,
 }: {
   onClose: () => void;
   onLogout: () => void;
+  isLoading: boolean;
 }) => {
   return (
     <div>
@@ -91,12 +119,17 @@ const LogoutModalContent = ({
         <div className={styles['button-wrapper']}>
           <Button
             onClick={onClose}
-            style={{
-              backgroundColor: '#dedede',
-              color: '#fff',
-              border: 'none',
-            }}
+            style={
+              isLoading
+                ? {}
+                : {
+                    backgroundColor: '#dedede',
+                    color: '#fff',
+                    border: 'none',
+                  }
+            }
             className={styles.button}
+            isLoading={isLoading}
             thin
           >
             뒤로가기
@@ -105,11 +138,16 @@ const LogoutModalContent = ({
         <div className={styles['button-wrapper']}>
           <Button
             onClick={onLogout}
-            style={{
-              backgroundColor: '#ff321b',
-              color: '#fff',
-              border: 'none',
-            }}
+            style={
+              isLoading
+                ? {}
+                : {
+                    backgroundColor: '#ff321b',
+                    color: '#fff',
+                    border: 'none',
+                  }
+            }
+            isLoading={isLoading}
             thin
           >
             로그아웃
@@ -128,7 +166,7 @@ const getSideBarStyle = (isMoved: boolean, isOpen: boolean) => {
 
 export default function AppChattingListPage() {
   const [chattingList, setChattingList] = useState<ChattingPreview[]>([]);
-  const [isLoading, setIsFirstLoading] = useState(true);
+  const [isFirstLoading, setIsFirstLoading] = useState(true);
   const intervalId = useRef<ReturnType<typeof setInterval>>(undefined);
   const navigate = useNavigate();
   const [lastMbti, setLastMbti] = useState<Mbti | null>(null);
@@ -139,6 +177,9 @@ export default function AppChattingListPage() {
   const [isSidebarMoved, setIsSidebarMoved] = useState(false);
   const { email, resetEmail } = useEmail();
   const mainContainerRef = useRef<HTMLDivElement>(null);
+  const [isLogoutSending, setIsLogoutSending] = useState(false);
+  const [isChattingModifying, setIsChattingModifying] = useState(false);
+  const afterModifyFn = useRef<undefined | (() => void)>(undefined);
 
   useEffect(() => {
     let isFetching = false;
@@ -179,7 +220,15 @@ export default function AppChattingListPage() {
   }, []);
 
   const handleLogout = useCallback(async () => {
-    await postFetch(HTTP_API_END_POINT.logout);
+    setIsLogoutSending(true);
+    try {
+      await postFetch(HTTP_API_END_POINT.logout);
+    } catch (_) {
+      setIsLogoutSending(false);
+      alert('로그아웃에 실패했습니다. 다시 시도해주세요');
+      return;
+    }
+    setIsLogoutSending(false);
     resetEmail();
     setIsLogoutModalOpen(false);
     navigate(APP_END_POINT.main);
@@ -218,7 +267,7 @@ export default function AppChattingListPage() {
               </p>
               <SolidPlusSVG className={styles['plus-icon']} />
             </button>
-            {!isLoading && chattingList.length === 0 && (
+            {!isFirstLoading && chattingList.length === 0 && (
               <div className={styles['empty-container']}>
                 <div className={styles['sona-container']}>
                   <div className={styles.blur} />
@@ -231,20 +280,23 @@ export default function AppChattingListPage() {
                 </p>
               </div>
             )}
-            {!isLoading && chattingList.length > 0 && (
+            {isFirstLoading && <ChattingListSkeleton />}
+            {!isFirstLoading && chattingList.length > 0 && (
               <ChattingList
                 chattingPreviews={chattingList}
                 onChattingRoomClick={(mbti) =>
                   navigate(APP_END_POINT.chatMbti(mbti))
                 }
-                initChat={(mbti) => {
+                initChat={(mbti, onClose) => {
                   setLastMbti(mbti);
                   setLastType('reset');
                   setIsChatManageModalOpen(true);
+                  afterModifyFn.current = onClose;
                 }}
-                deleteChat={(mbti) => {
+                deleteChat={(mbti, onClose) => {
                   setLastMbti(mbti);
                   setLastType('close');
+                  afterModifyFn.current = onClose;
                   setIsChatManageModalOpen(true);
                 }}
               />
@@ -255,6 +307,9 @@ export default function AppChattingListPage() {
               <ChatManageModalContent
                 mbti={lastMbti}
                 type={lastType}
+                isLoading={isChattingModifying}
+                setIsLoading={setIsChattingModifying}
+                afterModify={afterModifyFn}
                 onClose={() => setIsChatManageModalOpen(false)}
               />
             </Modal>
@@ -267,6 +322,7 @@ export default function AppChattingListPage() {
           dimmerColor="transparent"
         >
           <LogoutModalContent
+            isLoading={isLogoutSending}
             onClose={() => setIsLogoutModalOpen(false)}
             onLogout={handleLogout}
           />

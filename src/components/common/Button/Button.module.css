@@ -29,7 +29,6 @@
 }
 
 .loading {
-  border          : 1px solid #4849e833;
-  background-color: #8d8deb;
-
+  border          : none;
+  background-color: #bebebe;
 }

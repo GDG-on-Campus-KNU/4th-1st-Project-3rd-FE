@@ -8,12 +8,14 @@ import styles from './RegisterEmailPage.module.css';
 interface EmailPageProps {
   email: string;
   hasEmailError: boolean;
+  isEmailSending: boolean;
   onEmailChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function RegisterEmailPage({
   email,
   hasEmailError,
+  isEmailSending,
   onEmailChange,
 }: EmailPageProps) {
   return (
@@ -28,6 +30,7 @@ export default function RegisterEmailPage({
         isError={hasEmailError}
         onChange={onEmailChange}
         placeholder="이메일"
+        isLoading={isEmailSending}
       />
       <span className={styles['error-message']}>
         {hasEmailError && '이메일 형식이 맞지 않습니다'}

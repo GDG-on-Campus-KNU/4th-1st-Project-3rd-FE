@@ -27,11 +27,13 @@ const getCodeErrorMessage = (
 
 export default function useEmailVerify() {
   const [email, setEmail] = useState('');
+  const [isEmailSending, setIsEmailSending] = useState(false);
   const [hasEmailError, setHasEmailError] = useState(false);
   const [isValidCode, setIsValidCode] = useState(false);
 
   const [isVerified, setIsVerified] = useState(false);
   const [code, setCode] = useState<string>('');
+  const [isCodeSending, setIsCodeSending] = useState(false);
   const [canVerifyCode, setCanVerifyCode] = useState(false);
   const [leftSecond, setLeftSecond] = useState(0);
   const [leftCnt, setLeftCnt] = useState(LEFT_COUNT_INIT);
@@ -64,12 +66,15 @@ export default function useEmailVerify() {
   }, [isValidCode, leftSecond]);
 
   const sendCode = useCallback(async () => {
+    setIsEmailSending(true);
     try {
       await postFetch(HTTP_API_END_POINT.sendEmailCode, { body: { email } });
     } catch (_: unknown) {
       setHasEmailError(true);
+      setIsEmailSending(false);
       return;
     }
+    setIsEmailSending(false);
     setHasEmailError(false);
     setIsValidCode(true);
     setLeftCnt(LEFT_COUNT_INIT);
@@ -82,6 +87,7 @@ export default function useEmailVerify() {
     if (leftSecond <= 0) return;
     if (leftCnt <= 0) return;
     if (code.length !== 4) return;
+    setIsCodeSending(true);
     try {
       setCanVerifyCode(false);
       await postFetch<verifyEmailRequestBody>(HTTP_API_END_POINT.verifyEmail, {
@@ -89,9 +95,11 @@ export default function useEmailVerify() {
       });
     } catch (_: unknown) {
       if (leftCnt) setLeftCnt(leftCnt - 1);
+      setIsCodeSending(false);
       setCanVerifyCode(true);
       return;
     }
+    setIsCodeSending(false);
     setIsVerified(true);
     setHasEmailError(false);
   }, [canVerifyCode, leftSecond, code, leftCnt, email]);
@@ -113,6 +121,8 @@ export default function useEmailVerify() {
     leftCnt,
     leftSecond,
     hasEmailError,
+    isEmailSending,
+    isCodeSending,
     isVerified,
     hasCodeError,
     codeErrorMessage,

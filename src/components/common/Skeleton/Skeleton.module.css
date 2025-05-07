@@ -1,0 +1,19 @@
+.skeleton {
+  border-radius: 4px;
+  background   : #e0e0e0;
+  animation    : pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: #e0e0e0;
+  }
+
+  50% {
+    background-color: #f0f0f0;
+  }
+
+  100% {
+    background-color: #e0e0e0;
+  }
+}

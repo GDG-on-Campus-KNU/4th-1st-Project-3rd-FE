@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -56,6 +56,8 @@ export default function AppRegisterPage() {
     code,
     leftCnt,
     hasEmailError,
+    isEmailSending,
+    isCodeSending,
     leftSecond,
     isVerified,
     hasCodeError,
@@ -91,6 +93,8 @@ export default function AppRegisterPage() {
 
   const nowStep: Step = location.state?.step || 1;
 
+  const [isRegisterSending, setIsRegisterSending] = useState(false);
+
   const handleGoBackward = useCallback(() => {
     navigate(-1);
   }, [navigate]);
@@ -104,9 +108,10 @@ export default function AppRegisterPage() {
       return;
     }
     if (nowStep === 4) {
+      setIsRegisterSending(true);
       await postFetch<RegisterRequestBody>(HTTP_API_END_POINT.register, {
         body: { email, password, mbti: mbti as Mbti },
-      });
+      }).finally(() => setIsRegisterSending(false));
       navigate(APP_END_POINT.registerSuccess);
       return;
     }
@@ -116,6 +121,8 @@ export default function AppRegisterPage() {
     });
   }, [nowStep, email, password, mbti, navigate, sendCode, location.pathname]);
 
+  const isLoading =
+    (nowStep === 1 && isEmailSending) || (nowStep === 4 && isRegisterSending);
   return (
     <section>
       <header className={styles.header}>
@@ -137,6 +144,7 @@ export default function AppRegisterPage() {
               email={email}
               hasEmailError={hasEmailError}
               onEmailChange={handleChangeEmail}
+              isEmailSending={isEmailSending}
             />
           )}
           {nowStep === 2 && (
@@ -149,6 +157,7 @@ export default function AppRegisterPage() {
               codeErrorMessage={codeErrorMessage}
               leftSecond={leftSecond}
               isVerified={isVerified}
+              isCodeSending={isCodeSending}
               verify={verifyCode}
               resend={sendCode}
               onCodeChange={handleChangeCode}
@@ -168,6 +177,7 @@ export default function AppRegisterPage() {
           )}
           {nowStep === 4 && (
             <RegisterMBTIPage
+              canChange={!isRegisterSending}
               energyChar={energyChar}
               perspectiveChar={perspectiveChar}
               judgeChar={judgeChar}
@@ -182,6 +192,7 @@ export default function AppRegisterPage() {
 
         <Button
           className={styles.button}
+          isLoading={isLoading}
           isValid={
             !checkIsButtonDisabled({
               step: nowStep,

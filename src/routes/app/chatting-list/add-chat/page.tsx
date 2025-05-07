@@ -11,6 +11,7 @@ import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { postFetch } from '@_/fetches/BaseFetches';
 
 import MbtiList from './_components/MbtiList/MbtiList';
+import MbtiListSkeleton from './_components/MbtiListSkeleton/MBTIListSkeleton';
 import useClosedMbti from './_hooks/useClosedMbti';
 import styles from './page.module.css';
 
@@ -22,6 +23,7 @@ const ModalContent = ({
   onClose: () => void;
 }) => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   return (
     <div>
       <p className={styles['modal-title']}>{mbti} 채팅방을 추가할까요?</p>
@@ -32,11 +34,16 @@ const ModalContent = ({
         <div className={styles['button-wrapper']}>
           <Button
             onClick={onClose}
-            style={{
-              backgroundColor: '#dedede',
-              color: '#fff',
-              border: 'none',
-            }}
+            style={
+              isLoading
+                ? {}
+                : {
+                    backgroundColor: '#dedede',
+                    color: '#fff',
+                    border: 'none',
+                  }
+            }
+            isLoading={isLoading}
             thin
           >
             그만두기
@@ -45,16 +52,28 @@ const ModalContent = ({
         <div className={styles['button-wrapper']}>
           <Button
             onClick={async () => {
-              await postFetch<ChatMbtiOpenPostRequestBody>(
-                HTTP_API_END_POINT.mbtiChatOpenPost,
-                { body: { mbti } },
-              );
+              setIsLoading(true);
+              try {
+                await postFetch<ChatMbtiOpenPostRequestBody>(
+                  HTTP_API_END_POINT.mbtiChatOpenPost,
+                  { body: { mbti } },
+                );
+              } catch (_) {
+                alert('채팅방 추가에 실패하였습니다.');
+                setIsLoading(false);
+              }
+              setIsLoading(false);
               navigate(APP_END_POINT.chatMbti(mbti));
               onClose();
             }}
-            style={{
-              border: 'none',
-            }}
+            style={
+              isLoading
+                ? {}
+                : {
+                    border: 'none',
+                  }
+            }
+            isLoading={isLoading}
             thin
           >
             추가하기
@@ -99,6 +118,7 @@ export default function AppAddChatPage() {
             </p>
           </div>
         )}
+        {closedMbti === null && <MbtiListSkeleton />}
       </section>
       {isModalOpen && selectedMbti && (
         <Modal onClose={() => setIsModalOpen(false)}>
