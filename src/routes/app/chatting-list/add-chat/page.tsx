@@ -11,6 +11,7 @@ import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { postFetch } from '@_/fetches/BaseFetches';
 
 import MbtiList from './_components/MbtiList/MbtiList';
+import MbtiListSkeleton from './_components/MbtiListSkeleton/MBTIListSkeleton';
 import useClosedMbti from './_hooks/useClosedMbti';
 import styles from './page.module.css';
 
@@ -117,6 +118,7 @@ export default function AppAddChatPage() {
             </p>
           </div>
         )}
+        {closedMbti === null && <MbtiListSkeleton />}
       </section>
       {isModalOpen && selectedMbti && (
         <Modal onClose={() => setIsModalOpen(false)}>
