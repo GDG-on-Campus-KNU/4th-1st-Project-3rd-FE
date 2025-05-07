@@ -28,9 +28,9 @@ const getEmail = () => {
 };
 
 const fetchEmail = async () => {
-  const { email } = await getFetch<GetEmailResponseBody>(
+  const email = await getFetch<GetEmailResponseBody>(
     HTTP_API_END_POINT.getEmail,
-  ).catch(() => ({ email: null }));
+  ).catch(() => null);
   return email;
 };
 

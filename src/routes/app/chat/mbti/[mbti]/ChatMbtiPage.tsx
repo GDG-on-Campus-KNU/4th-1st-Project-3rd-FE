@@ -56,8 +56,16 @@ export default function AppChatMbtiPage() {
       if (isFetching) return;
       isFetching = true;
       try {
+        const offset = 9;
+        const lastMs = +new Date(messages.at(-1)?.time || 0);
+        const nowMs = lastMs + 1000 + offset * 60 * 60 * 1000;
+        const targetDate = new Date(nowMs);
+
         const messageResponses = await getFetch<ChatMbtiResponseBody>(
-          HTTP_API_END_POINT.mbtiChatGet(mbti, messages.at(-1)?.order || 0),
+          HTTP_API_END_POINT.mbtiChatGet(
+            mbti,
+            targetDate.toISOString().slice(0, -5),
+          ),
         );
 
         if (messageResponses.at(-1)?.isUserChat) {
@@ -94,7 +102,7 @@ export default function AppChatMbtiPage() {
 
   useLayoutEffect(() => {
     endRef.current?.scrollIntoView();
-  }, [messages, isShownWaitingDot]);
+  }, [messages, isShownWaitingDot, sendingMessage]);
 
   const handleSubmit = useCallback(
     async (value: string) => {
@@ -122,6 +130,12 @@ export default function AppChatMbtiPage() {
   //     handleSubmit('123123');
   //   }
   // }, []);
+
+  // TODO: POST가 바로 응답오면 이거 없앨 것,
+  useLayoutEffect(() => {
+    setSendingPhase('complete');
+  }, [messages]);
+
   return (
     <>
       <ChatHeader
@@ -139,7 +153,7 @@ export default function AppChatMbtiPage() {
             const nowDate = getDateByISO8601(message.time);
             const isSameDay = lastDate && checkIsSameDay(nowDate, lastDate);
             return (
-              <Fragment key={message.order}>
+              <Fragment key={message.time + message.isUserChat}>
                 {!isSameDay && <ChatDayDiv timeISO={message.time} />}
                 <ChatBubble
                   content={message.content}

@@ -10,7 +10,6 @@ type ResponseInMocking<T = MessageResponse> = BaseResponse<T> & {
 
 interface MessageResponse {
   content: string;
-  order: number;
   isUserChat: boolean;
   time: string;
 }
@@ -30,9 +29,8 @@ type ChatMbtiOpenGetResponse = BaseResponse<ChatMbtiOpenGetResponseBody>;
 type CheckIsAuthedBody = { isAuthed: boolean };
 type CheckIsAuthedResponse = BaseResponse<CheckIsAuthedBody>;
 
-interface GetEmailResponseBody {
-  email: string;
-}
+type GetEmailResponseBody = string;
+
 type GetEmailResponse = BaseResponse<GetEmailResponseBody>;
 
 type EmptyResponse = Record<string, never>;
