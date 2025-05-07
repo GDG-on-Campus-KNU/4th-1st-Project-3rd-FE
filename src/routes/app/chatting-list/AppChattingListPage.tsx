@@ -44,12 +44,17 @@ const ChatManageModalContent = ({
         <div className={styles['button-wrapper']}>
           <Button
             onClick={onClose}
-            style={{
-              backgroundColor: '#dedede',
-              color: '#fff',
-              border: 'none',
-            }}
+            style={
+              isLoading
+                ? {}
+                : {
+                    backgroundColor: '#dedede',
+                    color: '#fff',
+                    border: 'none',
+                  }
+            }
             thin
+            isLoading={isLoading}
           >
             그만두기
           </Button>
