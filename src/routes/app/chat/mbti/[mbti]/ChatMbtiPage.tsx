@@ -112,7 +112,11 @@ export default function AppChatMbtiPage() {
       postFetch<ChatMbtiRequestBody>(HTTP_API_END_POINT.mbtiChatPost(mbti), {
         body: { content: value },
       })
-        .then(() => setSendingPhase('wait-update'))
+        .then(() =>
+          setSendingPhase((prev) =>
+            prev === 'complete' ? prev : 'wait-update',
+          ),
+        )
         .catch(() => {
           alert('메세지 발신에 실패하였습니다..');
 
@@ -137,6 +141,7 @@ export default function AppChatMbtiPage() {
     setSendingPhase('complete');
     setSendingMessage(null);
   }, [messages]);
+  console.log(sendingPhase);
 
   return (
     <>
