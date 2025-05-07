@@ -16,12 +16,20 @@ import styles from './AppCancelPage.module.css';
 export default function AppCancelPage() {
   const { email, resetEmail } = useEmail();
   const [typedEmail, setTypedEmail] = useState('');
+  const [isCancelSending, setIsCancelSending] = useState(false);
   const navigate = useNavigate();
 
   const canCancel = email === typedEmail;
 
   const handleCancel = useCallback(async () => {
-    await deleteFetch(HTTP_API_END_POINT.cancelAccount);
+    setIsCancelSending(true);
+    try {
+      await deleteFetch(HTTP_API_END_POINT.cancelAccount);
+    } catch (_) {
+      setIsCancelSending(false);
+      return;
+    }
+    setIsCancelSending(false);
     resetEmail();
     navigate(APP_END_POINT.main);
   }, [navigate, resetEmail]);
@@ -57,16 +65,24 @@ export default function AppCancelPage() {
         />
         <div className={styles['button-container']}>
           <Button
-            className={styles['grey-button']}
+            className={isCancelSending ? '' : styles['grey-button']}
             onClick={() => navigate(APP_END_POINT.chattingList)}
             thin
+            isLoading={isCancelSending}
           >
             취소
           </Button>
           <Button
             isValid={canCancel}
-            className={canCancel ? styles.red : styles['grey-button']}
+            className={
+              isCancelSending
+                ? ''
+                : canCancel
+                  ? styles.red
+                  : styles['grey-button']
+            }
             onClick={handleCancel}
+            isLoading={isCancelSending}
             thin
           >
             회원탈퇴
