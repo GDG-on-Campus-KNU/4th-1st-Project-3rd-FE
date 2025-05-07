@@ -79,9 +79,11 @@ const ChatManageModalContent = ({
 const LogoutModalContent = ({
   onClose,
   onLogout,
+  isLoading,
 }: {
   onClose: () => void;
   onLogout: () => void;
+  isLoading: boolean;
 }) => {
   return (
     <div>
@@ -91,12 +93,17 @@ const LogoutModalContent = ({
         <div className={styles['button-wrapper']}>
           <Button
             onClick={onClose}
-            style={{
-              backgroundColor: '#dedede',
-              color: '#fff',
-              border: 'none',
-            }}
+            style={
+              isLoading
+                ? {}
+                : {
+                    backgroundColor: '#dedede',
+                    color: '#fff',
+                    border: 'none',
+                  }
+            }
             className={styles.button}
+            isLoading={isLoading}
             thin
           >
             뒤로가기
@@ -105,11 +112,16 @@ const LogoutModalContent = ({
         <div className={styles['button-wrapper']}>
           <Button
             onClick={onLogout}
-            style={{
-              backgroundColor: '#ff321b',
-              color: '#fff',
-              border: 'none',
-            }}
+            style={
+              isLoading
+                ? {}
+                : {
+                    backgroundColor: '#ff321b',
+                    color: '#fff',
+                    border: 'none',
+                  }
+            }
+            isLoading={isLoading}
             thin
           >
             로그아웃
@@ -139,6 +151,7 @@ export default function AppChattingListPage() {
   const [isSidebarMoved, setIsSidebarMoved] = useState(false);
   const { email, resetEmail } = useEmail();
   const mainContainerRef = useRef<HTMLDivElement>(null);
+  const [isLogoutSending, setIsLogoutSending] = useState(false);
 
   useEffect(() => {
     let isFetching = false;
@@ -179,7 +192,15 @@ export default function AppChattingListPage() {
   }, []);
 
   const handleLogout = useCallback(async () => {
-    await postFetch(HTTP_API_END_POINT.logout);
+    setIsLogoutSending(true);
+    try {
+      await postFetch(HTTP_API_END_POINT.logout);
+    } catch (_) {
+      setIsLogoutSending(false);
+      alert('로그아웃에 실패했습니다. 다시 시도해주세요');
+      return;
+    }
+    setIsLogoutSending(false);
     resetEmail();
     setIsLogoutModalOpen(false);
     navigate(APP_END_POINT.main);
@@ -267,6 +288,7 @@ export default function AppChattingListPage() {
           dimmerColor="transparent"
         >
           <LogoutModalContent
+            isLoading={isLogoutSending}
             onClose={() => setIsLogoutModalOpen(false)}
             onLogout={handleLogout}
           />
