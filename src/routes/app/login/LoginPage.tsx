@@ -1,31 +1,37 @@
+import { useState } from 'react';
+
 import { Link, useNavigate } from 'react-router-dom';
 
-import APP_END_POINT from '@_/constants/appEndpoint';
 import Button from '@_/components/common/Button/Button';
 import ControlledInput from '@_/components/common/Input/ControlledInput';
+import APP_END_POINT from '@_/constants/appEndpoint';
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { postFetch } from '@_/fetches/BaseFetches';
-import styles from './LoginPage.module.css';
 import useNonLoginPage from '@_/hooks/useNonLoginPage';
-import { useState } from 'react';
+
+import styles from './LoginPage.module.css';
 
 export default function AppLoginPage() {
   useNonLoginPage();
   const [email, setEmail] = useState('');
   const [password, setPassWord] = useState('');
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
+  const [isLoginSending, setIsLoginSending] = useState(false);
   const navigate = useNavigate();
+
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
+    setIsLoginSending(true);
     try {
       await postFetch<LoginRequestBody>(HTTP_API_END_POINT.login, {
         body: { email, password },
       });
     } catch (_: unknown) {
+      setIsLoginSending(false);
       setErrorMessage('아이디 혹은 비밀번호가 틀렸습니다');
       return;
     }
+    setIsLoginSending(false);
     navigate(APP_END_POINT.chattingList);
   };
 
@@ -42,6 +48,7 @@ export default function AppLoginPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           isError={!!errorMessage}
+          isLoading={isLoginSending}
         />
         <div className={styles['id-input']} />
         <ControlledInput
@@ -51,9 +58,14 @@ export default function AppLoginPage() {
           value={password}
           onChange={(e) => setPassWord(e.target.value)}
           isError={!!errorMessage}
+          isLoading={isLoginSending}
         />
-        <div className={styles['error-message']}>{errorMessage}</div>
-        <Button className={styles['login-button']}>로그인</Button>
+        <div className={styles['error-message']}>
+          {!isLoginSending && errorMessage}
+        </div>
+        <Button className={styles['login-button']} isLoading={isLoginSending}>
+          로그인
+        </Button>
       </form>
       <div className={styles['register-span']}>
         PERSONA가 처음이에요.{' '}
