@@ -4,8 +4,8 @@ import { ChattingRoomItem } from '../ChattingRoomItem/ChattingRoomItem';
 
 interface ChattingListProps {
   chattingPreviews: ChattingPreview[];
-  initChat: (mbti: Mbti) => void;
-  deleteChat: (mbti: Mbti) => void;
+  initChat: (mbti: Mbti, onClose?: () => void) => void;
+  deleteChat: (mbti: Mbti, onClose?: () => void) => void;
   onChattingRoomClick: (mbti: Mbti) => void;
 }
 
@@ -48,8 +48,14 @@ export default function ChattingList(props: ChattingListProps) {
           }
           isSwiped={checkIsSwiped(chattingPreview.mbti)}
           setIsSwiped={getSetSwiped(chattingPreview.mbti)}
-          onRefresh={() => initChat(chattingPreview.mbti)}
-          onDelete={() => deleteChat(chattingPreview.mbti)}
+          // TODO: initChat에서 mbti 채팅을 닫을 수 있도록 initChat에 함수를 넣음
+          // 개선요망
+          onRefresh={() =>
+            initChat(chattingPreview.mbti, () => setSwipedMbti(null))
+          }
+          onDelete={() =>
+            deleteChat(chattingPreview.mbti, () => setSwipedMbti(null))
+          }
           onChattingRoomClick={() => onChattingRoomClick(chattingPreview.mbti)}
         />
       ))}

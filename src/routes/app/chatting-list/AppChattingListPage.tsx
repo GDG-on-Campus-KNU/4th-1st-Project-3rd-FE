@@ -21,12 +21,14 @@ const ChatManageModalContent = ({
   type,
   isLoading,
   onClose,
+  afterModify,
   setIsLoading,
 }: {
   mbti: Mbti;
   type: 'close' | 'reset';
   isLoading: boolean;
   onClose: () => void;
+  afterModify: { current: (() => void) | undefined };
   setIsLoading: (boolean: boolean) => void;
 }) => {
   return (
@@ -76,7 +78,7 @@ const ChatManageModalContent = ({
                 );
               }
               setIsLoading(false);
-
+              afterModify.current?.();
               onClose();
             }}
             style={
@@ -176,6 +178,7 @@ export default function AppChattingListPage() {
   const mainContainerRef = useRef<HTMLDivElement>(null);
   const [isLogoutSending, setIsLogoutSending] = useState(false);
   const [isChattingModifying, setIsChattingModifying] = useState(false);
+  const afterModifyFn = useRef<undefined | (() => void)>(undefined);
 
   useEffect(() => {
     let isFetching = false;
@@ -282,14 +285,16 @@ export default function AppChattingListPage() {
                 onChattingRoomClick={(mbti) =>
                   navigate(APP_END_POINT.chatMbti(mbti))
                 }
-                initChat={(mbti) => {
+                initChat={(mbti, onClose) => {
                   setLastMbti(mbti);
                   setLastType('reset');
                   setIsChatManageModalOpen(true);
+                  afterModifyFn.current = onClose;
                 }}
-                deleteChat={(mbti) => {
+                deleteChat={(mbti, onClose) => {
                   setLastMbti(mbti);
                   setLastType('close');
+                  afterModifyFn.current = onClose;
                   setIsChatManageModalOpen(true);
                 }}
               />
@@ -302,6 +307,7 @@ export default function AppChattingListPage() {
                 type={lastType}
                 isLoading={isChattingModifying}
                 setIsLoading={setIsChattingModifying}
+                afterModify={afterModifyFn}
                 onClose={() => setIsChatManageModalOpen(false)}
               />
             </Modal>
