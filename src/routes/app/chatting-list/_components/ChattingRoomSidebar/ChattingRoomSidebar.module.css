@@ -6,7 +6,7 @@
   box-sizing: border-box;
   width     : 70%;
   max-width : calc(600px * 0.7);
-  height    : 100vh;
+  height    : 100dvh;
 
   background-color: #f1f1f1;
 }
