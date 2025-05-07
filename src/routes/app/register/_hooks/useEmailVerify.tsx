@@ -33,6 +33,7 @@ export default function useEmailVerify() {
 
   const [isVerified, setIsVerified] = useState(false);
   const [code, setCode] = useState<string>('');
+  const [isCodeSending, setIsCodeSending] = useState(false);
   const [canVerifyCode, setCanVerifyCode] = useState(false);
   const [leftSecond, setLeftSecond] = useState(0);
   const [leftCnt, setLeftCnt] = useState(LEFT_COUNT_INIT);
@@ -86,6 +87,7 @@ export default function useEmailVerify() {
     if (leftSecond <= 0) return;
     if (leftCnt <= 0) return;
     if (code.length !== 4) return;
+    setIsCodeSending(true);
     try {
       setCanVerifyCode(false);
       await postFetch<verifyEmailRequestBody>(HTTP_API_END_POINT.verifyEmail, {
@@ -93,9 +95,11 @@ export default function useEmailVerify() {
       });
     } catch (_: unknown) {
       if (leftCnt) setLeftCnt(leftCnt - 1);
+      setIsCodeSending(false);
       setCanVerifyCode(true);
       return;
     }
+    setIsCodeSending(false);
     setIsVerified(true);
     setHasEmailError(false);
   }, [canVerifyCode, leftSecond, code, leftCnt, email]);
@@ -118,6 +122,7 @@ export default function useEmailVerify() {
     leftSecond,
     hasEmailError,
     isEmailSending,
+    isCodeSending,
     isVerified,
     hasCodeError,
     codeErrorMessage,

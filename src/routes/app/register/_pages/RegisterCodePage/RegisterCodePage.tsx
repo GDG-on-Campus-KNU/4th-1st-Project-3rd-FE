@@ -14,6 +14,7 @@ interface RegisterCodePageProps {
   leftCnt: number;
   leftSecond: number;
   isVerified: boolean;
+  isCodeSending: boolean;
   hasCodeError: boolean;
   codeErrorMessage: string | null;
   verify: () => void;
@@ -45,6 +46,7 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
     hasCodeError,
     codeErrorMessage,
     isVerified,
+    isCodeSending,
     verify,
     resend,
     onCodeChange,
@@ -65,6 +67,7 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
         placeholder="인증번호 4자리를 입력하세요"
         isError={hasCodeError}
         disabled={isVerified}
+        isLoading={isCodeSending}
         type="number"
         rightIcon={
           !isVerified && (
@@ -76,9 +79,12 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
                 onClick={leftCnt && leftSecond ? verify : resend}
                 className={[
                   styles['send-button'],
-                  isValidButton(leftSecond, leftCnt, code) ? styles.valid : '',
+                  isValidButton(leftSecond, leftCnt, code) && !isCodeSending
+                    ? styles.valid
+                    : '',
                 ].join(' ')}
                 isValid={isValidButton(leftSecond, leftCnt, code)}
+                isLoading={isCodeSending}
               >
                 {getButtonMessage(leftSecond, leftCnt)}
               </Button>
