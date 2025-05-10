@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 import Button from '@_/components/common/Button/Button';
 import SolidStepIndicator from '@_/components/common/SoildStepper/SolidStepIndicator';
@@ -97,6 +97,8 @@ export default function AppRegisterPage() {
 
   const [isRegisterSending, setIsRegisterSending] = useState(false);
 
+  const [maxCompletedStep, setMaxCompletedStep] = useState(0);
+
   const handleGoBackward = useCallback(() => {
     navigate(-1);
   }, [navigate]);
@@ -108,6 +110,7 @@ export default function AppRegisterPage() {
         navigate(location.pathname, {
           state: { step: 2 },
         });
+        setMaxCompletedStep(1);
         return;
       } catch (_) {
         noop();
@@ -130,6 +133,7 @@ export default function AppRegisterPage() {
         });
         setIsRegisterSending(false);
         navigate(APP_END_POINT.registerSuccess);
+        setMaxCompletedStep(4);
         return;
       } catch (_) {
         setIsRegisterSending(false);
@@ -139,10 +143,15 @@ export default function AppRegisterPage() {
     navigate(location.pathname, {
       state: { step: Math.min(MAX_STEP, nowStep + 1) },
     });
+    setMaxCompletedStep((prev) => Math.max(prev, nowStep + 1));
   }, [nowStep, email, password, mbti, navigate, sendEmail, location.pathname]);
 
   const isLoading =
     (nowStep === 1 && isEmailSending) || (nowStep === 4 && isRegisterSending);
+
+  if (nowStep > maxCompletedStep + 1)
+    return <Navigate to={APP_END_POINT.register} state={{ step: 0 }} replace />;
+
   return (
     <section>
       <header className={styles.header}>
