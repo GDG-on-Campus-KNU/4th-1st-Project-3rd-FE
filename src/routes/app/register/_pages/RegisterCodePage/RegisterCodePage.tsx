@@ -66,7 +66,7 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
         className={styles.input}
         placeholder="인증번호 4자리를 입력하세요"
         isError={hasCodeError}
-        disabled={isVerified}
+        disabled={isVerified || leftCnt === 0}
         isLoading={isCodeSending}
         type="number"
         rightIcon={
