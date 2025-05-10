@@ -76,7 +76,12 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
                 {leftCnt ? getMMSSBySecond(leftSecond) : null}
               </span>
               <Button
-                onClick={leftCnt && leftSecond ? verify : resend}
+                onClick={
+                  codeErrorMessage ===
+                  '인증 횟수를 모두 사용하였습니다\n오른쪽 버튼을 눌러 인증메일을 다시 보내주세요.'
+                    ? resend
+                    : verify
+                }
                 className={[
                   styles['send-button'],
                   isValidButton(leftSecond, leftCnt, code) && !isCodeSending

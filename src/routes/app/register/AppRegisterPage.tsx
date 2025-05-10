@@ -165,7 +165,7 @@ export default function AppRegisterPage() {
               codeErrorMessage={codeErrorMessage}
               leftSecond={leftSecond}
               isVerified={isVerified}
-              isCodeSending={isCodeSending}
+              isCodeSending={isCodeSending || isEmailSending}
               verify={verifyCode}
               resend={sendEmail}
               onCodeChange={handleChangeCode}
