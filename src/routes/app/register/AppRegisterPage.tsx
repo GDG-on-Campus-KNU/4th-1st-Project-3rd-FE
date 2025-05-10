@@ -116,11 +116,24 @@ export default function AppRegisterPage() {
     }
     if (nowStep === 4) {
       setIsRegisterSending(true);
-      await postFetch<RegisterRequestBody>(HTTP_API_END_POINT.register, {
-        body: { email, password, mbti: mbti as Mbti },
-      }).finally(() => setIsRegisterSending(false));
-      navigate(APP_END_POINT.registerSuccess);
-      return;
+      try {
+        await postFetch<RegisterRequestBody>(HTTP_API_END_POINT.register, {
+          body: { email, password, mbti: mbti as Mbti },
+          handleCode: (code) => {
+            if (code === 'E001') {
+              alert('이메일이 만료되었습니다. 처음부터 다시 시도해주세요.');
+            } else alert('알 수 없는 오류입니다. 다시 시도해주세요.');
+            navigate(APP_END_POINT.register, {
+              state: { step: 0 },
+            });
+          },
+        });
+        setIsRegisterSending(false);
+        navigate(APP_END_POINT.registerSuccess);
+        return;
+      } catch (_) {
+        setIsRegisterSending(false);
+      }
     }
 
     navigate(location.pathname, {
