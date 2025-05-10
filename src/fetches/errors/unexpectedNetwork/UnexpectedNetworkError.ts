@@ -1,3 +1,7 @@
 import NetworkError from '../NetworkError';
 
-export default class UnexpectedNetworkError extends NetworkError {}
+export default class UnexpectedNetworkError extends NetworkError {
+  constructor() {
+    super({ code: 'none' });
+  }
+}
