@@ -20,6 +20,7 @@ import RegisterMBTIPage from './_pages/RegisterMBTIPage/RegisterMBTIPage';
 import RegisterPasswordPage from './_pages/RegisterPasswordPage/RegisterPasswordPage';
 
 type Step = 1 | 2 | 3 | 4;
+const noop = () => {};
 const MAX_STEP = 4;
 const getButtonStr = (step: Step) => {
   if (step === 1) return '인증번호 받기';
@@ -55,7 +56,8 @@ export default function AppRegisterPage() {
     email,
     code,
     leftCnt,
-    hasEmailError,
+    hasEmailFormatError,
+    usedEmail,
     isEmailSending,
     isCodeSending,
     leftSecond,
@@ -101,11 +103,16 @@ export default function AppRegisterPage() {
 
   const handleGoNextStep = useCallback(async () => {
     if (nowStep === 1) {
-      await sendEmail();
-      navigate(location.pathname, {
-        state: { step: 2 },
-      });
-      return;
+      try {
+        await sendEmail();
+        navigate(location.pathname, {
+          state: { step: 2 },
+        });
+        return;
+      } catch (_) {
+        noop();
+        return;
+      }
     }
     if (nowStep === 4) {
       setIsRegisterSending(true);
@@ -142,7 +149,8 @@ export default function AppRegisterPage() {
           {nowStep === 1 && (
             <RegisterEmailPage
               email={email}
-              hasEmailError={hasEmailError}
+              hasEmailFormatError={hasEmailFormatError}
+              usedEmail={usedEmail}
               onEmailChange={handleChangeEmail}
               isEmailSending={isEmailSending}
             />
@@ -196,7 +204,11 @@ export default function AppRegisterPage() {
           isValid={
             !checkIsButtonDisabled({
               step: nowStep,
-              isValidEmail: !!(email && !hasEmailError),
+              isValidEmail: !!(
+                email &&
+                !hasEmailFormatError &&
+                email !== usedEmail
+              ),
               isVerified,
               isValidPassword: !!(
                 password &&

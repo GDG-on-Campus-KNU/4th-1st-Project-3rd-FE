@@ -7,17 +7,20 @@ import styles from './RegisterEmailPage.module.css';
 
 interface EmailPageProps {
   email: string;
-  hasEmailError: boolean;
+  hasEmailFormatError: boolean;
+  usedEmail: string | null;
   isEmailSending: boolean;
   onEmailChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function RegisterEmailPage({
   email,
-  hasEmailError,
+  hasEmailFormatError,
+  usedEmail,
   isEmailSending,
   onEmailChange,
 }: EmailPageProps) {
+  const isUsedEmail = email === usedEmail;
   return (
     <>
       <RegisterDescription
@@ -27,13 +30,15 @@ export default function RegisterEmailPage({
 
       <ControlledInput
         value={email}
-        isError={hasEmailError}
+        isError={hasEmailFormatError || isUsedEmail}
         onChange={onEmailChange}
         placeholder="이메일"
         isLoading={isEmailSending}
       />
       <span className={styles['error-message']}>
-        {hasEmailError && '이메일 형식이 맞지 않습니다'}
+        {hasEmailFormatError && '이메일 형식이 맞지 않습니다'}
+        <br />
+        {isUsedEmail && `${usedEmail}은 이미 사용 중인 이메일입니다.`}
       </span>
     </>
   );
