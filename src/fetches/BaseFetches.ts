@@ -1,5 +1,5 @@
 import getNetworkError from './getNetworkError';
-import handleNetworkError from './handleNetworkError';
+import manageNetworkError from './handleNetworkError';
 
 type EmptyBodyMethod = 'GET' | 'HEAD' | 'DELETE' | 'OPTIONS';
 type CanHasBodyMethod = 'POST' | 'PUT' | 'PATCH';
@@ -18,9 +18,10 @@ type Method = EmptyBodyMethod | CanHasBodyMethod;
 
 type JSONValue = object;
 
-type ResponseErrorHandler = (response?: Response) => void;
+// 리턴 값은 이후 이 에러를 handle 처리 할 것인지 말 것인지지
+type ResponseErrorHandler = (code: string) => void | true;
 interface CustomRequestInitBase extends RequestInit {
-  handleResponseError?: ResponseErrorHandler;
+  handleCode?: ResponseErrorHandler;
 }
 // body가 있으면 안되는 메서드에서는 body를 제한
 interface EmptyBodyRequestInit extends Omit<CustomRequestInitBase, 'body'> {
@@ -69,23 +70,18 @@ async function baseFetch(
   return fetch(url, getAddedDefault(optionResult));
 }
 
-const handleDefaultResponseError: ResponseErrorHandler = (
-  response?: Response,
-) => {
-  if (!response) return;
-  const networkError = getNetworkError(response);
-  // 이 함수에서 에러 throw
-  handleNetworkError(networkError);
-};
-
 async function normalizedFetch<ResponseType>(
   url: string,
   option: CustomRequestInit,
 ): Promise<ResponseType> {
   const response = await baseFetch(url, option);
   if (!response.ok) {
-    if (option.handleResponseError) option.handleResponseError(response);
-    handleDefaultResponseError(response);
+    const error = await getNetworkError(response);
+
+    const shouldHandled = option?.handleCode?.(error.code) === true;
+
+    error.shouldHandled = shouldHandled;
+    manageNetworkError(error);
   }
 
   try {

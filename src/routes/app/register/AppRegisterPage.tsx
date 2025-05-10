@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 import Button from '@_/components/common/Button/Button';
 import SolidStepIndicator from '@_/components/common/SoildStepper/SolidStepIndicator';
@@ -20,6 +20,7 @@ import RegisterMBTIPage from './_pages/RegisterMBTIPage/RegisterMBTIPage';
 import RegisterPasswordPage from './_pages/RegisterPasswordPage/RegisterPasswordPage';
 
 type Step = 1 | 2 | 3 | 4;
+const noop = () => {};
 const MAX_STEP = 4;
 const getButtonStr = (step: Step) => {
   if (step === 1) return '인증번호 받기';
@@ -55,14 +56,15 @@ export default function AppRegisterPage() {
     email,
     code,
     leftCnt,
-    hasEmailError,
+    hasEmailFormatError,
+    usedEmail,
     isEmailSending,
     isCodeSending,
     leftSecond,
     isVerified,
     hasCodeError,
     codeErrorMessage,
-    sendCode,
+    sendEmail,
     verifyCode,
     handleChangeEmail,
     handleChangeCode,
@@ -95,34 +97,61 @@ export default function AppRegisterPage() {
 
   const [isRegisterSending, setIsRegisterSending] = useState(false);
 
+  const [maxCompletedStep, setMaxCompletedStep] = useState(0);
+
   const handleGoBackward = useCallback(() => {
     navigate(-1);
   }, [navigate]);
 
   const handleGoNextStep = useCallback(async () => {
     if (nowStep === 1) {
-      await sendCode();
-      navigate(location.pathname, {
-        state: { step: 2 },
-      });
-      return;
+      try {
+        await sendEmail();
+        navigate(location.pathname, {
+          state: { step: 2 },
+        });
+        setMaxCompletedStep(1);
+        return;
+      } catch (_) {
+        noop();
+        return;
+      }
     }
     if (nowStep === 4) {
       setIsRegisterSending(true);
-      await postFetch<RegisterRequestBody>(HTTP_API_END_POINT.register, {
-        body: { email, password, mbti: mbti as Mbti },
-      }).finally(() => setIsRegisterSending(false));
-      navigate(APP_END_POINT.registerSuccess);
-      return;
+      try {
+        await postFetch<RegisterRequestBody>(HTTP_API_END_POINT.register, {
+          body: { email, password, mbti: mbti as Mbti },
+          handleCode: (code) => {
+            if (code === 'E001') {
+              alert('이메일이 만료되었습니다. 처음부터 다시 시도해주세요.');
+            } else alert('알 수 없는 오류입니다. 다시 시도해주세요.');
+            navigate(APP_END_POINT.register, {
+              state: { step: 0 },
+            });
+          },
+        });
+        setIsRegisterSending(false);
+        navigate(APP_END_POINT.registerSuccess);
+        setMaxCompletedStep(4);
+        return;
+      } catch (_) {
+        setIsRegisterSending(false);
+      }
     }
 
     navigate(location.pathname, {
       state: { step: Math.min(MAX_STEP, nowStep + 1) },
     });
-  }, [nowStep, email, password, mbti, navigate, sendCode, location.pathname]);
+    setMaxCompletedStep((prev) => Math.max(prev, nowStep + 1));
+  }, [nowStep, email, password, mbti, navigate, sendEmail, location.pathname]);
 
   const isLoading =
     (nowStep === 1 && isEmailSending) || (nowStep === 4 && isRegisterSending);
+
+  if (nowStep > maxCompletedStep + 1)
+    return <Navigate to={APP_END_POINT.register} state={{ step: 0 }} replace />;
+
   return (
     <section>
       <header className={styles.header}>
@@ -142,7 +171,8 @@ export default function AppRegisterPage() {
           {nowStep === 1 && (
             <RegisterEmailPage
               email={email}
-              hasEmailError={hasEmailError}
+              hasEmailFormatError={hasEmailFormatError}
+              usedEmail={usedEmail}
               onEmailChange={handleChangeEmail}
               isEmailSending={isEmailSending}
             />
@@ -157,9 +187,9 @@ export default function AppRegisterPage() {
               codeErrorMessage={codeErrorMessage}
               leftSecond={leftSecond}
               isVerified={isVerified}
-              isCodeSending={isCodeSending}
+              isCodeSending={isCodeSending || isEmailSending}
               verify={verifyCode}
-              resend={sendCode}
+              resend={sendEmail}
               onCodeChange={handleChangeCode}
             />
           )}
@@ -196,7 +226,11 @@ export default function AppRegisterPage() {
           isValid={
             !checkIsButtonDisabled({
               step: nowStep,
-              isValidEmail: !!(email && !hasEmailError),
+              isValidEmail: !!(
+                email &&
+                !hasEmailFormatError &&
+                email !== usedEmail
+              ),
               isVerified,
               isValidPassword: !!(
                 password &&

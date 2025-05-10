@@ -9,26 +9,11 @@ const LEFT_COUNT_INIT = 5;
 const EMAIL_REGEX =
   /^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/;
 
-const getCodeErrorMessage = (
-  leftCnt: number,
-  maxVerifyCnt: number,
-  leftSecond: number,
-  isVerified: boolean,
-) => {
-  if (isVerified) return null;
-  if (leftSecond === 0)
-    return '유효시간이 지났습니다. 오른쪽 버튼을 눌러 인증메일을 다시 보내주세요.' as const;
-  if (leftCnt === 0)
-    return '인증 횟수를 모두 사용하였습니다\n오른쪽 버튼을 눌러 인증메일을 다시 보내주세요.' as const;
-  if (leftCnt !== LEFT_COUNT_INIT)
-    return `인증번호가 일치하지 않습니다 ${maxVerifyCnt - leftCnt}/${maxVerifyCnt}` as const;
-  return null;
-};
-
 export default function useEmailVerify() {
   const [email, setEmail] = useState('');
   const [isEmailSending, setIsEmailSending] = useState(false);
-  const [hasEmailError, setHasEmailError] = useState(false);
+  const [hasEmailFormatError, setHasEmailFormatError] = useState(false);
+  const [usedEmail, setUsedEmail] = useState<string | null>(null);
   const [isValidCode, setIsValidCode] = useState(false);
 
   const [isVerified, setIsVerified] = useState(false);
@@ -37,12 +22,7 @@ export default function useEmailVerify() {
   const [canVerifyCode, setCanVerifyCode] = useState(false);
   const [leftSecond, setLeftSecond] = useState(0);
   const [leftCnt, setLeftCnt] = useState(LEFT_COUNT_INIT);
-  const codeErrorMessage = getCodeErrorMessage(
-    leftCnt,
-    LEFT_COUNT_INIT,
-    leftSecond,
-    isVerified,
-  );
+  const [codeErrorMessage, setCodeErrorMessage] = useState<string | null>(null);
   const hasCodeError = !!codeErrorMessage;
   const intervalIdRef = useRef<ReturnType<typeof setInterval>>(undefined);
 
@@ -65,21 +45,31 @@ export default function useEmailVerify() {
     }
   }, [isValidCode, leftSecond]);
 
-  const sendCode = useCallback(async () => {
+  const sendEmail = useCallback(async () => {
     setIsEmailSending(true);
     try {
-      await postFetch(HTTP_API_END_POINT.sendEmailCode, { body: { email } });
-    } catch (_: unknown) {
-      setHasEmailError(true);
+      await postFetch(HTTP_API_END_POINT.sendEmailCode, {
+        body: { email },
+        handleCode: (code) => {
+          switch (code) {
+            case 'U001':
+              setUsedEmail(email);
+              return;
+          }
+        },
+      });
+    } catch (e: unknown) {
       setIsEmailSending(false);
-      return;
+      throw e;
     }
     setIsEmailSending(false);
-    setHasEmailError(false);
+    setHasEmailFormatError(false);
+    setUsedEmail(null);
     setIsValidCode(true);
     setLeftCnt(LEFT_COUNT_INIT);
     setLeftSecond(VERIFY_INIT_SECOND);
     setCanVerifyCode(true);
+    setCodeErrorMessage(null);
   }, [email]);
 
   const verifyCode = useCallback(async () => {
@@ -92,6 +82,24 @@ export default function useEmailVerify() {
       setCanVerifyCode(false);
       await postFetch<verifyEmailRequestBody>(HTTP_API_END_POINT.verifyEmail, {
         body: { email, code },
+        handleCode: (code) => {
+          switch (code) {
+            case 'E001':
+              return setCodeErrorMessage(
+                '유효시간이 지났습니다. 오른쪽 버튼을 눌러 인증메일을 다시 보내주세요.',
+              );
+            case 'E002':
+              return setCodeErrorMessage(
+                '인증 횟수를 모두 사용하였습니다\n오른쪽 버튼을 눌러 인증메일을 다시 보내주세요.',
+              );
+            case 'E003':
+              return setCodeErrorMessage(
+                `인증번호가 일치하지 않습니다 ${LEFT_COUNT_INIT - leftCnt + 1}/${LEFT_COUNT_INIT}`,
+              );
+            default:
+              return setCodeErrorMessage('예상치 못한 오류가 발생하였습니다.');
+          }
+        },
       });
     } catch (_: unknown) {
       if (leftCnt) setLeftCnt(leftCnt - 1);
@@ -99,14 +107,15 @@ export default function useEmailVerify() {
       setCanVerifyCode(true);
       return;
     }
+    setCodeErrorMessage(null);
     setIsCodeSending(false);
     setIsVerified(true);
-    setHasEmailError(false);
+    setHasEmailFormatError(false);
   }, [canVerifyCode, leftSecond, code, leftCnt, email]);
 
   const handleChangeEmail = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.currentTarget.value);
-    setHasEmailError(!EMAIL_REGEX.test(e.currentTarget.value));
+    setHasEmailFormatError(!EMAIL_REGEX.test(e.currentTarget.value));
   }, []);
 
   const handleChangeCode = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -120,13 +129,14 @@ export default function useEmailVerify() {
     code,
     leftCnt,
     leftSecond,
-    hasEmailError,
+    hasEmailFormatError,
+    usedEmail,
     isEmailSending,
     isCodeSending,
     isVerified,
     hasCodeError,
     codeErrorMessage,
-    sendCode,
+    sendEmail,
     verifyCode,
     handleChangeEmail,
     handleChangeCode,
