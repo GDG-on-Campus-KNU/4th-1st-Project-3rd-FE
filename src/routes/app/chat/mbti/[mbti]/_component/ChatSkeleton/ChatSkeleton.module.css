@@ -1,0 +1,44 @@
+.container {
+  overflow-y    : hidden;
+  display       : flex;
+  flex-direction: column;
+  gap           : 20px;
+  align-items   : center;
+
+  width     : 100%;
+  max-height: 400px;
+}
+
+.chat-day-div {
+  width        : 81px;
+  height       : 22px;
+  border-radius: 20px;
+}
+
+.chat-bubble-container {
+  display        : flex;
+  align-items    : flex-end;
+  justify-content: flex-end;
+  width          : 100%;
+}
+
+.mine.chat-bubble-container {
+  flex-direction: row;
+}
+
+.others.chat-bubble-container {
+  flex-direction: row-reverse;
+}
+
+.time-span {
+  width : 40px;
+  height: 10px;
+  margin: 0 4px;
+}
+
+.chat-bubble {
+  box-sizing   : border-box;
+  height       : 40px;
+  padding      : 8px 16px;
+  border-radius: 10px;
+}

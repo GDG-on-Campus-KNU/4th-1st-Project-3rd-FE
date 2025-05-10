@@ -20,6 +20,7 @@ import styles from './ChatMbtiPage.module.css';
 import ChatBubble from './_component/ChatBubble/ChatBubble';
 import ChatDayDiv from './_component/ChatDayDiv/ChatDayDiv';
 import ChatHeader from './_component/ChatHeader/ChatHeader';
+import ChatSkeleton from './_component/ChatSkeleton/ChatSkeleton';
 import MessageTextArea from './_component/MessageTextArea/MessageTextArea';
 
 type SendingPhase = 'posting' | 'wait-update' | 'complete';
@@ -39,6 +40,7 @@ export default function AppChatMbtiPage() {
   const [isShownWaitingDot, setIsShownWaitingDot] = useState(false);
   const [hasChattedThisMount, setHasChattedThisMount] = useState(false);
   const [sendingPhase, setSendingPhase] = useState<SendingPhase>('complete');
+  const [isChatFirstLoading, setIsChatFirstLoading] = useState(true);
 
   const handleValueChange = useCallback(() => {
     if (!contentRef.current) return;
@@ -78,6 +80,7 @@ export default function AppChatMbtiPage() {
           messageResponses.length === 0 ? prev : [...prev, ...messageResponses],
         );
       } finally {
+        setIsChatFirstLoading(false);
         isFetching = false;
       }
     }
@@ -152,6 +155,7 @@ export default function AppChatMbtiPage() {
       />
       <div className={styles['under-header']}>
         <div className={styles['content-box']} ref={contentRef}>
+          {isChatFirstLoading && <ChatSkeleton />}
           {messages.map((message, index) => {
             const lastMessage = messages[index - 1];
             const lastDate = lastMessage
