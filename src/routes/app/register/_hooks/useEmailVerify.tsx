@@ -37,12 +37,7 @@ export default function useEmailVerify() {
   const [canVerifyCode, setCanVerifyCode] = useState(false);
   const [leftSecond, setLeftSecond] = useState(0);
   const [leftCnt, setLeftCnt] = useState(LEFT_COUNT_INIT);
-  const codeErrorMessage = getCodeErrorMessage(
-    leftCnt,
-    LEFT_COUNT_INIT,
-    leftSecond,
-    isVerified,
-  );
+  const [codeErrorMessage, setCodeErrorMessage] = useState<string | null>(null);
   const hasCodeError = !!codeErrorMessage;
   const intervalIdRef = useRef<ReturnType<typeof setInterval>>(undefined);
 
@@ -65,7 +60,7 @@ export default function useEmailVerify() {
     }
   }, [isValidCode, leftSecond]);
 
-  const sendCode = useCallback(async () => {
+  const sendEmail = useCallback(async () => {
     setIsEmailSending(true);
     try {
       await postFetch(HTTP_API_END_POINT.sendEmailCode, { body: { email } });
@@ -80,6 +75,7 @@ export default function useEmailVerify() {
     setLeftCnt(LEFT_COUNT_INIT);
     setLeftSecond(VERIFY_INIT_SECOND);
     setCanVerifyCode(true);
+    setCodeErrorMessage(null);
   }, [email]);
 
   const verifyCode = useCallback(async () => {
@@ -92,6 +88,24 @@ export default function useEmailVerify() {
       setCanVerifyCode(false);
       await postFetch<verifyEmailRequestBody>(HTTP_API_END_POINT.verifyEmail, {
         body: { email, code },
+        handleCode: (code) => {
+          switch (code) {
+            case 'E001':
+              return setCodeErrorMessage(
+                '유효시간이 지났습니다. 오른쪽 버튼을 눌러 인증메일을 다시 보내주세요.',
+              );
+            case 'E002':
+              return setCodeErrorMessage(
+                '인증 횟수를 모두 사용하였습니다\n오른쪽 버튼을 눌러 인증메일을 다시 보내주세요.',
+              );
+            case 'E003':
+              return setCodeErrorMessage(
+                `인증번호가 일치하지 않습니다 ${LEFT_COUNT_INIT - leftCnt + 1}/${LEFT_COUNT_INIT}`,
+              );
+            default:
+              return setCodeErrorMessage('예상치 못한 오류가 발생하였습니다.');
+          }
+        },
       });
     } catch (_: unknown) {
       if (leftCnt) setLeftCnt(leftCnt - 1);
@@ -99,6 +113,7 @@ export default function useEmailVerify() {
       setCanVerifyCode(true);
       return;
     }
+    setCodeErrorMessage(null);
     setIsCodeSending(false);
     setIsVerified(true);
     setHasEmailError(false);
@@ -126,7 +141,7 @@ export default function useEmailVerify() {
     isVerified,
     hasCodeError,
     codeErrorMessage,
-    sendCode,
+    sendEmail,
     verifyCode,
     handleChangeEmail,
     handleChangeCode,

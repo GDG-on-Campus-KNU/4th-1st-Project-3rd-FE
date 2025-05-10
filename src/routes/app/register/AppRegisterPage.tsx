@@ -62,7 +62,7 @@ export default function AppRegisterPage() {
     isVerified,
     hasCodeError,
     codeErrorMessage,
-    sendCode,
+    sendEmail,
     verifyCode,
     handleChangeEmail,
     handleChangeCode,
@@ -101,7 +101,7 @@ export default function AppRegisterPage() {
 
   const handleGoNextStep = useCallback(async () => {
     if (nowStep === 1) {
-      await sendCode();
+      await sendEmail();
       navigate(location.pathname, {
         state: { step: 2 },
       });
@@ -119,7 +119,7 @@ export default function AppRegisterPage() {
     navigate(location.pathname, {
       state: { step: Math.min(MAX_STEP, nowStep + 1) },
     });
-  }, [nowStep, email, password, mbti, navigate, sendCode, location.pathname]);
+  }, [nowStep, email, password, mbti, navigate, sendEmail, location.pathname]);
 
   const isLoading =
     (nowStep === 1 && isEmailSending) || (nowStep === 4 && isRegisterSending);
@@ -159,7 +159,7 @@ export default function AppRegisterPage() {
               isVerified={isVerified}
               isCodeSending={isCodeSending}
               verify={verifyCode}
-              resend={sendCode}
+              resend={sendEmail}
               onCodeChange={handleChangeCode}
             />
           )}
