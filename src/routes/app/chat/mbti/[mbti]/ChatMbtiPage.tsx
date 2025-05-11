@@ -19,6 +19,7 @@ import getDateByISO8601 from '@_/utils/getDateByISO8601';
 import styles from './ChatMbtiPage.module.css';
 import ChatBubble from './_component/ChatBubble/ChatBubble';
 import ChatDayDiv from './_component/ChatDayDiv/ChatDayDiv';
+import ChatFallback from './_component/ChatFallback/ChatFallback';
 import ChatHeader from './_component/ChatHeader/ChatHeader';
 import ChatSkeleton from './_component/ChatSkeleton/ChatSkeleton';
 import MessageTextArea from './_component/MessageTextArea/MessageTextArea';
@@ -144,8 +145,9 @@ export default function AppChatMbtiPage() {
     setSendingPhase('complete');
     setSendingMessage(null);
   }, [messages]);
-  console.log(sendingPhase);
 
+  const isFallbacked =
+    !isChatFirstLoading && sendingPhase === 'complete' && messages.length === 0;
   return (
     <>
       <ChatHeader
@@ -154,7 +156,14 @@ export default function AppChatMbtiPage() {
         ref={headerRef}
       />
       <div className={styles['under-header']}>
-        <div className={styles['content-box']} ref={contentRef}>
+        <div
+          className={[
+            styles['content-box'],
+            isFallbacked ? styles.fallbacked : '',
+          ].join(' ')}
+          ref={contentRef}
+        >
+          {isFallbacked && <ChatFallback mbti={mbti} />}
           {isChatFirstLoading && <ChatSkeleton />}
           {messages.map((message, index) => {
             const lastMessage = messages[index - 1];
