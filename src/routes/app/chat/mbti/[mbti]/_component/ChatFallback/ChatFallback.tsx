@@ -30,7 +30,7 @@ export default function ChatFallback(props: ChatFallbackProps) {
 
   return (
     <div className={styles.content}>
-      <SonaWithBlur type={mbti} blurMultiple={1.3} />
+      <SonaWithBlur type={mbti} blurMultiple={1.3} width={170} />
       <span>
         {DESCRIPTION[mbti] + ','}
         <br />
