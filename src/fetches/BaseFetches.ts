@@ -78,9 +78,9 @@ async function normalizedFetch<ResponseType>(
   if (!response.ok) {
     const error = await getNetworkError(response);
 
-    const shouldHandled = option?.handleCode?.(error.code) === true;
-
-    error.shouldHandled = shouldHandled;
+    if (option.handleCode) {
+      error.shouldHandled = !!option?.handleCode?.(error.code);
+    }
     manageNetworkError(error);
   }
 
