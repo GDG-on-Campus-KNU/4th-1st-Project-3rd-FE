@@ -175,7 +175,15 @@ export default function AppChatMbtiPage() {
             );
           })}
           {sendingPhase !== 'complete' && (
-            <ChatBubble content={sendingMessage} isUserChat={true} />
+            <>
+              {!checkIsSameDay(
+                getDateByISO8601(
+                  messages.at(-1)?.time || '2001-05-17T00:00:00',
+                ),
+                new Date(),
+              ) && <ChatDayDiv timeISO={new Date().toISOString()} />}
+              <ChatBubble content={sendingMessage} isUserChat={true} />
+            </>
           )}
           {isShownWaitingDot && messages.at(-1)?.isUserChat && (
             <ChatBubble content={<WaitingDot />} isUserChat={false} />
