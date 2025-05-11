@@ -1,4 +1,11 @@
-import { HTMLProps, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  HTMLProps,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import SolidArrowSVG from '@_/components/common/svgs/SolidArrowSVG';
 
@@ -86,19 +93,21 @@ export default function MessageTextArea(props: MessageTextAreaProps) {
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setValue(e.target.value);
 
-      const el = textAreaRef.current;
-      if (el) {
-        el.style.height = 'auto';
-        const height = Math.min(el.scrollHeight, maxTextAreaHeight);
-        el.style.height = height + 'px';
-      }
       if (onValueChange) {
         onValueChange(value);
       }
     },
-    [maxTextAreaHeight, onValueChange, value],
+    [onValueChange, value],
   );
 
+  useLayoutEffect(() => {
+    const el = textAreaRef.current;
+    if (el) {
+      el.style.height = 'auto';
+      const height = Math.min(el.scrollHeight, maxTextAreaHeight);
+      el.style.height = height + 'px';
+    }
+  }, [value, maxTextAreaHeight]);
   return (
     <form
       onSubmit={handleSubmit}
