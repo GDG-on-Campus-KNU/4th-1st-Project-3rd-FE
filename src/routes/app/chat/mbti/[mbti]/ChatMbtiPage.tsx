@@ -19,7 +19,9 @@ import getDateByISO8601 from '@_/utils/getDateByISO8601';
 import styles from './ChatMbtiPage.module.css';
 import ChatBubble from './_component/ChatBubble/ChatBubble';
 import ChatDayDiv from './_component/ChatDayDiv/ChatDayDiv';
+import ChatFallback from './_component/ChatFallback/ChatFallback';
 import ChatHeader from './_component/ChatHeader/ChatHeader';
+import ChatSkeleton from './_component/ChatSkeleton/ChatSkeleton';
 import MessageTextArea from './_component/MessageTextArea/MessageTextArea';
 
 type SendingPhase = 'posting' | 'wait-update' | 'complete';
@@ -39,6 +41,7 @@ export default function AppChatMbtiPage() {
   const [isShownWaitingDot, setIsShownWaitingDot] = useState(false);
   const [hasChattedThisMount, setHasChattedThisMount] = useState(false);
   const [sendingPhase, setSendingPhase] = useState<SendingPhase>('complete');
+  const [isChatFirstLoading, setIsChatFirstLoading] = useState(true);
 
   const handleValueChange = useCallback(() => {
     if (!contentRef.current) return;
@@ -78,6 +81,7 @@ export default function AppChatMbtiPage() {
           messageResponses.length === 0 ? prev : [...prev, ...messageResponses],
         );
       } finally {
+        setIsChatFirstLoading(false);
         isFetching = false;
       }
     }
@@ -141,8 +145,9 @@ export default function AppChatMbtiPage() {
     setSendingPhase('complete');
     setSendingMessage(null);
   }, [messages]);
-  console.log(sendingPhase);
 
+  const isFallbacked =
+    !isChatFirstLoading && sendingPhase === 'complete' && messages.length === 0;
   return (
     <>
       <ChatHeader
@@ -151,7 +156,15 @@ export default function AppChatMbtiPage() {
         ref={headerRef}
       />
       <div className={styles['under-header']}>
-        <div className={styles['content-box']} ref={contentRef}>
+        <div
+          className={[
+            styles['content-box'],
+            isFallbacked ? styles.fallbacked : '',
+          ].join(' ')}
+          ref={contentRef}
+        >
+          {isFallbacked && <ChatFallback mbti={mbti} />}
+          {isChatFirstLoading && <ChatSkeleton />}
           {messages.map((message, index) => {
             const lastMessage = messages[index - 1];
             const lastDate = lastMessage
@@ -171,7 +184,15 @@ export default function AppChatMbtiPage() {
             );
           })}
           {sendingPhase !== 'complete' && (
-            <ChatBubble content={sendingMessage} isUserChat={true} />
+            <>
+              {!checkIsSameDay(
+                getDateByISO8601(
+                  messages.at(-1)?.time || '2001-05-17T00:00:00',
+                ),
+                new Date(),
+              ) && <ChatDayDiv timeISO={new Date().toISOString()} />}
+              <ChatBubble content={sendingMessage} isUserChat={true} />
+            </>
           )}
           {isShownWaitingDot && messages.at(-1)?.isUserChat && (
             <ChatBubble content={<WaitingDot />} isUserChat={false} />
