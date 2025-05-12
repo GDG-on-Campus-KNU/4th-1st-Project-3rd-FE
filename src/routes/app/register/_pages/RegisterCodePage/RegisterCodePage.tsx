@@ -58,13 +58,14 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
 
   const isValidButton = checkIsValidButton(leftSecond, leftCnt, code);
   const [isChanged, setIsChanged] = useState(false);
+  const isAuto = leftSecond > 0 && leftCnt > 0 && isValidButton && isChanged;
   useEffect(() => {
-    if (leftSecond > 0 && leftCnt > 0 && isValidButton && isChanged) {
+    if (isAuto) {
       verify();
       setIsChanged(false);
       return;
     }
-  }, [isValidButton, leftSecond, leftCnt, isChanged, verify]);
+  }, [isAuto, verify]);
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -108,7 +109,8 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
                 className={[
                   styles['send-button'],
                   checkIsValidButton(leftSecond, leftCnt, code) &&
-                  !isCodeSending
+                  !isCodeSending &&
+                  (!isAuto || leftCnt === 0)
                     ? styles.valid
                     : '',
                 ].join(' ')}
