@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 
@@ -99,9 +99,22 @@ export default function AppRegisterPage() {
 
   const [maxCompletedStep, setMaxCompletedStep] = useState(0);
 
+  const [isAutoNext, setIsAutoNext] = useState(true);
+
   const handleGoBackward = useCallback(() => {
+    setIsAutoNext(false);
     navigate(-1);
   }, [navigate]);
+
+  const updateMaxStep = useCallback(
+    (step: Step) => {
+      if (step === maxCompletedStep + 1) {
+        setMaxCompletedStep(step + 1);
+        setIsAutoNext(true);
+      }
+    },
+    [maxCompletedStep],
+  );
 
   const handleGoNextStep = useCallback(async () => {
     if (nowStep === 1) {
@@ -110,7 +123,7 @@ export default function AppRegisterPage() {
         navigate(location.pathname, {
           state: { step: 2 },
         });
-        setMaxCompletedStep(1);
+        updateMaxStep(1);
         return;
       } catch (_) {
         noop();
@@ -133,21 +146,48 @@ export default function AppRegisterPage() {
         });
         setIsRegisterSending(false);
         navigate(APP_END_POINT.registerSuccess);
-        setMaxCompletedStep(4);
+        updateMaxStep(4);
         return;
       } catch (_) {
         setIsRegisterSending(false);
+        return;
       }
     }
 
     navigate(location.pathname, {
       state: { step: Math.min(MAX_STEP, nowStep + 1) },
     });
-    setMaxCompletedStep((prev) => Math.max(prev, nowStep + 1));
-  }, [nowStep, email, password, mbti, navigate, sendEmail, location.pathname]);
+    updateMaxStep((nowStep + 1) as Step);
+  }, [
+    nowStep,
+    email,
+    password,
+    mbti,
+    navigate,
+    sendEmail,
+    updateMaxStep,
+    location.pathname,
+  ]);
 
   const isLoading =
     (nowStep === 1 && isEmailSending) || (nowStep === 4 && isRegisterSending);
+
+  const canGoNext = !checkIsButtonDisabled({
+    step: nowStep,
+    isValidEmail: !!(email && !hasEmailFormatError && email !== usedEmail),
+    isVerified,
+    isValidPassword: !!(
+      password &&
+      passwordChecker &&
+      !hasPasswordError &&
+      !hasPasswordCheckerError
+    ),
+    isValidMBTI: !!(mbti && isMBTICompleted),
+  });
+
+  useEffect(() => {
+    if (nowStep !== 1 && canGoNext && isAutoNext) handleGoNextStep();
+  }, [nowStep, canGoNext, isAutoNext, handleGoNextStep]);
 
   if (nowStep > maxCompletedStep + 1)
     return <Navigate to={APP_END_POINT.register} state={{ step: 0 }} replace />;
@@ -223,24 +263,7 @@ export default function AppRegisterPage() {
         <Button
           className={styles.button}
           isLoading={isLoading}
-          isValid={
-            !checkIsButtonDisabled({
-              step: nowStep,
-              isValidEmail: !!(
-                email &&
-                !hasEmailFormatError &&
-                email !== usedEmail
-              ),
-              isVerified,
-              isValidPassword: !!(
-                password &&
-                passwordChecker &&
-                !hasPasswordError &&
-                !hasPasswordCheckerError
-              ),
-              isValidMBTI: !!(mbti && isMBTICompleted),
-            })
-          }
+          isValid={canGoNext}
           onClick={handleGoNextStep}
         >
           {getButtonStr(nowStep)}
