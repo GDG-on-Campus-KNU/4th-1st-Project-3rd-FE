@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 
 import Button from '@_/components/common/Button/Button';
 import ControlledInput from '@_/components/common/Input/ControlledInput';
@@ -20,6 +20,7 @@ interface RegisterCodePageProps {
   verify: () => Promise<void>;
   resend: () => Promise<void>;
   onCodeChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  resetCode: () => void;
 }
 
 const MAX_CODE_LENGTH = 4;
@@ -54,20 +55,25 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
     verify,
     resend,
     onCodeChange,
+    resetCode,
   } = props;
 
   const isValidButton = checkIsValidButton(leftSecond, leftCnt, code);
   const [isChanged, setIsChanged] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
   const isAuto = leftSecond > 0 && leftCnt > 0 && isValidButton && isChanged;
+
   useEffect(() => {
     if (isAuto) {
       verify().catch((_) => {
         setIsChanged(false);
+        resetCode();
+        setTimeout(() => inputRef.current?.focus());
         throw _;
       });
       return;
     }
-  }, [isAuto, verify]);
+  }, [isAuto, resetCode, verify]);
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -95,6 +101,7 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
         isLoading={isCodeSending}
         type="number"
         autoFocus
+        ref={inputRef}
         rightIcon={
           !isVerified && (
             <div className={styles['send-container']}>

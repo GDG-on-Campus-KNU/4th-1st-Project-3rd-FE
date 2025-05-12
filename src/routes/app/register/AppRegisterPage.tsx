@@ -68,6 +68,7 @@ export default function AppRegisterPage() {
     verifyCode,
     handleChangeEmail,
     handleChangeCode,
+    resetCode,
   } = useEmailVerify();
   const {
     password,
@@ -190,7 +191,6 @@ export default function AppRegisterPage() {
   });
 
   useEffect(() => {
-    console.log({ nowStep, canGoNext, isAutoNext });
     if (nowStep !== 1 && canGoNext && isAutoNext) handleGoNextStep();
   }, [nowStep, canGoNext, isAutoNext, handleGoNextStep]);
 
@@ -236,6 +236,7 @@ export default function AppRegisterPage() {
               verify={verifyCode}
               resend={sendEmail}
               onCodeChange={handleChangeCode}
+              resetCode={resetCode}
             />
           )}
           {nowStep === 3 && (
@@ -268,7 +269,7 @@ export default function AppRegisterPage() {
         <Button
           className={styles.button}
           isLoading={isLoading}
-          isValid={canGoNext}
+          isValid={canGoNext && (nowStep === 1 || !isAutoNext)}
           onClick={handleGoNextStep}
         >
           {getButtonStr(nowStep)}

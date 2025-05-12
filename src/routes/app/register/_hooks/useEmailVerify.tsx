@@ -129,6 +129,10 @@ export default function useEmailVerify() {
     setCode(e.currentTarget.value);
   }, []);
 
+  const resetCode = useCallback(() => {
+    setCode('');
+  }, []);
+
   return {
     email,
     code,
@@ -145,5 +149,6 @@ export default function useEmailVerify() {
     verifyCode,
     handleChangeEmail,
     handleChangeCode,
+    resetCode,
   };
 }
