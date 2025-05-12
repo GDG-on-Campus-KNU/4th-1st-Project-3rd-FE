@@ -145,6 +145,7 @@ export default function useEmailVerify() {
     isVerified,
     hasCodeError,
     codeErrorMessage,
+    isCodeExpired: leftCnt === 0 || leftSecond === 0,
     sendEmail,
     verifyCode,
     handleChangeEmail,

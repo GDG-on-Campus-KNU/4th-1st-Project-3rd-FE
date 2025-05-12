@@ -22,14 +22,39 @@ import RegisterPasswordPage from './_pages/RegisterPasswordPage/RegisterPassword
 type Step = 1 | 2 | 3 | 4;
 const noop = () => {};
 const MAX_STEP = 4;
-const getButtonStr = (step: Step) => {
+const getButtonStr = (step: Step, isCodeExpired: boolean) => {
   if (step === 1) return '인증번호 받기';
-  if (step === 2) return '확인';
+  if (step === 2) {
+    if (isCodeExpired) return '인증메일 다시 받기';
+    return '확인';
+  }
   if (step === MAX_STEP) return '회원가입 완료하기';
   return '다음으로';
 };
 
 const checkIsButtonDisabled = ({
+  step,
+  isValidEmail,
+  isVerified,
+  isValidPassword,
+  isValidMBTI,
+  isCodeExpired,
+}: {
+  step: Step;
+  isValidEmail: boolean;
+  isVerified: boolean;
+  isValidPassword: boolean;
+  isValidMBTI: boolean;
+  isCodeExpired: boolean;
+}) => {
+  if (step === 1 && !isValidEmail) return true;
+  if (step === 2 && !isVerified && !isCodeExpired) return true;
+  if (step === 3 && !isValidPassword) return true;
+  if (step === 4 && !isValidMBTI) return true;
+  return false;
+};
+
+const checkIsFilled = ({
   step,
   isValidEmail,
   isVerified,
@@ -42,12 +67,13 @@ const checkIsButtonDisabled = ({
   isValidPassword: boolean;
   isValidMBTI: boolean;
 }) => {
-  if (step === 1 && !isValidEmail) return true;
-  if (step === 2 && !isVerified) return true;
-  if (step === 3 && !isValidPassword) return true;
-  if (step === 4 && !isValidMBTI) return true;
+  if (step === 1 && isValidEmail) return true;
+  if (step === 2 && isVerified) return true;
+  if (step === 3 && isValidPassword) return true;
+  if (step === 4 && isValidMBTI) return true;
   return false;
 };
+
 export default function AppRegisterPage() {
   useNonLoginPage();
   const navigate = useNavigate();
@@ -64,6 +90,7 @@ export default function AppRegisterPage() {
     isVerified,
     hasCodeError,
     codeErrorMessage,
+    isCodeExpired,
     sendEmail,
     verifyCode,
     handleChangeEmail,
@@ -114,8 +141,43 @@ export default function AppRegisterPage() {
     },
     [maxCompletedStep],
   );
+  const isLoading =
+    (nowStep === 1 && isEmailSending) ||
+    (nowStep === 2 && isEmailSending) ||
+    (nowStep === 4 && isRegisterSending);
+
+  const isFilled = checkIsFilled({
+    step: nowStep,
+    isValidEmail: !!(email && !hasEmailFormatError && email !== usedEmail),
+    isVerified,
+    isValidPassword: !!(
+      password &&
+      passwordChecker &&
+      !hasPasswordError &&
+      !hasPasswordCheckerError
+    ),
+    isValidMBTI: !!(mbti && isMBTICompleted),
+  });
+
+  const isButtonDisabled = checkIsButtonDisabled({
+    step: nowStep,
+    isValidEmail: !!(email && !hasEmailFormatError && email !== usedEmail),
+    isVerified,
+    isValidPassword: !!(
+      password &&
+      passwordChecker &&
+      !hasPasswordError &&
+      !hasPasswordCheckerError
+    ),
+    isValidMBTI: !!(mbti && isMBTICompleted),
+    isCodeExpired,
+  });
 
   const handleGoNextStep = useCallback(async () => {
+    console.log({ nowStep, isCodeExpired, isVerified });
+    if (nowStep === 2 && isCodeExpired && !isVerified) {
+      return sendEmail();
+    }
     if (nowStep === 1) {
       try {
         await sendEmail();
@@ -162,32 +224,22 @@ export default function AppRegisterPage() {
     email,
     password,
     mbti,
+    isVerified,
+    isCodeExpired,
     navigate,
     sendEmail,
     updateMaxStep,
     location.pathname,
   ]);
 
-  const isLoading =
-    (nowStep === 1 && isEmailSending) || (nowStep === 4 && isRegisterSending);
-
-  const canGoNext = !checkIsButtonDisabled({
-    step: nowStep,
-    isValidEmail: !!(email && !hasEmailFormatError && email !== usedEmail),
-    isVerified,
-    isValidPassword: !!(
-      password &&
-      passwordChecker &&
-      !hasPasswordError &&
-      !hasPasswordCheckerError
-    ),
-    isValidMBTI: !!(mbti && isMBTICompleted),
-  });
+  const shouldShowButton =
+    !isAutoNext || (nowStep === 2 && (leftCnt === 0 || leftSecond === 0));
 
   useEffect(() => {
-    if (canGoNext && isAutoNext) handleGoNextStep();
-  }, [canGoNext, isAutoNext, handleGoNextStep]);
-  console.log(isAutoNext, nowStep, maxCompletedStep);
+    if (isFilled && isAutoNext) {
+      handleGoNextStep();
+    }
+  }, [isFilled, isAutoNext, handleGoNextStep]);
 
   if (nowStep > maxCompletedStep + 1)
     return <Navigate to={APP_END_POINT.register} state={{ step: 0 }} replace />;
@@ -228,8 +280,8 @@ export default function AppRegisterPage() {
               leftSecond={leftSecond}
               isVerified={isVerified}
               isCodeSending={isCodeSending || isEmailSending}
+              isExpired={isCodeExpired}
               verify={verifyCode}
-              resend={sendEmail}
               onCodeChange={handleChangeCode}
               resetCode={resetCode}
             />
@@ -261,14 +313,14 @@ export default function AppRegisterPage() {
           )}
         </div>
 
-        {!isAutoNext && (
+        {shouldShowButton && (
           <Button
             className={styles.button}
             isLoading={isLoading}
-            isValid={canGoNext && (nowStep === 1 || !isAutoNext)}
+            isValid={!isButtonDisabled}
             onClick={handleGoNextStep}
           >
-            {getButtonStr(nowStep)}
+            {getButtonStr(nowStep, isCodeExpired)}
           </Button>
         )}
       </section>
