@@ -17,8 +17,8 @@ interface RegisterCodePageProps {
   isCodeSending: boolean;
   hasCodeError: boolean;
   codeErrorMessage: string | null;
-  verify: () => void;
-  resend: () => void;
+  verify: () => Promise<void>;
+  resend: () => Promise<void>;
   onCodeChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -61,8 +61,10 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
   const isAuto = leftSecond > 0 && leftCnt > 0 && isValidButton && isChanged;
   useEffect(() => {
     if (isAuto) {
-      verify();
-      setIsChanged(false);
+      verify().catch((_) => {
+        setIsChanged(false);
+        throw _;
+      });
       return;
     }
   }, [isAuto, verify]);
@@ -109,12 +111,15 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
                 className={[
                   styles['send-button'],
                   checkIsValidButton(leftSecond, leftCnt, code) &&
-                  !isCodeSending &&
-                  (!isAuto || leftCnt === 0)
+                  (!isAuto || leftCnt === 0) &&
+                  !isCodeSending
                     ? styles.valid
                     : '',
                 ].join(' ')}
-                isValid={checkIsValidButton(leftSecond, leftCnt, code)}
+                isValid={
+                  checkIsValidButton(leftSecond, leftCnt, code) &&
+                  (!isAuto || leftCnt === 0)
+                }
                 isLoading={isCodeSending}
               >
                 {getButtonMessage(leftSecond, leftCnt)}
@@ -131,7 +136,7 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
           <span className={styles['error-message']}>
             {hasCodeError && codeErrorMessage}
             <span className={styles['verified-message']}>
-              {isVerified && '인증완료'}
+              {!isAuto && isVerified && '인증완료'}
             </span>
           </span>
         </div>

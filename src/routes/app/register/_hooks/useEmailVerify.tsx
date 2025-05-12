@@ -110,7 +110,7 @@ export default function useEmailVerify() {
       if (leftCnt) setLeftCnt(leftCnt - 1);
       setIsCodeSending(false);
       setCanVerifyCode(true);
-      return;
+      throw _;
     }
     setCodeErrorMessage(null);
     setIsCodeSending(false);
