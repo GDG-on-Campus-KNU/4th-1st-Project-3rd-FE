@@ -108,6 +108,10 @@ export default function AppRegisterPage() {
 
   const updateMaxStep = useCallback(
     (step: Step) => {
+      if (step === maxCompletedStep) {
+        setIsAutoNext(true);
+        return;
+      }
       if (step === maxCompletedStep + 1) {
         setMaxCompletedStep(step + 1);
         setIsAutoNext(true);
@@ -157,7 +161,7 @@ export default function AppRegisterPage() {
     navigate(location.pathname, {
       state: { step: Math.min(MAX_STEP, nowStep + 1) },
     });
-    updateMaxStep((nowStep + 1) as Step);
+    updateMaxStep(nowStep);
   }, [
     nowStep,
     email,
@@ -186,6 +190,7 @@ export default function AppRegisterPage() {
   });
 
   useEffect(() => {
+    console.log({ nowStep, canGoNext, isAutoNext });
     if (nowStep !== 1 && canGoNext && isAutoNext) handleGoNextStep();
   }, [nowStep, canGoNext, isAutoNext, handleGoNextStep]);
 
