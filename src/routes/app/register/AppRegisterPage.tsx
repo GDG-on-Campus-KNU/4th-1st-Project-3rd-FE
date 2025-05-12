@@ -100,22 +100,16 @@ export default function AppRegisterPage() {
 
   const [maxCompletedStep, setMaxCompletedStep] = useState(0);
 
-  const [isAutoNext, setIsAutoNext] = useState(true);
+  const isAutoNext = nowStep !== 1 && nowStep === maxCompletedStep + 1;
 
   const handleGoBackward = useCallback(() => {
-    setIsAutoNext(false);
     navigate(-1);
   }, [navigate]);
 
   const updateMaxStep = useCallback(
     (step: Step) => {
-      if (step === maxCompletedStep) {
-        setIsAutoNext(true);
-        return;
-      }
       if (step === maxCompletedStep + 1) {
-        setMaxCompletedStep(step + 1);
-        setIsAutoNext(true);
+        setMaxCompletedStep(step);
       }
     },
     [maxCompletedStep],
@@ -191,8 +185,9 @@ export default function AppRegisterPage() {
   });
 
   useEffect(() => {
-    if (nowStep !== 1 && canGoNext && isAutoNext) handleGoNextStep();
-  }, [nowStep, canGoNext, isAutoNext, handleGoNextStep]);
+    if (canGoNext && isAutoNext) handleGoNextStep();
+  }, [canGoNext, isAutoNext, handleGoNextStep]);
+  console.log(isAutoNext, nowStep, maxCompletedStep);
 
   if (nowStep > maxCompletedStep + 1)
     return <Navigate to={APP_END_POINT.register} state={{ step: 0 }} replace />;
@@ -266,14 +261,16 @@ export default function AppRegisterPage() {
           )}
         </div>
 
-        <Button
-          className={styles.button}
-          isLoading={isLoading}
-          isValid={canGoNext && (nowStep === 1 || !isAutoNext)}
-          onClick={handleGoNextStep}
-        >
-          {getButtonStr(nowStep)}
-        </Button>
+        {!isAutoNext && (
+          <Button
+            className={styles.button}
+            isLoading={isLoading}
+            isValid={canGoNext && (nowStep === 1 || !isAutoNext)}
+            onClick={handleGoNextStep}
+          >
+            {getButtonStr(nowStep)}
+          </Button>
+        )}
       </section>
     </section>
   );
