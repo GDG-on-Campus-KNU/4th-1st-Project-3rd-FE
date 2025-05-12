@@ -1,4 +1,4 @@
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 import Button from '@_/components/common/Button/Button';
 import ControlledInput from '@_/components/common/Input/ControlledInput';
@@ -29,7 +29,11 @@ const getButtonMessage = (leftSecond: number, leftCnt: number) => {
   return '재전송';
 };
 
-const isValidButton = (leftSecond: number, leftCnt: number, code: string) => {
+const checkIsValidButton = (
+  leftSecond: number,
+  leftCnt: number,
+  code: string,
+) => {
   if (leftSecond > 0 && leftCnt > 0 && code.length === MAX_CODE_LENGTH)
     return true;
   if (leftSecond === 0) return true;
@@ -52,6 +56,24 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
     onCodeChange,
   } = props;
 
+  const isValidButton = checkIsValidButton(leftSecond, leftCnt, code);
+  const [isChanged, setIsChanged] = useState(false);
+  useEffect(() => {
+    if (leftSecond > 0 && leftCnt > 0 && isValidButton && isChanged) {
+      verify();
+      setIsChanged(false);
+      return;
+    }
+  }, [isValidButton, leftSecond, leftCnt, isChanged, verify]);
+
+  const handleChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setIsChanged(true);
+      onCodeChange(e);
+    },
+    [onCodeChange],
+  );
+
   return (
     <>
       <RegisterDescription
@@ -62,7 +84,7 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
         max={9999}
         min={0}
         value={code}
-        onChange={onCodeChange}
+        onChange={handleChange}
         className={styles.input}
         placeholder="인증번호 4자리를 입력하세요"
         isError={hasCodeError}
@@ -85,11 +107,12 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
                 }
                 className={[
                   styles['send-button'],
-                  isValidButton(leftSecond, leftCnt, code) && !isCodeSending
+                  checkIsValidButton(leftSecond, leftCnt, code) &&
+                  !isCodeSending
                     ? styles.valid
                     : '',
                 ].join(' ')}
-                isValid={isValidButton(leftSecond, leftCnt, code)}
+                isValid={checkIsValidButton(leftSecond, leftCnt, code)}
                 isLoading={isCodeSending}
               >
                 {getButtonMessage(leftSecond, leftCnt)}
