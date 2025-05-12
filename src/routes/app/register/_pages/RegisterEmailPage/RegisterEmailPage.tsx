@@ -33,6 +33,7 @@ export default function RegisterEmailPage({
         isError={hasEmailFormatError || isUsedEmail}
         onChange={onEmailChange}
         placeholder="이메일"
+        autoFocus
         isLoading={isEmailSending}
       />
       <span className={styles['error-message']}>

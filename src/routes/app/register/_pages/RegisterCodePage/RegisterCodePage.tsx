@@ -69,6 +69,7 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
         disabled={isVerified || leftCnt === 0}
         isLoading={isCodeSending}
         type="number"
+        autoFocus
         rightIcon={
           !isVerified && (
             <div className={styles['send-container']}>
