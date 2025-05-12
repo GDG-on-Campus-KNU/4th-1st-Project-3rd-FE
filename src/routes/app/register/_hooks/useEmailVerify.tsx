@@ -70,6 +70,11 @@ export default function useEmailVerify() {
     setLeftSecond(VERIFY_INIT_SECOND);
     setCanVerifyCode(true);
     setCodeErrorMessage(null);
+    setIsVerified(false);
+    setCodeErrorMessage(null);
+    setIsVerified(false);
+    setHasEmailFormatError(false);
+    setCode('');
   }, [email]);
 
   const verifyCode = useCallback(async () => {
