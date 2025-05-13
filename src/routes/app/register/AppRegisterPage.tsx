@@ -144,14 +144,9 @@ export default function AppRegisterPage() {
     navigate(-1);
   }, [navigate]);
 
-  const updateMaxStep = useCallback(
-    (step: Step) => {
-      if (step === maxCompletedStep + 1) {
-        setMaxCompletedStep(step);
-      }
-    },
-    [maxCompletedStep],
-  );
+  const updateMaxStep = useCallback((step: Step) => {
+    setMaxCompletedStep((prev) => (prev + 1 === step ? step : prev));
+  }, []);
   const isLoading =
     (nowStep === 1 && isEmailSending) ||
     (nowStep === 2 && isEmailSending) ||
@@ -202,7 +197,6 @@ export default function AppRegisterPage() {
       return sendEmail();
     }
     if (nowStep === 4) {
-      setIsRegisterSending(true);
       try {
         await postFetch<RegisterRequestBody>(HTTP_API_END_POINT.register, {
           body: { email, password, mbti: mbti as Mbti },
@@ -211,7 +205,7 @@ export default function AppRegisterPage() {
               alert('이메일이 만료되었습니다. 처음부터 다시 시도해주세요.');
             } else alert('알 수 없는 오류입니다. 다시 시도해주세요.');
             navigate(APP_END_POINT.register, {
-              state: { step: 0 },
+              state: { step: 1 },
             });
           },
         });
