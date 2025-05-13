@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 import Button from '@_/components/common/Button/Button';
 import SolidStepIndicator from '@_/components/common/SoildStepper/SolidStepIndicator';
@@ -87,7 +87,6 @@ const checkIsFilled = ({
 export default function AppRegisterPage() {
   useNonLoginPage();
   const navigate = useNavigate();
-  const location = useLocation();
   const {
     email,
     code,
@@ -132,17 +131,26 @@ export default function AppRegisterPage() {
     changePlanningChar,
   } = useMBTIInput();
 
-  const nowStep: Step = location.state?.step || 1;
+  const [stepHistory, setNowStepHistory] = useState<Step[]>([1]);
+
+  const nowStep = stepHistory[stepHistory.length - 1];
+  const goStep = useCallback((step: Step) => {
+    setNowStepHistory((prev) => prev.concat(step));
+  }, []);
+
+  const backStep = useCallback(() => {
+    if (stepHistory.length === 1) {
+      navigate(-1);
+      return;
+    }
+    setNowStepHistory((prev) => prev.slice(0, -1));
+  }, [stepHistory, navigate]);
 
   const [isRegisterSending, setIsRegisterSending] = useState(false);
 
   const [maxCompletedStep, setMaxCompletedStep] = useState(0);
 
   const isAutoNext = nowStep !== 1 && nowStep === maxCompletedStep + 1;
-
-  const handleGoBackward = useCallback(() => {
-    navigate(-1);
-  }, [navigate]);
 
   const updateMaxStep = useCallback((step: Step) => {
     setMaxCompletedStep((prev) => (prev + 1 === step ? step : prev));
@@ -183,9 +191,7 @@ export default function AppRegisterPage() {
     if (nowStep === 1 && email !== verifiedEmail) {
       try {
         await sendEmail();
-        navigate(location.pathname, {
-          state: { step: 2 },
-        });
+        goStep(2);
         updateMaxStep(1);
         return;
       } catch (_) {
@@ -204,9 +210,7 @@ export default function AppRegisterPage() {
             if (code === 'E001') {
               alert('이메일이 만료되었습니다. 처음부터 다시 시도해주세요.');
             } else alert('알 수 없는 오류입니다. 다시 시도해주세요.');
-            navigate(APP_END_POINT.register, {
-              state: { step: 1 },
-            });
+            setNowStepHistory([]);
           },
         });
         setIsRegisterSending(false);
@@ -219,9 +223,7 @@ export default function AppRegisterPage() {
       }
     }
 
-    navigate(location.pathname, {
-      state: { step: Math.min(MAX_STEP, nowStep + 1) },
-    });
+    goStep(Math.min(MAX_STEP, nowStep + 1) as Step);
     updateMaxStep(nowStep);
   }, [
     nowStep,
@@ -231,10 +233,10 @@ export default function AppRegisterPage() {
     isVerified,
     isCodeExpired,
     verifiedEmail,
+    goStep,
     navigate,
     sendEmail,
     updateMaxStep,
-    location.pathname,
   ]);
 
   const shouldShowButton =
@@ -254,7 +256,7 @@ export default function AppRegisterPage() {
       <header className={styles.header}>
         <SolidArrowHeadSVG
           direction="left"
-          onClick={handleGoBackward}
+          onClick={backStep}
           className={styles['header-backward-button']}
         />
       </header>
