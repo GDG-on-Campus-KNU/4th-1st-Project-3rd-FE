@@ -31,7 +31,7 @@ const getButtonStr = (
   if (step === 1) {
     if (!verifiedEmail) return '인증번호 받기';
     if (verifiedEmail && email !== verifiedEmail)
-      return '이 메일로 다시 인증받기';
+      return '다른 메일로 다시 인증받기';
     return '다음으로';
   }
   if (step === 2) {
