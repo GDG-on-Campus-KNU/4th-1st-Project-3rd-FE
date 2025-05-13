@@ -17,6 +17,7 @@ interface RegisterCodePageProps {
   hasCodeError: boolean;
   codeErrorMessage: string | null;
   isExpired: boolean;
+  isAuto: boolean;
   verify: () => Promise<void>;
   onCodeChange: (e: ChangeEvent<HTMLInputElement>) => void;
   resetCode: () => void;
@@ -35,6 +36,7 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
     isVerified,
     isExpired,
     isCodeSending,
+    isAuto,
     verify,
     onCodeChange,
     resetCode,
@@ -72,7 +74,7 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
             : '인증번호 4자리를 입력하세요'
         }
         isError={hasCodeError}
-        disabled={isVerified || leftCnt === 0}
+        disabled={isVerified || isExpired}
         isLoading={isCodeSending}
         type="number"
         autoFocus
@@ -95,7 +97,7 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
           <span className={styles['error-message']}>
             {hasCodeError && codeErrorMessage}
             <span className={styles['verified-message']}>
-              {!canCodeSend && isVerified && '인증완료'}
+              {!isAuto && isVerified && '인증완료'}
             </span>
           </span>
         </div>

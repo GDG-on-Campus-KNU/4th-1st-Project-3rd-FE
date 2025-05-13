@@ -1,9 +1,10 @@
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { postFetch } from '@_/fetches/BaseFetches';
+import useTimer from '@_/hooks/useTimer';
 
-const VERIFY_INIT_SECOND = 5 * 60;
+const VERIFY_INIT_SECOND = 10;
 const LEFT_COUNT_INIT = 5;
 
 const EMAIL_REGEX =
@@ -14,36 +15,20 @@ export default function useEmailVerify() {
   const [isEmailSending, setIsEmailSending] = useState(false);
   const [hasEmailFormatError, setHasEmailFormatError] = useState(false);
   const [usedEmail, setUsedEmail] = useState<string | null>(null);
-  const [isValidCode, setIsValidCode] = useState(false);
 
   const [isVerified, setIsVerified] = useState(false);
   const [code, setCode] = useState<string>('');
   const [isCodeSending, setIsCodeSending] = useState(false);
   const [canVerifyCode, setCanVerifyCode] = useState(false);
-  const [leftSecond, setLeftSecond] = useState(0);
   const [leftCnt, setLeftCnt] = useState(LEFT_COUNT_INIT);
   const [codeErrorMessage, setCodeErrorMessage] = useState<string | null>(null);
   const hasCodeError = !!codeErrorMessage;
-  const intervalIdRef = useRef<ReturnType<typeof setInterval>>(undefined);
 
-  useEffect(() => {
-    if (!isValidCode) return;
-    function leftTimeInterval() {
-      setLeftSecond((prev) => {
-        return Math.max(prev - 1, 0);
-      });
-    }
-    intervalIdRef.current = setInterval(leftTimeInterval, 1000);
-
-    return () => clearInterval(intervalIdRef.current);
-  }, [isValidCode]);
-
-  useEffect(() => {
-    if (isValidCode && leftSecond === 0) {
-      clearInterval(intervalIdRef.current);
-      setIsValidCode(false);
-    }
-  }, [isValidCode, leftSecond]);
+  const {
+    leftSecond: codeLeftSecond,
+    startCount: startCodeCount,
+    resetCount: resetCodeCount,
+  } = useTimer(useMemo(() => ({ targetSec: VERIFY_INIT_SECOND }), []));
 
   const sendEmail = useCallback(async () => {
     setIsEmailSending(true);
@@ -65,9 +50,7 @@ export default function useEmailVerify() {
     setIsEmailSending(false);
     setHasEmailFormatError(false);
     setUsedEmail(null);
-    setIsValidCode(true);
     setLeftCnt(LEFT_COUNT_INIT);
-    setLeftSecond(VERIFY_INIT_SECOND);
     setCanVerifyCode(true);
     setCodeErrorMessage(null);
     setIsVerified(false);
@@ -75,11 +58,12 @@ export default function useEmailVerify() {
     setIsVerified(false);
     setHasEmailFormatError(false);
     setCode('');
-  }, [email]);
+    startCodeCount();
+  }, [email, startCodeCount]);
 
   const verifyCode = useCallback(async () => {
     if (!canVerifyCode) return;
-    if (leftSecond <= 0) return;
+    if (codeLeftSecond <= 0) return;
     if (leftCnt <= 0) return;
     if (code.length !== 4) return;
     setIsCodeSending(true);
@@ -116,7 +100,8 @@ export default function useEmailVerify() {
     setIsCodeSending(false);
     setIsVerified(true);
     setHasEmailFormatError(false);
-  }, [canVerifyCode, leftSecond, code, leftCnt, email]);
+    resetCodeCount();
+  }, [canVerifyCode, codeLeftSecond, code, leftCnt, email, resetCodeCount]);
 
   const handleChangeEmail = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.currentTarget.value);
@@ -137,7 +122,7 @@ export default function useEmailVerify() {
     email,
     code,
     leftCnt,
-    leftSecond,
+    leftSecond: codeLeftSecond,
     hasEmailFormatError,
     usedEmail,
     isEmailSending,
@@ -145,7 +130,7 @@ export default function useEmailVerify() {
     isVerified,
     hasCodeError,
     codeErrorMessage,
-    isCodeExpired: leftCnt === 0 || leftSecond === 0,
+    isCodeExpired: leftCnt === 0 || codeLeftSecond === 0,
     sendEmail,
     verifyCode,
     handleChangeEmail,

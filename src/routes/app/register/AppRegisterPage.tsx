@@ -174,7 +174,6 @@ export default function AppRegisterPage() {
   });
 
   const handleGoNextStep = useCallback(async () => {
-    console.log({ nowStep, isCodeExpired, isVerified });
     if (nowStep === 2 && isCodeExpired && !isVerified) {
       return sendEmail();
     }
@@ -281,6 +280,7 @@ export default function AppRegisterPage() {
               isVerified={isVerified}
               isCodeSending={isCodeSending || isEmailSending}
               isExpired={isCodeExpired}
+              isAuto={isAutoNext}
               verify={verifyCode}
               onCodeChange={handleChangeCode}
               resetCode={resetCode}
