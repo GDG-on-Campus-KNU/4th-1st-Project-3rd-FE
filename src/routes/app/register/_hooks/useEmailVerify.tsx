@@ -4,7 +4,7 @@ import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { postFetch } from '@_/fetches/BaseFetches';
 import useTimer from '@_/hooks/useTimer';
 
-const VERIFY_INIT_SECOND = 10;
+const VERIFY_INIT_SECOND = 5 * 60;
 const LEFT_COUNT_INIT = 5;
 
 const EMAIL_REGEX =
