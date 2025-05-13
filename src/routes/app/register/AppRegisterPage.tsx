@@ -322,6 +322,7 @@ export default function AppRegisterPage() {
               changePerspectiveChar={changePerspectiveChar}
               changeJudgeChar={changeJudgeChar}
               changePlanningChar={changePlanningChar}
+              isLoading={isRegisterSending}
             />
           )}
         </div>

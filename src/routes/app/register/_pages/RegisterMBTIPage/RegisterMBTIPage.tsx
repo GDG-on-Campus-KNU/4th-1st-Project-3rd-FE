@@ -8,6 +8,7 @@ interface RegisterMBTIPageProps {
   perspectiveChar: 'N' | 'S' | null;
   judgeChar: 'F' | 'T' | null;
   planningChar: 'P' | 'J' | null;
+  isLoading: boolean;
   changeEnergyChar: (value: 'E' | 'I') => void;
   changePerspectiveChar: (value: 'S' | 'N') => void;
   changeJudgeChar: (value: 'T' | 'F') => void;
@@ -23,6 +24,7 @@ export default function RegisterMBTIPage(props: RegisterMBTIPageProps) {
     perspectiveChar,
     judgeChar,
     planningChar,
+    isLoading,
     changeEnergyChar,
     changePerspectiveChar,
     changeJudgeChar,
@@ -41,6 +43,7 @@ export default function RegisterMBTIPage(props: RegisterMBTIPageProps) {
           downValue="I"
           nowValue={energyChar}
           description="에너지방향"
+          isLoading={isLoading}
           onToggle={canChange ? changeEnergyChar : noop}
         />
         <CharToggler
@@ -48,6 +51,7 @@ export default function RegisterMBTIPage(props: RegisterMBTIPageProps) {
           downValue="N"
           nowValue={perspectiveChar}
           description="인식"
+          isLoading={isLoading}
           onToggle={canChange ? changePerspectiveChar : noop}
         />
         <CharToggler
@@ -55,6 +59,7 @@ export default function RegisterMBTIPage(props: RegisterMBTIPageProps) {
           downValue="F"
           nowValue={judgeChar}
           description="판단"
+          isLoading={isLoading}
           onToggle={canChange ? changeJudgeChar : noop}
         />
         <CharToggler
@@ -62,6 +67,7 @@ export default function RegisterMBTIPage(props: RegisterMBTIPageProps) {
           downValue="P"
           nowValue={planningChar}
           description="계획성"
+          isLoading={isLoading}
           onToggle={canChange ? changePlanningChar : noop}
         />
       </div>
