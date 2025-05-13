@@ -21,14 +21,17 @@ export default function useTimer(props: useTimerProps) {
 
     intervalRef.current = setInterval(() => {
       const nowDate = new Date();
-      const leftCnt = Math.max(0, targetDate.getTime() - nowDate.getTime());
+      const leftCnt = Math.max(
+        0,
+        Math.floor((targetDate.getTime() - nowDate.getTime()) / 1000),
+      );
       setLeftSecond(leftCnt);
       if (leftCnt === 0) {
         clearInterval(intervalRef.current);
 
         onFinish();
       }
-    }, 1000);
+    }, 100);
   }, [onFinish, targetSec]);
 
   return { resetCount, startCount, leftSecond };
