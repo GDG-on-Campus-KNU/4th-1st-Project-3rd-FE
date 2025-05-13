@@ -22,8 +22,18 @@ import RegisterPasswordPage from './_pages/RegisterPasswordPage/RegisterPassword
 type Step = 1 | 2 | 3 | 4;
 const noop = () => {};
 const MAX_STEP = 4;
-const getButtonStr = (step: Step, isCodeExpired: boolean) => {
-  if (step === 1) return '인증번호 받기';
+const getButtonStr = (
+  step: Step,
+  isCodeExpired: boolean,
+  email: string | null,
+  verifiedEmail: string | null,
+) => {
+  if (step === 1) {
+    if (!verifiedEmail) return '인증번호 받기';
+    if (verifiedEmail && email !== verifiedEmail)
+      return '이 메일로 다시 인증받기';
+    return '다음으로';
+  }
   if (step === 2) {
     if (isCodeExpired) return '인증메일 다시 받기';
     return '확인';
@@ -91,6 +101,7 @@ export default function AppRegisterPage() {
     hasCodeError,
     codeErrorMessage,
     isCodeExpired,
+    verifiedEmail,
     sendEmail,
     verifyCode,
     handleChangeEmail,
@@ -174,10 +185,7 @@ export default function AppRegisterPage() {
   });
 
   const handleGoNextStep = useCallback(async () => {
-    if (nowStep === 2 && isCodeExpired && !isVerified) {
-      return sendEmail();
-    }
-    if (nowStep === 1) {
+    if (nowStep === 1 && email !== verifiedEmail) {
       try {
         await sendEmail();
         navigate(location.pathname, {
@@ -189,6 +197,9 @@ export default function AppRegisterPage() {
         noop();
         return;
       }
+    }
+    if (nowStep === 2 && isCodeExpired && !isVerified) {
+      return sendEmail();
     }
     if (nowStep === 4) {
       setIsRegisterSending(true);
@@ -225,6 +236,7 @@ export default function AppRegisterPage() {
     mbti,
     isVerified,
     isCodeExpired,
+    verifiedEmail,
     navigate,
     sendEmail,
     updateMaxStep,
@@ -261,6 +273,7 @@ export default function AppRegisterPage() {
         <div>
           {nowStep === 1 && (
             <RegisterEmailPage
+              verifiedEmail={verifiedEmail}
               email={email}
               hasEmailFormatError={hasEmailFormatError}
               usedEmail={usedEmail}
@@ -320,7 +333,7 @@ export default function AppRegisterPage() {
             isValid={!isButtonDisabled}
             onClick={handleGoNextStep}
           >
-            {getButtonStr(nowStep, isCodeExpired)}
+            {getButtonStr(nowStep, isCodeExpired, email, verifiedEmail)}
           </Button>
         )}
       </section>

@@ -15,6 +15,7 @@ export default function useEmailVerify() {
   const [isEmailSending, setIsEmailSending] = useState(false);
   const [hasEmailFormatError, setHasEmailFormatError] = useState(false);
   const [usedEmail, setUsedEmail] = useState<string | null>(null);
+  const [verifiedEmail, setVerifiedEmail] = useState<string | null>(null);
 
   const [isVerified, setIsVerified] = useState(false);
   const [code, setCode] = useState<string>('');
@@ -59,6 +60,7 @@ export default function useEmailVerify() {
     setHasEmailFormatError(false);
     setCode('');
     startCodeCount();
+    setVerifiedEmail(email);
   }, [email, startCodeCount]);
 
   const verifyCode = useCallback(async () => {
@@ -131,6 +133,7 @@ export default function useEmailVerify() {
     hasCodeError,
     codeErrorMessage,
     isCodeExpired: leftCnt === 0 || codeLeftSecond === 0,
+    verifiedEmail,
     sendEmail,
     verifyCode,
     handleChangeEmail,
