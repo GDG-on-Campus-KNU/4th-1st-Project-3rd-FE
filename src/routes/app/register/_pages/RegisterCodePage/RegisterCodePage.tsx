@@ -78,6 +78,7 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
         isLoading={isCodeSending}
         type="number"
         autoFocus
+        autoComplete="one-time-code"
         ref={inputRef}
         rightIcon={
           !isVerified && (

@@ -36,6 +36,7 @@ export default function RegisterEmailPage({
         onChange={onEmailChange}
         placeholder="이메일"
         autoFocus
+        autoComplete="username"
         isLoading={isEmailSending}
       />
       <span className={styles['message']}>

@@ -62,6 +62,7 @@ export default function AppCancelPage() {
           value={typedEmail}
           onChange={(e) => setTypedEmail(e.target.value)}
           className={styles.input}
+          autoComplete="off"
         />
         <div className={styles['button-container']}>
           <Button

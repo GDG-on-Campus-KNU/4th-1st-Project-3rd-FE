@@ -39,6 +39,7 @@ export default function RegisterPasswordPage(props: RegisterPasswordPageProps) {
         placeholder="비밀번호"
         maxLength={20}
         autoFocus
+        autoComplete="new-password"
       />
       <span className={styles['error-message']}>
         {hasPasswordError && passwordErrorMessage}
@@ -49,6 +50,7 @@ export default function RegisterPasswordPage(props: RegisterPasswordPageProps) {
         isError={hasPasswordCheckerError}
         onChange={onChangePasswordChecker}
         placeholder="비밀번호 확인"
+        autoComplete="new-password"
         maxLength={20}
       />
       <span className={styles['error-message']}>

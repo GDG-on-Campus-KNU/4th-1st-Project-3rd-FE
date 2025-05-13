@@ -50,6 +50,7 @@ export default function AppLoginPage() {
           isError={!!errorMessage}
           isLoading={isLoginSending}
           autoFocus
+          autoComplete="username"
         />
         <div className={styles['id-input']} />
         <ControlledInput
@@ -60,6 +61,7 @@ export default function AppLoginPage() {
           onChange={(e) => setPassWord(e.target.value)}
           isError={!!errorMessage}
           isLoading={isLoginSending}
+          autoComplete="current-password"
         />
         <div className={styles['error-message']}>
           {!isLoginSending && errorMessage}
