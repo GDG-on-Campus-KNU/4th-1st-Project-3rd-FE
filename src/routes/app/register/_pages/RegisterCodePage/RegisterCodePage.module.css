@@ -10,13 +10,8 @@
 
 
 .send-container {
-  display        : flex;
-  gap            : 14px;
-  align-items    : center;
-  justify-content: space-between;
-
-  width : 96px;
-  height: 100%;
+  height       : 100%;
+  padding-right: 10px;
 }
 
 .left-time {

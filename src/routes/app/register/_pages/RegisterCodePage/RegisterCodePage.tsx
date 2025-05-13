@@ -1,6 +1,5 @@
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useEffect, useRef } from 'react';
 
-import Button from '@_/components/common/Button/Button';
 import ControlledInput from '@_/components/common/Input/ControlledInput';
 import getMMSSBySecond from '@_/utils/getMMSSBySecond';
 
@@ -17,25 +16,14 @@ interface RegisterCodePageProps {
   isCodeSending: boolean;
   hasCodeError: boolean;
   codeErrorMessage: string | null;
-  verify: () => void;
-  resend: () => void;
+  isExpired: boolean;
+  isAuto: boolean;
+  verify: () => Promise<void>;
   onCodeChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  resetCode: () => void;
 }
 
 const MAX_CODE_LENGTH = 4;
-
-const getButtonMessage = (leftSecond: number, leftCnt: number) => {
-  if (leftSecond > 0 && leftCnt > 0) return '인증';
-  return '재전송';
-};
-
-const isValidButton = (leftSecond: number, leftCnt: number, code: string) => {
-  if (leftSecond > 0 && leftCnt > 0 && code.length === MAX_CODE_LENGTH)
-    return true;
-  if (leftSecond === 0) return true;
-  if (leftCnt === 0) return true;
-  return false;
-};
 
 export default function RegisterCodePage(props: RegisterCodePageProps) {
   const {
@@ -46,11 +34,27 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
     hasCodeError,
     codeErrorMessage,
     isVerified,
+    isExpired,
     isCodeSending,
+    isAuto,
     verify,
-    resend,
     onCodeChange,
+    resetCode,
   } = props;
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  const canCodeSend = !isExpired && code.length === MAX_CODE_LENGTH;
+
+  useEffect(() => {
+    if (canCodeSend) {
+      verify().catch((_) => {
+        resetCode();
+        setTimeout(() => inputRef.current?.focus());
+        throw _;
+      });
+      return;
+    }
+  }, [canCodeSend, resetCode, verify]);
 
   return (
     <>
@@ -64,35 +68,23 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
         value={code}
         onChange={onCodeChange}
         className={styles.input}
-        placeholder="인증번호 4자리를 입력하세요"
+        placeholder={
+          isExpired
+            ? '인증 메일을 다시 받으세요'
+            : '인증번호 4자리를 입력하세요'
+        }
         isError={hasCodeError}
-        disabled={isVerified || leftCnt === 0}
+        disabled={isVerified || isExpired}
         isLoading={isCodeSending}
         type="number"
+        autoFocus
+        ref={inputRef}
         rightIcon={
           !isVerified && (
             <div className={styles['send-container']}>
               <span className={styles['left-time']}>
                 {leftCnt ? getMMSSBySecond(leftSecond) : null}
               </span>
-              <Button
-                onClick={
-                  codeErrorMessage ===
-                  '인증 횟수를 모두 사용하였습니다\n오른쪽 버튼을 눌러 인증메일을 다시 보내주세요.'
-                    ? resend
-                    : verify
-                }
-                className={[
-                  styles['send-button'],
-                  isValidButton(leftSecond, leftCnt, code) && !isCodeSending
-                    ? styles.valid
-                    : '',
-                ].join(' ')}
-                isValid={isValidButton(leftSecond, leftCnt, code)}
-                isLoading={isCodeSending}
-              >
-                {getButtonMessage(leftSecond, leftCnt)}
-              </Button>
             </div>
           )
         }
@@ -105,7 +97,7 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
           <span className={styles['error-message']}>
             {hasCodeError && codeErrorMessage}
             <span className={styles['verified-message']}>
-              {isVerified && '인증완료'}
+              {!isAuto && isVerified && '인증완료'}
             </span>
           </span>
         </div>

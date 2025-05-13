@@ -6,10 +6,15 @@ import CharToggler, { CharTogglerProps } from './CharToggler';
 
 type TmpElementProps = Pick<
   CharTogglerProps<string>,
-  'upValue' | 'downValue' | 'description'
+  'upValue' | 'downValue' | 'description' | 'isLoading'
 >;
 
-const TmpElement = ({ upValue, downValue, description }: TmpElementProps) => {
+const TmpElement = ({
+  upValue,
+  downValue,
+  description,
+  isLoading,
+}: TmpElementProps) => {
   const [nowValue, setNowValue] = useState<string | null | undefined>(null);
   useEffect(() => {
     setNowValue(null);
@@ -23,6 +28,7 @@ const TmpElement = ({ upValue, downValue, description }: TmpElementProps) => {
         setNowValue((prev) => (prev === value ? null : value))
       }
       description={description}
+      isLoading={isLoading}
     />
   );
 };
@@ -32,6 +38,7 @@ const meta = {
     upValue: 'E',
     downValue: 'I',
     description: '에너지방향',
+    isLoading: false,
   },
   component: TmpElement,
 } satisfies Meta<typeof TmpElement>;

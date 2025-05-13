@@ -10,6 +10,7 @@ interface EmailPageProps {
   hasEmailFormatError: boolean;
   usedEmail: string | null;
   isEmailSending: boolean;
+  verifiedEmail: string | null;
   onEmailChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -18,6 +19,7 @@ export default function RegisterEmailPage({
   hasEmailFormatError,
   usedEmail,
   isEmailSending,
+  verifiedEmail,
   onEmailChange,
 }: EmailPageProps) {
   const isUsedEmail = email === usedEmail;
@@ -33,12 +35,25 @@ export default function RegisterEmailPage({
         isError={hasEmailFormatError || isUsedEmail}
         onChange={onEmailChange}
         placeholder="이메일"
+        autoFocus
         isLoading={isEmailSending}
       />
-      <span className={styles['error-message']}>
-        {hasEmailFormatError && '이메일 형식이 맞지 않습니다'}
-        <br />
-        {isUsedEmail && `${usedEmail}은 이미 사용 중인 이메일입니다.`}
+      <span className={styles['message']}>
+        {verifiedEmail && (
+          <>
+            {`${verifiedEmail}로 인증 받으셨습니다.`}
+            <br />
+            이메일을 수정하시면 다른 이메일로 인증받으실 수 있습니다.
+          </>
+        )}
+        {hasEmailFormatError && (
+          <div className={styles.error}>이메일 형식이 맞지 않습니다</div>
+        )}
+        {isUsedEmail && (
+          <div
+            className={styles.error}
+          >{`${usedEmail}은 이미 사용 중인 이메일입니다.`}</div>
+        )}
       </span>
     </>
   );

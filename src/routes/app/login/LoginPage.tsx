@@ -49,6 +49,7 @@ export default function AppLoginPage() {
           onChange={(e) => setEmail(e.target.value)}
           isError={!!errorMessage}
           isLoading={isLoginSending}
+          autoFocus
         />
         <div className={styles['id-input']} />
         <ControlledInput

@@ -29,6 +29,8 @@
 .char-box {
   user-select: none;
 
+  position: relative;
+
   display        : flex;
   align-items    : center;
   justify-content: center;
@@ -50,4 +52,15 @@
 
 .unselected {
   color: #666;
+}
+
+.loading {
+  position: absolute;
+
+  width        : 100%;
+  height       : 100%;
+  border-radius: 10px;
+
+  background-color: #5555;
+
 }
