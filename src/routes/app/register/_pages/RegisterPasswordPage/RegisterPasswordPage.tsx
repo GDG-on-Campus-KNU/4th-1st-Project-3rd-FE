@@ -31,6 +31,13 @@ export default function RegisterPasswordPage(props: RegisterPasswordPageProps) {
   return (
     <>
       <RegisterDescription title="비밀번호 설정" />
+      {/* 접근성을 위한 빈 input */}
+      <input
+        type="text"
+        name="username"
+        autoComplete="username"
+        style={{ display: 'none' }}
+      />
       <ControlledInput
         type="password"
         value={password}
@@ -39,6 +46,7 @@ export default function RegisterPasswordPage(props: RegisterPasswordPageProps) {
         placeholder="비밀번호"
         maxLength={20}
         autoFocus
+        autoComplete="new-password"
       />
       <span className={styles['error-message']}>
         {hasPasswordError && passwordErrorMessage}
@@ -49,6 +57,7 @@ export default function RegisterPasswordPage(props: RegisterPasswordPageProps) {
         isError={hasPasswordCheckerError}
         onChange={onChangePasswordChecker}
         placeholder="비밀번호 확인"
+        autoComplete="new-password"
         maxLength={20}
       />
       <span className={styles['error-message']}>
