@@ -9,6 +9,13 @@ import './styles/reset.css';
 if (import.meta.env.VITE_MSW) {
   await startMSW();
 }
+
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  // @ts-expect-error 이거 있음
+  event.prompt();
+});
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
