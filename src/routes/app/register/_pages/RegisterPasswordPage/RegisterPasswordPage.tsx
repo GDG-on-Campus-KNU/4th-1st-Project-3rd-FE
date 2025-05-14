@@ -31,6 +31,13 @@ export default function RegisterPasswordPage(props: RegisterPasswordPageProps) {
   return (
     <>
       <RegisterDescription title="비밀번호 설정" />
+      {/* 접근성을 위한 빈 input */}
+      <input
+        type="text"
+        name="username"
+        autoComplete="username"
+        style={{ display: 'none' }}
+      />
       <ControlledInput
         type="password"
         value={password}

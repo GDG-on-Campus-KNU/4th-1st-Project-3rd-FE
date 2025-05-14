@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 
 import { Navigate, useNavigate } from 'react-router-dom';
 
@@ -248,6 +248,14 @@ export default function AppRegisterPage() {
     }
   }, [isFilled, isAutoNext, handleGoNextStep]);
 
+  const handleSubmit = useCallback(
+    (e: FormEvent) => {
+      e.preventDefault();
+      handleGoNextStep();
+    },
+    [handleGoNextStep],
+  );
+
   if (nowStep > maxCompletedStep + 1)
     return <Navigate to={APP_END_POINT.register} state={{ step: 0 }} replace />;
 
@@ -265,7 +273,7 @@ export default function AppRegisterPage() {
         nowStep={nowStep}
         className={styles['step-indicator']}
       />
-      <section className={styles['section-layout']}>
+      <form onSubmit={handleSubmit} className={styles['section-layout']}>
         <div>
           {nowStep === 1 && (
             <RegisterEmailPage
@@ -328,12 +336,11 @@ export default function AppRegisterPage() {
             className={styles.button}
             isLoading={isLoading}
             isValid={!isButtonDisabled}
-            onClick={handleGoNextStep}
           >
             {getButtonStr(nowStep, isCodeExpired, email, verifiedEmail)}
           </Button>
         )}
-      </section>
+      </form>
     </section>
   );
 }
