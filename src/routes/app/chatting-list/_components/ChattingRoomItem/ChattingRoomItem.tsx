@@ -66,6 +66,7 @@ export function ChattingRoomItem({
   }, [isSwiped]);
 
   const handleTouchStart = useCallback((e: TouchEvent<HTMLDivElement>) => {
+    e.stopPropagation();
     touchStarted.current = true;
     canMoveRef.current = true;
     swipeStartedTouchX.current = getTouchEventOffsetXPosition(e);
@@ -73,6 +74,7 @@ export function ChattingRoomItem({
 
   const handleTouchMove = useCallback(
     (e: TouchEvent<HTMLDivElement>) => {
+      e.stopPropagation();
       if (!canMoveRef.current) return;
       if (swipeStartedTouchX.current === null) return;
       canMoveRef.current = false;
@@ -102,29 +104,33 @@ export function ChattingRoomItem({
     [isSwiped],
   );
 
-  const handleTouchEnd = useCallback(() => {
-    if (!swiperRef.current) return;
-    if (swipeStartedTouchX.current === null) return;
-    if (swipeLastTouchX.current === null) return;
-    const BUTTONS_WIDTH = buttonContainerRef.current?.offsetWidth || 0;
-    const moveDistance = getMovedDistance(
-      swipeStartedTouchX.current,
-      swipeLastTouchX.current,
-      isSwiped,
-    );
-    setIsSwiped((prev) => {
-      const isSameLast = moveDistance <= 40;
-      const nextIsSwiped = isSameLast ? prev : !prev;
-      if (!swiperRef.current) return nextIsSwiped;
-      if (isSameLast) {
-        swiperRef.current.style.right = `${nextIsSwiped ? BUTTONS_WIDTH : 0}px`;
-      }
-      return nextIsSwiped;
-    });
+  const handleTouchEnd = useCallback(
+    (e: TouchEvent<HTMLDivElement>) => {
+      e.stopPropagation();
+      if (!swiperRef.current) return;
+      if (swipeStartedTouchX.current === null) return;
+      if (swipeLastTouchX.current === null) return;
+      const BUTTONS_WIDTH = buttonContainerRef.current?.offsetWidth || 0;
+      const moveDistance = getMovedDistance(
+        swipeStartedTouchX.current,
+        swipeLastTouchX.current,
+        isSwiped,
+      );
+      setIsSwiped((prev) => {
+        const isSameLast = moveDistance <= 40;
+        const nextIsSwiped = isSameLast ? prev : !prev;
+        if (!swiperRef.current) return nextIsSwiped;
+        if (isSameLast) {
+          swiperRef.current.style.right = `${nextIsSwiped ? BUTTONS_WIDTH : 0}px`;
+        }
+        return nextIsSwiped;
+      });
 
-    swipeStartedTouchX.current = null;
-    swipeLastTouchX.current = null;
-  }, [isSwiped, setIsSwiped]);
+      swipeStartedTouchX.current = null;
+      swipeLastTouchX.current = null;
+    },
+    [isSwiped, setIsSwiped],
+  );
 
   const handleRefresh = useCallback(() => {
     onRefresh();
