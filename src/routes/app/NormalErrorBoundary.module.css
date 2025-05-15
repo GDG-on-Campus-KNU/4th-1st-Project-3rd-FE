@@ -25,3 +25,8 @@
   color      : #333;
   text-align : center;
 }
+
+.back-button {
+  color           : #606060;
+  background-color: white;
+}
