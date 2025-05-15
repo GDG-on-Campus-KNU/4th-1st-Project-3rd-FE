@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import Button from '@_/components/common/Button/Button';
 import { Modal } from '@_/components/common/Modal/Modal';
+import SwipeXDetector from '@_/components/common/SwipeXDetector/SwipeXDetector';
 import HamburgerSVG from '@_/components/common/svgs/HamburgerSVG';
 import SolidPlusSVG from '@_/components/common/svgs/SolidPlusSVG';
 import SONASvg from '@_/components/common/svgs/sona/SONASvg';
@@ -214,9 +215,9 @@ export default function AppChattingListPage() {
     navigate(APP_END_POINT.chattingListAdd);
   };
 
-  const handleHamburgerClick = useCallback(() => {
+  const openSidebar = useCallback(() => {
     setIsSidebarMoved(true);
-    setIsSidebarOpened((prev) => !prev);
+    setIsSidebarOpened(true);
   }, []);
 
   const handleLogout = useCallback(async () => {
@@ -236,7 +237,13 @@ export default function AppChattingListPage() {
 
   return (
     <>
-      <div
+      <SwipeXDetector
+        direction="both"
+        onLeftDetect={useCallback(() => setIsSidebarOpened(false), [])}
+        onRightDetect={openSidebar}
+        startOffsetXPercent={-Infinity}
+        finishOffsetXPercent={Infinity}
+        criteria={10}
         className={[
           styles.container,
           getSideBarStyle(isSidebarMoved, isSidebarOpened),
@@ -257,7 +264,7 @@ export default function AppChattingListPage() {
             />
           )}
           <header className={styles.header}>
-            <HamburgerSVG onClick={handleHamburgerClick} />
+            <HamburgerSVG onClick={openSidebar} />
             채팅
           </header>
           <section className={styles.section}>
@@ -315,7 +322,7 @@ export default function AppChattingListPage() {
             </Modal>
           )}
         </div>
-      </div>
+      </SwipeXDetector>
       {isLogoutModalOpen && (
         <Modal
           onClose={() => setIsLogoutModalOpen(false)}
