@@ -48,7 +48,6 @@ input[type="number"] {
   color: #c3c3c3
 }
 
-/* 현재 normal과 똑같음 */
 .disabled {
   border-color: #c3c3c3;
   color       : #666;

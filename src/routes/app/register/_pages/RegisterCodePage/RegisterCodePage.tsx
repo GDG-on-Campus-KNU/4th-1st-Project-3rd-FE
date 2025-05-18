@@ -74,8 +74,7 @@ export default function RegisterCodePage(props: RegisterCodePageProps) {
             : '인증번호 4자리를 입력하세요'
         }
         isError={hasCodeError}
-        disabled={isVerified || isExpired}
-        isLoading={isCodeSending}
+        disabled={isVerified || isExpired || isCodeSending}
         type="number"
         autoFocus
         autoComplete="one-time-code"

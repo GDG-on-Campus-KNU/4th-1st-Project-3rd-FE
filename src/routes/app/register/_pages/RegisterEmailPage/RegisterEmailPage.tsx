@@ -37,7 +37,7 @@ export default function RegisterEmailPage({
         placeholder="이메일"
         autoFocus
         autoComplete="username"
-        isLoading={isEmailSending}
+        disabled={isEmailSending}
       />
       <span className={styles['message']}>
         {verifiedEmail && (

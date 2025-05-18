@@ -5,17 +5,17 @@ import { Meta, StoryObj } from '@storybook/react';
 import ControlledInput from './ControlledInput';
 
 interface TmpProps {
-  buttonType: 'normal' | 'disabled' | 'error';
+  inputType: 'normal' | 'disabled' | 'error';
   placeholder: string;
 }
 const TmpElement = (props: TmpProps) => {
-  const { buttonType, placeholder } = props;
+  const { inputType, placeholder } = props;
   const [value, setValue] = useState('');
 
   return (
     <ControlledInput
-      disabled={buttonType === 'disabled'}
-      isError={buttonType === 'error'}
+      disabled={inputType === 'disabled'}
+      isError={inputType === 'error'}
       placeholder={placeholder}
       value={value}
       onChange={(e) => setValue(e.target.value)}
@@ -27,12 +27,12 @@ const meta = {
   title: 'Common/ControlledInput',
   args: {
     placeholder: '내용을 입력하세요',
-    buttonType: 'normal',
+    inputType: 'normal',
   },
   argTypes: {
-    buttonType: {
+    inputType: {
       control: 'select',
-      options: ['normal', 'disabled', 'error'],
+      options: ['normal', 'disabled', 'error', 'loading'],
     },
   },
   component: TmpElement,

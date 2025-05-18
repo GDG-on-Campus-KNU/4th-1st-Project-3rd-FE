@@ -48,7 +48,7 @@ export default function AppLoginPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           isError={!!errorMessage}
-          isLoading={isLoginSending}
+          disabled={isLoginSending}
           autoFocus
           autoComplete="username"
         />
@@ -60,7 +60,7 @@ export default function AppLoginPage() {
           value={password}
           onChange={(e) => setPassWord(e.target.value)}
           isError={!!errorMessage}
-          isLoading={isLoginSending}
+          disabled={isLoginSending}
           autoComplete="current-password"
         />
         <div className={styles['error-message']}>
