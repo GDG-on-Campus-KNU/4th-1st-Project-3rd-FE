@@ -9,6 +9,7 @@ import {
 } from 'react';
 
 import SolidArrowSVG from '@_/components/common/svgs/SolidArrowSVG';
+import checkIsMobile from '@_/utils/checkIsMobile';
 
 import styles from './MessageTextArea.module.css';
 
@@ -103,7 +104,7 @@ export default function MessageTextArea(props: MessageTextAreaProps) {
 
   const handleKeydown = useCallback(
     async (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
+      if (e.key === 'Enter' && !checkIsMobile() && !e.shiftKey) {
         e.preventDefault();
         if (!canSend) return;
         if (valueLength === 0 || valueLength > textLimit) return;
