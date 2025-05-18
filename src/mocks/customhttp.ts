@@ -2,7 +2,7 @@ import { http } from 'msw';
 
 import sleep from './utils/sleep';
 
-let nowSleepTime: number = 0;
+let nowSleepTime: number = 500;
 
 export function changeNowNetworkType(ms: number) {
   nowSleepTime = ms;
