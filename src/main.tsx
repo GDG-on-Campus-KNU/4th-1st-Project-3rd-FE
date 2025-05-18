@@ -12,8 +12,9 @@ if (import.meta.env.VITE_MSW) {
 
 window.addEventListener('beforeinstallprompt', (event) => {
   event.preventDefault();
-  // @ts-expect-error 이거 있음
-  event.prompt();
+  // @ts-expect-error 공식 기능이 아니기에 에러가 뜸
+  // https://developer.mozilla.org/en-US/docs/Web/API/BeforeInstallPromptEvent
+  event.prompt?.();
 });
 
 createRoot(document.getElementById('root')!).render(
