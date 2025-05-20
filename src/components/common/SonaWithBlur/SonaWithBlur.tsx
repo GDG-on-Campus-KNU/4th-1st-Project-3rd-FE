@@ -1,10 +1,10 @@
 import { SVGComponentProp } from '@_/types/props';
 
-import SONASvg from '../svgs/sona/SONASvg';
+import SONASvg, { SONAType } from '../svgs/sona/SONASvg';
 import styles from './SonaWithBlur.module.css';
 
 interface SonaWithBlurProps extends SVGComponentProp {
-  type: 'sleep' | 'sad' | 'talk' | Mbti;
+  type: SONAType;
   blurMultiple?: number;
 }
 
