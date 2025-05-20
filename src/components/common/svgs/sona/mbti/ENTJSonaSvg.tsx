@@ -7,7 +7,7 @@ export default function ENTJSonaSvg(props: SVGComponentProp) {
     <svg
       width={width || '126'}
       height={height || '101'}
-      viewBox="0 0 126 101"
+      viewBox="-19 0 156 101"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...restProps}
