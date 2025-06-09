@@ -80,7 +80,10 @@ const AnalysisFacePage = () => {
     if (step === 4 && mbti) {
       navigate('.', { state: { step: 5 }, replace: true });
     }
-  }, [step, mbti, navigate]);
+    if (step >= 4 && !imageUrl) {
+      navigate('.', { state: { step: 3 }, replace: true });
+    }
+  }, [step, mbti, navigate, imageUrl]);
 
   return (
     <div ref={divRef}>
