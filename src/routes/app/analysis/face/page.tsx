@@ -22,34 +22,65 @@ const AnalysisFacePage = () => {
     isFromChattingList?: boolean;
   };
   const divRef = useRef<HTMLDivElement>(null);
-  const [mbti, setMbti] = useState<Mbti | null>(null);
   const [image, setImage] = useState<File | null>(null);
   const imageUrl = useMemo(() => {
     if (!image) return null;
     return URL.createObjectURL(image);
   }, [image]);
 
+  const [imageStatusMap, setImageStatusMap] = useState<
+    Map<
+      string,
+      { status: 'loading'; mbti: null } | { status: 'success'; mbti: Mbti }
+    >
+  >(new Map());
+
+  const mbti: Mbti | null = imageStatusMap.get(imageUrl || '')?.mbti || null;
+  const handleAddImageStatusMap = useCallback(
+    (
+      imageUrl: string,
+      value:
+        | { status: 'loading'; mbti: null }
+        | { status: 'success'; mbti: Mbti },
+    ) => {
+      setImageStatusMap((prev) => {
+        if (prev.get(imageUrl)?.status === 'success') return prev;
+        return new Map(prev).set(imageUrl, value);
+      });
+    },
+    [],
+  );
+
   useEffect(() => {
     if (imageUrl) {
-      return () => URL.revokeObjectURL(imageUrl);
+      return () => {
+        URL.revokeObjectURL(imageUrl);
+      };
     }
   }, [imageUrl]);
 
-  const postAnalysisFace = useCallback(
-    async (image: File) => {
-      const formData = new FormData();
-      formData.append('image', image);
-      const { mbti } = await postFetch(HTTP_API_END_POINT.analysisFace, {
-        body: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      setMbti(mbti);
+  const postAnalysisFace = useCallback(async () => {
+    if (!image) return;
+    if (!imageUrl) return;
+    if (imageStatusMap.has(imageUrl)) return;
+    handleAddImageStatusMap(imageUrl, { status: 'loading', mbti: null });
+
+    const formData = new FormData();
+    formData.append('image', image);
+    const { mbti } = await postFetch(HTTP_API_END_POINT.analysisFace, {
+      body: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    handleAddImageStatusMap(imageUrl, { status: 'success', mbti });
+  }, [image, imageUrl, handleAddImageStatusMap, imageStatusMap]);
+
+  useEffect(() => {
+    if (step === 4 && mbti) {
       navigate('.', { state: { step: 5 }, replace: true });
-    },
-    [navigate],
-  );
+    }
+  }, [step, mbti, navigate]);
 
   return (
     <div ref={divRef}>
@@ -82,8 +113,12 @@ const AnalysisFacePage = () => {
           <AnalysisFaceStep3
             divRef={divRef}
             goNextStep={() => {
+              if (!imageUrl) return;
+              if (imageStatusMap.get(imageUrl)?.status === 'success') {
+                return navigate('.', { state: { step: 5 } });
+              }
               if (image) {
-                postAnalysisFace(image);
+                postAnalysisFace();
                 navigate('.', { state: { step: 4 } });
               }
             }}
@@ -97,9 +132,8 @@ const AnalysisFacePage = () => {
           <AnalysisFaceStep5
             mbti={mbti}
             retest={() => {
-              setMbti(null);
               setImage(null);
-              navigate('.', { state: { step: 1 } });
+              navigate('.', { state: { step: 3 } });
             }}
           />
         )}
