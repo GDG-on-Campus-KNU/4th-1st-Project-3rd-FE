@@ -16,7 +16,7 @@ export interface HeaderProps
   onBack?: () => void;
 }
 
-export default function ControlledInput(props: HeaderProps) {
+export default function BackHeader(props: HeaderProps) {
   const navigate = useNavigate();
 
   const handleBack = useCallback(
