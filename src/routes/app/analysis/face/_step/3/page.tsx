@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { createPortal } from 'react-dom';
 
@@ -66,23 +66,19 @@ const UploadModalContent = ({
 export default function AnalysisFaceStep3({
   goNextStep,
   divRef,
+  photo,
+  updateImage: updatePhoto,
+  photoUrl,
 }: {
   goNextStep: () => void;
   divRef: React.RefObject<HTMLDivElement | null>;
+  photo: File | null;
+  updateImage: (image: File) => void;
+  photoUrl: string | null;
 }) {
-  const [photo, setPhoto] = useState<File | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const hasPhoto = photo !== null;
-  const photoUrl = useMemo(() => {
-    if (!photo) return null;
-    return URL.createObjectURL(photo);
-  }, [photo]);
 
-  useEffect(() => {
-    return () => {
-      if (photoUrl) URL.revokeObjectURL(photoUrl);
-    };
-  }, [photoUrl]);
   return (
     <>
       <div className={styles.container}>
@@ -129,11 +125,11 @@ export default function AnalysisFaceStep3({
           <Modal onClose={() => setIsModalOpen(false)}>
             <UploadModalContent
               onCamera={(image) => {
-                setPhoto(image);
+                updatePhoto(image);
                 setIsModalOpen(false);
               }}
               onGallery={(image) => {
-                setPhoto(image);
+                updatePhoto(image);
                 setIsModalOpen(false);
               }}
             />
