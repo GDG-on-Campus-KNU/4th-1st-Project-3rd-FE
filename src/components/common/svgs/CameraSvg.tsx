@@ -6,8 +6,8 @@ export default function CameraSVG(props: SVGComponentProp) {
   return (
     <svg
       width={width || '36'}
-      height={height || '36'}
-      viewBox="0 0 36 36"
+      height={height || '37'}
+      viewBox="0 0 36 37"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...restProps}
