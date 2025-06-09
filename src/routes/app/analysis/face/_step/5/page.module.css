@@ -27,4 +27,31 @@
   align-items   : center;
 
   margin-top: 40px;
+
+}
+
+
+.mbti-description {
+  position: relative;
+  z-index : 2;
+
+  box-sizing   : border-box;
+  margin-top   : 10px;
+  padding      : 15px;
+  border-radius: 10px;
+
+  color: #666;
+
+  background-color: #f1f1f1;
+
+}
+
+.mbti-description p {
+  font-size  : 12px;
+  line-height: 150%;
+}
+
+.mbti-description p::before {
+  content     : '•';
+  margin-right: 8px;
 }
