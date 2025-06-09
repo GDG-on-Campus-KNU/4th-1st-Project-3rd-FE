@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import BackHeader from '@_/components/common/Header/BackHeader';
+import APP_END_POINT from '@_/constants/appEndpoint';
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { postFetch } from '@_/fetches/BaseFetches';
 
@@ -16,7 +17,10 @@ import styles from './page.module.css';
 const AnalysisFacePage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { step = 1 } = (location.state || {}) as { step?: 1 | 2 | 3 | 4 | 5 };
+  const { step = 1, isFromChattingList = false } = (location.state || {}) as {
+    step?: 1 | 2 | 3 | 4 | 5;
+    isFromChattingList?: boolean;
+  };
   const divRef = useRef<HTMLDivElement>(null);
   const [mbti, setMbti] = useState<Mbti | null>(null);
   const [image, setImage] = useState<File | null>(null);
@@ -49,7 +53,20 @@ const AnalysisFacePage = () => {
 
   return (
     <div ref={divRef}>
-      <BackHeader>관상 MBTI</BackHeader>
+      <BackHeader
+        onBack={() => {
+          if (isFromChattingList) {
+            return navigate(APP_END_POINT.chattingList, {
+              state: {
+                isSidebarOpened: true,
+              },
+            });
+          }
+          return navigate(-1);
+        }}
+      >
+        관상 MBTI
+      </BackHeader>
       <div className={styles.container}>
         {step === 1 && (
           <AnalysisFaceStep1

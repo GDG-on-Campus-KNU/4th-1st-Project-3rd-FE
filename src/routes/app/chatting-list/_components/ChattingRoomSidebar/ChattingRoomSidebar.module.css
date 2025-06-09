@@ -16,9 +16,10 @@
   align-items    : center;
   justify-content: space-between;
 
-  box-sizing: border-box;
-  height    : 56px;
-  padding   : 10px;
+  box-sizing   : border-box;
+  height       : 56px;
+  padding      : 10px;
+  border-bottom: 1px solid #dedede;
 
   font-size: 14px;
   color    : #666;
@@ -52,4 +53,18 @@
 
 .grey {
   color: #666;
+}
+
+.item {
+  display        : flex;
+  gap            : 10px;
+  align-items    : center;
+  justify-content: flex-start;
+
+  height : 56px;
+  padding: 10px 20px;
+
+  font-size  : 18px;
+  font-weight: 400;
+  color      : black;
 }
