@@ -1,4 +1,4 @@
-const MBTI_DESCRIPTION: Record<Mbti, string> = {
+const MBTI_NICKNAME: Record<Mbti, string> = {
   ISTJ: '책임감 있는 현실주의자',
   ISFJ: '호기심 많은 예술가',
   INFJ: '통찰력 있는 선지자',
@@ -17,4 +17,4 @@ const MBTI_DESCRIPTION: Record<Mbti, string> = {
   ENTJ: '대담한 통솔자',
 };
 
-export default MBTI_DESCRIPTION;
+export default MBTI_NICKNAME;

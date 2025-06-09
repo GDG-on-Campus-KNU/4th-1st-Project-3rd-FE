@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '@_/components/common/Button/Button';
 import SonaWithBlur from '@_/components/common/SonaWithBlur/SonaWithBlur';
 import APP_END_POINT from '@_/constants/appEndpoint';
-import MBTI_DESCRIPTION from '@_/constants/mbtiDescription';
+import MBTI_NICKNAME from '@_/constants/mbtiNickname';
 
 import styles from './page.module.css';
 
@@ -20,7 +20,7 @@ export default function AnalysisFaceStep5({
     <>
       <span className={styles.description}>
         <h3>{mbti}</h3>
-        <p>{MBTI_DESCRIPTION[mbti]}</p>
+        <p>{MBTI_NICKNAME[mbti]}</p>
       </span>
       <div className={styles.svg}>
         <SonaWithBlur type={mbti} blurMultiple={1.3} />

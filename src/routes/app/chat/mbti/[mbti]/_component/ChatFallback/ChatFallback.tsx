@@ -1,5 +1,5 @@
 import SonaWithBlur from '@_/components/common/SonaWithBlur/SonaWithBlur';
-import MBTI_DESCRIPTION from '@_/constants/mbtiDescription';
+import MBTI_NICKNAME from '@_/constants/mbtiNickname';
 
 import styles from './ChatFallback.module.css';
 
@@ -14,7 +14,7 @@ export default function ChatFallback(props: ChatFallbackProps) {
     <div className={styles.content}>
       <SonaWithBlur type={mbti} blurMultiple={1.3} width={170} />
       <span>
-        {MBTI_DESCRIPTION[mbti] + ','}
+        {MBTI_NICKNAME[mbti] + ','}
         <br />
         {`${mbti}와 대화를 시작하세요`}
       </span>
