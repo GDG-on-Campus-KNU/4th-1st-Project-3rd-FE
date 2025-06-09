@@ -15,6 +15,7 @@ const HTTP_PURE_STRING_API_END_POINT = {
   verifyEmail: '/auth/email/code/verify',
   mockCheckVerifyEmail: '/mock/auth/email/code/verify',
   register: '/auth/register',
+  analysisFace: '/analysis/image',
 } as const;
 
 const HTTP_PURE_FUNCTION_API_END_POINT = {
