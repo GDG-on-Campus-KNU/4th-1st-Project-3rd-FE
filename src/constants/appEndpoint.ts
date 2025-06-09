@@ -8,6 +8,7 @@ const APP_END_POINT = {
   chattingList: '/chatting-list',
   chattingListAdd: '/chatting-list/add',
   cancel: '/cancel',
+  analysisFace: '/analysis/face',
 };
 
 export default APP_END_POINT;
