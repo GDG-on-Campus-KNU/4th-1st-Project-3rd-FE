@@ -55,3 +55,13 @@
   content     : '•';
   margin-right: 8px;
 }
+
+.url {
+  margin-top: 20px;
+
+  font-size  : 16px;
+  font-weight: 400;
+  line-height: 150%;
+  color      : #666;
+  text-align : center;
+}

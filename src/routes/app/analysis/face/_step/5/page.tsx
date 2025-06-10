@@ -37,6 +37,7 @@ export default function AnalysisFaceStep5({
         </Button>
         <Button onClick={retest}>다시하기</Button>
       </div>
+      <div className={styles.url}>personachat.my/analysis/face</div>
     </>
   );
 }
