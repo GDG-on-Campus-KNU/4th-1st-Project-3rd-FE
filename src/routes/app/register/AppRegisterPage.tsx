@@ -1,5 +1,6 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 
+import { MutationOptions, useMutation } from '@tanstack/react-query';
 import { Navigate, useNavigate } from 'react-router-dom';
 
 import Button from '@_/components/common/Button/Button';
@@ -8,6 +9,7 @@ import SolidArrowHeadSVG from '@_/components/common/svgs/SolidArrowHeadSVG';
 import APP_END_POINT from '@_/constants/appEndpoint';
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { postFetch } from '@_/fetches/BaseFetches';
+import NetworkError from '@_/fetches/errors/NetworkError';
 import useNonLoginPage from '@_/hooks/useNonLoginPage';
 
 import styles from './AppRegisterPage.module.css';
@@ -84,6 +86,37 @@ const checkIsFilled = ({
   return false;
 };
 
+const useRegisterMutation = (
+  options: MutationOptions<
+    EmptyResponse,
+    NetworkError,
+    { email: string; password: string; mbti: Mbti }
+  > = {},
+) => {
+  const navigate = useNavigate();
+  return useMutation({
+    mutationFn: ({
+      email,
+      password,
+      mbti,
+    }: {
+      email: string;
+      password: string;
+      mbti: Mbti;
+    }) =>
+      postFetch<RegisterRequestBody>(HTTP_API_END_POINT.register, {
+        body: { email, password, mbti },
+      }),
+    onSuccess: () => {
+      navigate(APP_END_POINT.registerSuccess);
+    },
+    onError: (e: NetworkError) => {
+      if (e.code === 'E001') {
+        alert('이메일이 만료되었습니다. 처음부터 다시 시도해주세요.');
+      } else alert('알 수 없는 오류입니다. 다시 시도해주세요.');
+    },
+  });
+};
 export default function AppRegisterPage() {
   useNonLoginPage();
   const navigate = useNavigate();
@@ -131,6 +164,8 @@ export default function AppRegisterPage() {
     changePlanningChar,
   } = useMBTIInput();
 
+  const { mutate: register, isPending: isRegisterPending } =
+    useRegisterMutation();
   const [stepHistory, setNowStepHistory] = useState<Step[]>([1]);
 
   const nowStep = stepHistory[stepHistory.length - 1];
@@ -146,8 +181,6 @@ export default function AppRegisterPage() {
     setNowStepHistory((prev) => prev.slice(0, -1));
   }, [stepHistory, navigate]);
 
-  const [isRegisterSending, setIsRegisterSending] = useState(false);
-
   const [maxCompletedStep, setMaxCompletedStep] = useState(0);
 
   const isAutoNext = nowStep !== 1 && nowStep === maxCompletedStep + 1;
@@ -158,7 +191,7 @@ export default function AppRegisterPage() {
   const isLoading =
     (nowStep === 1 && isEmailSending) ||
     (nowStep === 2 && isEmailSending) ||
-    (nowStep === 4 && isRegisterSending);
+    (nowStep === 4 && isRegisterPending);
 
   const isFilled = checkIsFilled({
     step: nowStep,
@@ -203,24 +236,8 @@ export default function AppRegisterPage() {
       return sendEmail();
     }
     if (nowStep === 4) {
-      try {
-        await postFetch<RegisterRequestBody>(HTTP_API_END_POINT.register, {
-          body: { email, password, mbti: mbti as Mbti },
-          handleCode: (code) => {
-            if (code === 'E001') {
-              alert('이메일이 만료되었습니다. 처음부터 다시 시도해주세요.');
-            } else alert('알 수 없는 오류입니다. 다시 시도해주세요.');
-            setNowStepHistory([]);
-          },
-        });
-        setIsRegisterSending(false);
-        navigate(APP_END_POINT.registerSuccess);
-        updateMaxStep(4);
-        return;
-      } catch (_) {
-        setIsRegisterSending(false);
-        return;
-      }
+      register({ email, password, mbti: mbti as Mbti });
+      return;
     }
 
     goStep(Math.min(MAX_STEP, nowStep + 1) as Step);
@@ -234,9 +251,9 @@ export default function AppRegisterPage() {
     isCodeExpired,
     verifiedEmail,
     goStep,
-    navigate,
     sendEmail,
     updateMaxStep,
+    register,
   ]);
 
   const shouldShowButton =
@@ -317,7 +334,7 @@ export default function AppRegisterPage() {
           )}
           {nowStep === 4 && (
             <RegisterMBTIPage
-              canChange={!isRegisterSending}
+              canChange={!isRegisterPending}
               energyChar={energyChar}
               perspectiveChar={perspectiveChar}
               judgeChar={judgeChar}
@@ -326,7 +343,7 @@ export default function AppRegisterPage() {
               changePerspectiveChar={changePerspectiveChar}
               changeJudgeChar={changeJudgeChar}
               changePlanningChar={changePlanningChar}
-              isLoading={isRegisterSending}
+              isLoading={isRegisterPending}
             />
           )}
         </div>

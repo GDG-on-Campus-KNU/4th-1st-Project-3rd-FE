@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import {
+  mutationOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import Button from '@_/components/common/Button/Button';
@@ -10,29 +16,63 @@ import SolidPlusSVG from '@_/components/common/svgs/SolidPlusSVG';
 import SONASvg from '@_/components/common/svgs/sona/SONASvg';
 import APP_END_POINT from '@_/constants/appEndpoint';
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
-import { deleteFetch, getFetch, postFetch } from '@_/fetches/BaseFetches';
-import useEmail from '@_/hooks/useEmail';
+import { deleteFetch, postFetch } from '@_/fetches/BaseFetches';
+import profileQueryBases from '@_/remote/profileQueryBase';
 
 import styles from './AppChattingListPage.module.css';
 import ChattingList from './_components/ChattingList/ChattingList';
 import ChattingListSkeleton from './_components/ChattingListSkeleton/ChattingListSkeleton';
 import ChattingRoomSidebar from './_components/ChattingRoomSidebar/ChattingRoomSidebar';
+import mbtiChatQueryBases from './remote/mbtiChatQueryBases';
 
+// TODO: 삭제시 너무 버벅거림
 const ChatManageModalContent = ({
   mbti,
   type,
-  isLoading,
   onClose,
   afterModify,
-  setIsLoading,
 }: {
   mbti: Mbti;
   type: 'close' | 'reset';
-  isLoading: boolean;
   onClose: () => void;
   afterModify: { current: (() => void) | undefined };
-  setIsLoading: (boolean: boolean) => void;
 }) => {
+  const queryClient = useQueryClient();
+  const options = mutationOptions({
+    onMutate: () => {
+      const oldData =
+        queryClient.getQueryData(mbtiChatQueryBases.all().queryKey) || [];
+      queryClient.setQueryData(
+        mbtiChatQueryBases.all().queryKey,
+        oldData.filter((chat) => chat.mbti !== mbti),
+      );
+      return { oldData };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(mbtiChatQueryBases.all());
+      console.log(queryClient.getQueryData(mbtiChatQueryBases.all().queryKey));
+      afterModify.current?.();
+      onClose();
+    },
+    onError: (_, __, context) => {
+      queryClient.setQueryData(
+        mbtiChatQueryBases.all().queryKey,
+        context?.oldData,
+      );
+      alert(`${type === 'close' ? '삭제하기' : '리셋하기'}에 실패하였습니다.`);
+    },
+  });
+  const { mutate: deleteChat, isPending: isDeleteChatPending } = useMutation({
+    mutationFn: () => deleteFetch(HTTP_API_END_POINT.mbtiChatClose(mbti)),
+    ...options,
+  });
+
+  const { mutate: resetChat, isPending: isResetChatPending } = useMutation({
+    mutationFn: () => deleteFetch(HTTP_API_END_POINT.mbtiChatInit(mbti)),
+    ...options,
+  });
+
+  const isLoading = isDeleteChatPending || isResetChatPending;
   return (
     <div>
       <p className={styles['modal-title']}>
@@ -66,22 +106,11 @@ const ChatManageModalContent = ({
         <div className={styles['button-wrapper']}>
           <Button
             onClick={async () => {
-              setIsLoading(true);
-              try {
-                if (type === 'close') {
-                  await deleteFetch(HTTP_API_END_POINT.mbtiChatClose(mbti));
-                } else {
-                  await deleteFetch(HTTP_API_END_POINT.mbtiChatInit(mbti));
-                }
-              } catch (_) {
-                setIsLoading(false);
-                alert(
-                  `${type === 'close' ? '삭제하기' : '리셋하기'}에 실패하였습니다..`,
-                );
+              if (type === 'close') {
+                deleteChat();
+              } else {
+                resetChat();
               }
-              setIsLoading(false);
-              afterModify.current?.();
-              onClose();
             }}
             style={
               isLoading
@@ -165,10 +194,26 @@ const getSideBarStyle = (isMoved: boolean, isOpen: boolean) => {
   return styles.close;
 };
 
+const useLogout = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const { mutate: logout, isPending: isLogoutPending } = useMutation({
+    mutationFn: () => postFetch(HTTP_API_END_POINT.logout),
+
+    onError: () => {
+      alert('로그아웃에 실패했습니다. 다시 시도해주세요');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(profileQueryBases.email());
+      navigate(APP_END_POINT.main);
+    },
+  });
+
+  return { logout, isLogoutPending };
+};
+
 export default function AppChattingListPage() {
-  const [chattingList, setChattingList] = useState<ChattingPreview[]>([]);
-  const [isFirstLoading, setIsFirstLoading] = useState(true);
-  const intervalId = useRef<ReturnType<typeof setInterval>>(undefined);
   const location = useLocation();
   const { isSidebarOpened: isSidebarOpenedFromLocation = false } =
     (location.state || {}) as { isSidebarOpened: boolean };
@@ -183,28 +228,18 @@ export default function AppChattingListPage() {
   const [isSidebarMoved, setIsSidebarMoved] = useState(
     isSidebarOpenedFromLocation,
   );
-  const { email, resetEmail } = useEmail();
+  const { data: email } = useQuery(profileQueryBases.email());
   const mainContainerRef = useRef<HTMLDivElement>(null);
-  const [isLogoutSending, setIsLogoutSending] = useState(false);
-  const [isChattingModifying, setIsChattingModifying] = useState(false);
   const afterModifyFn = useRef<undefined | (() => void)>(undefined);
 
-  useEffect(() => {
-    let isFetching = false;
-    async function updateChattingList() {
-      if (isFetching) return;
-      isFetching = true;
-      const data = await getFetch<ChatMbtiRecentResponseBody>(
-        HTTP_API_END_POINT.recentMbtiChat,
-      );
-
-      setChattingList(data);
-      isFetching = false;
-      setIsFirstLoading(false);
-    }
-    intervalId.current = setInterval(updateChattingList, 100);
-    return () => clearInterval(intervalId.current);
-  }, []);
+  const {
+    data: chattingList,
+    isSuccess: isChattingListSuccess,
+    isPending: isChattingListPending,
+  } = useQuery({
+    ...mbtiChatQueryBases.all(),
+    refetchInterval: 100,
+  });
 
   useEffect(() => {
     if (!isSidebarOpened) return;
@@ -227,20 +262,7 @@ export default function AppChattingListPage() {
     setIsSidebarOpened(true);
   }, []);
 
-  const handleLogout = useCallback(async () => {
-    setIsLogoutSending(true);
-    try {
-      await postFetch(HTTP_API_END_POINT.logout);
-    } catch (_) {
-      setIsLogoutSending(false);
-      alert('로그아웃에 실패했습니다. 다시 시도해주세요');
-      return;
-    }
-    setIsLogoutSending(false);
-    resetEmail();
-    setIsLogoutModalOpen(false);
-    navigate(APP_END_POINT.main);
-  }, [resetEmail, navigate]);
+  const { logout, isLogoutPending } = useLogout();
 
   return (
     <>
@@ -258,7 +280,7 @@ export default function AppChattingListPage() {
         ref={mainContainerRef}
       >
         <ChattingRoomSidebar
-          email={email}
+          email={email ?? null}
           logout={() => setIsLogoutModalOpen(true)}
           hide={() => setIsSidebarOpened(false)}
         />
@@ -281,7 +303,7 @@ export default function AppChattingListPage() {
               </p>
               <SolidPlusSVG className={styles['plus-icon']} />
             </button>
-            {!isFirstLoading && chattingList.length === 0 && (
+            {isChattingListSuccess && chattingList.length === 0 && (
               <div className={styles['empty-container']}>
                 <div className={styles['sona-container']}>
                   <div className={styles.blur} />
@@ -294,8 +316,8 @@ export default function AppChattingListPage() {
                 </p>
               </div>
             )}
-            {isFirstLoading && <ChattingListSkeleton />}
-            {!isFirstLoading && chattingList.length > 0 && (
+            {isChattingListPending && <ChattingListSkeleton />}
+            {isChattingListSuccess && chattingList.length > 0 && (
               <ChattingList
                 chattingPreviews={chattingList}
                 onChattingRoomClick={(mbti) =>
@@ -321,8 +343,6 @@ export default function AppChattingListPage() {
               <ChatManageModalContent
                 mbti={lastMbti}
                 type={lastType}
-                isLoading={isChattingModifying}
-                setIsLoading={setIsChattingModifying}
                 afterModify={afterModifyFn}
                 onClose={() => setIsChatManageModalOpen(false)}
               />
@@ -336,9 +356,9 @@ export default function AppChattingListPage() {
           dimmerColor="transparent"
         >
           <LogoutModalContent
-            isLoading={isLogoutSending}
+            isLoading={isLogoutPending}
             onClose={() => setIsLogoutModalOpen(false)}
-            onLogout={handleLogout}
+            onLogout={logout}
           />
         </Modal>
       )}
