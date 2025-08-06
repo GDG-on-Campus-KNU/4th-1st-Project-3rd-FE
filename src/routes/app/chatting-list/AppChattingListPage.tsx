@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  mutationOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import Button from '@_/components/common/Button/Button';
@@ -20,21 +25,54 @@ import ChattingListSkeleton from './_components/ChattingListSkeleton/ChattingLis
 import ChattingRoomSidebar from './_components/ChattingRoomSidebar/ChattingRoomSidebar';
 import mbtiChatQueryBases from './remote/mbtiChatQueryBases';
 
+// TODO: 삭제시 너무 버벅거림
 const ChatManageModalContent = ({
   mbti,
   type,
-  isLoading,
   onClose,
   afterModify,
-  setIsLoading,
 }: {
   mbti: Mbti;
   type: 'close' | 'reset';
-  isLoading: boolean;
   onClose: () => void;
   afterModify: { current: (() => void) | undefined };
-  setIsLoading: (boolean: boolean) => void;
 }) => {
+  const queryClient = useQueryClient();
+  const options = mutationOptions({
+    onMutate: () => {
+      const oldData =
+        queryClient.getQueryData(mbtiChatQueryBases.all().queryKey) || [];
+      queryClient.setQueryData(
+        mbtiChatQueryBases.all().queryKey,
+        oldData.filter((chat) => chat.mbti !== mbti),
+      );
+      return { oldData };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(mbtiChatQueryBases.all());
+      console.log(queryClient.getQueryData(mbtiChatQueryBases.all().queryKey));
+      afterModify.current?.();
+      onClose();
+    },
+    onError: (_, __, context) => {
+      queryClient.setQueryData(
+        mbtiChatQueryBases.all().queryKey,
+        context?.oldData,
+      );
+      alert(`${type === 'close' ? '삭제하기' : '리셋하기'}에 실패하였습니다.`);
+    },
+  });
+  const { mutate: deleteChat, isPending: isDeleteChatPending } = useMutation({
+    mutationFn: () => deleteFetch(HTTP_API_END_POINT.mbtiChatClose(mbti)),
+    ...options,
+  });
+
+  const { mutate: resetChat, isPending: isResetChatPending } = useMutation({
+    mutationFn: () => deleteFetch(HTTP_API_END_POINT.mbtiChatInit(mbti)),
+    ...options,
+  });
+
+  const isLoading = isDeleteChatPending || isResetChatPending;
   return (
     <div>
       <p className={styles['modal-title']}>
@@ -68,22 +106,11 @@ const ChatManageModalContent = ({
         <div className={styles['button-wrapper']}>
           <Button
             onClick={async () => {
-              setIsLoading(true);
-              try {
-                if (type === 'close') {
-                  await deleteFetch(HTTP_API_END_POINT.mbtiChatClose(mbti));
-                } else {
-                  await deleteFetch(HTTP_API_END_POINT.mbtiChatInit(mbti));
-                }
-              } catch (_) {
-                setIsLoading(false);
-                alert(
-                  `${type === 'close' ? '삭제하기' : '리셋하기'}에 실패하였습니다..`,
-                );
+              if (type === 'close') {
+                deleteChat();
+              } else {
+                resetChat();
               }
-              setIsLoading(false);
-              afterModify.current?.();
-              onClose();
             }}
             style={
               isLoading
@@ -203,7 +230,6 @@ export default function AppChattingListPage() {
   );
   const { data: email } = useQuery(profileQueryBases.email());
   const mainContainerRef = useRef<HTMLDivElement>(null);
-  const [isChattingModifying, setIsChattingModifying] = useState(false);
   const afterModifyFn = useRef<undefined | (() => void)>(undefined);
 
   const {
@@ -317,8 +343,6 @@ export default function AppChattingListPage() {
               <ChatManageModalContent
                 mbti={lastMbti}
                 type={lastType}
-                isLoading={isChattingModifying}
-                setIsLoading={setIsChattingModifying}
                 afterModify={afterModifyFn}
                 onClose={() => setIsChatManageModalOpen(false)}
               />
