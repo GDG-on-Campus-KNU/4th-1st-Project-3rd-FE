@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import Button from '@_/components/common/Button/Button';
@@ -167,6 +167,25 @@ const getSideBarStyle = (isMoved: boolean, isOpen: boolean) => {
   return styles.close;
 };
 
+const useLogout = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const { mutate: logout, isPending: isLogoutPending } = useMutation({
+    mutationFn: () => postFetch(HTTP_API_END_POINT.logout),
+
+    onError: () => {
+      alert('로그아웃에 실패했습니다. 다시 시도해주세요');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(profileQueryBases.email());
+      navigate(APP_END_POINT.main);
+    },
+  });
+
+  return { logout, isLogoutPending };
+};
+
 export default function AppChattingListPage() {
   const location = useLocation();
   const { isSidebarOpened: isSidebarOpenedFromLocation = false } =
@@ -183,9 +202,7 @@ export default function AppChattingListPage() {
     isSidebarOpenedFromLocation,
   );
   const { data: email } = useQuery(profileQueryBases.email());
-  const queryClient = useQueryClient();
   const mainContainerRef = useRef<HTMLDivElement>(null);
-  const [isLogoutSending, setIsLogoutSending] = useState(false);
   const [isChattingModifying, setIsChattingModifying] = useState(false);
   const afterModifyFn = useRef<undefined | (() => void)>(undefined);
 
@@ -219,20 +236,7 @@ export default function AppChattingListPage() {
     setIsSidebarOpened(true);
   }, []);
 
-  const handleLogout = useCallback(async () => {
-    setIsLogoutSending(true);
-    try {
-      await postFetch(HTTP_API_END_POINT.logout);
-    } catch (_) {
-      setIsLogoutSending(false);
-      alert('로그아웃에 실패했습니다. 다시 시도해주세요');
-      return;
-    }
-    setIsLogoutSending(false);
-    queryClient.invalidateQueries(profileQueryBases.email());
-    setIsLogoutModalOpen(false);
-    navigate(APP_END_POINT.main);
-  }, [queryClient, navigate]);
+  const { logout, isLogoutPending } = useLogout();
 
   return (
     <>
@@ -328,9 +332,9 @@ export default function AppChattingListPage() {
           dimmerColor="transparent"
         >
           <LogoutModalContent
-            isLoading={isLogoutSending}
+            isLoading={isLogoutPending}
             onClose={() => setIsLogoutModalOpen(false)}
-            onLogout={handleLogout}
+            onLogout={logout}
           />
         </Modal>
       )}
