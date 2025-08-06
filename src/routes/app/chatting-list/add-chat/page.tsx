@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import Button from '@_/components/common/Button/Button';
@@ -23,8 +23,7 @@ const ModalContent = ({
   mbti: Mbti;
   onClose: () => void;
 }) => {
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  const { mutate: addChat, isPending: isAddChatPending } = useAddChatMutation();
   return (
     <div>
       <p className={styles['modal-title']}>{mbti} 채팅방을 추가할까요?</p>
@@ -36,7 +35,7 @@ const ModalContent = ({
           <Button
             onClick={onClose}
             style={
-              isLoading
+              isAddChatPending
                 ? {}
                 : {
                     backgroundColor: '#dedede',
@@ -44,7 +43,7 @@ const ModalContent = ({
                     border: 'none',
                   }
             }
-            isLoading={isLoading}
+            isLoading={isAddChatPending}
             thin
           >
             그만두기
@@ -52,29 +51,15 @@ const ModalContent = ({
         </div>
         <div className={styles['button-wrapper']}>
           <Button
-            onClick={async () => {
-              setIsLoading(true);
-              try {
-                await postFetch<ChatMbtiOpenPostRequestBody>(
-                  HTTP_API_END_POINT.mbtiChatOpenPost,
-                  { body: { mbti } },
-                );
-              } catch (_) {
-                alert('채팅방 추가에 실패하였습니다.');
-                setIsLoading(false);
-              }
-              setIsLoading(false);
-              navigate(APP_END_POINT.chatMbti(mbti));
-              onClose();
-            }}
+            onClick={() => addChat(mbti)}
             style={
-              isLoading
+              isAddChatPending
                 ? {}
                 : {
                     border: 'none',
                   }
             }
-            isLoading={isLoading}
+            isLoading={isAddChatPending}
             thin
           >
             추가하기
@@ -83,6 +68,25 @@ const ModalContent = ({
       </div>
     </div>
   );
+};
+
+const useAddChatMutation = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (mbti: Mbti) =>
+      postFetch<ChatMbtiOpenPostRequestBody>(
+        HTTP_API_END_POINT.mbtiChatOpenPost,
+        { body: { mbti } },
+      ),
+    onSuccess: (_, mbti) => {
+      navigate(APP_END_POINT.chatMbti(mbti));
+      queryClient.invalidateQueries(mbtiChatQueryBases.closed());
+    },
+    onError: () => {
+      alert('채팅방 추가에 실패하였습니다.');
+    },
+  });
 };
 
 export default function AppAddChatPage() {
