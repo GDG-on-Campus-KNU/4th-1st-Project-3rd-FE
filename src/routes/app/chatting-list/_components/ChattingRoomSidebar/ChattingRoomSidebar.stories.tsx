@@ -8,7 +8,7 @@ const Result = () => {
       <ChattingRoomSidebar
         email={'test@test.com'}
         logout={() => alert('로그아웃')}
-        cancel={() => alert('회원탈퇴')}
+        hide={() => alert('숨기기')}
       />
     </div>
   );
