@@ -7,15 +7,17 @@ import {
   useState,
 } from 'react';
 
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import WaitingDot from '@_/components/common/WaitingDot/WaitingDot';
 import APP_END_POINT from '@_/constants/appEndpoint';
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
-import { getFetch, postFetch } from '@_/fetches/BaseFetches';
+import { postFetch } from '@_/fetches/BaseFetches';
 import checkIsSameDay from '@_/utils/checkIsSameDay';
 import getDateByISO8601 from '@_/utils/getDateByISO8601';
 
+import mbtiChatQueryBases from '../../../chatting-list/remote/mbtiChatQueryBases';
 import styles from './ChatMbtiPage.module.css';
 import ChatBubble from './_component/ChatBubble/ChatBubble';
 import ChatDayDiv from './_component/ChatDayDiv/ChatDayDiv';
@@ -28,8 +30,6 @@ type SendingPhase = 'posting' | 'wait-update' | 'complete';
 
 export default function AppChatMbtiPage() {
   const navigate = useNavigate();
-
-  const [messages, setMessages] = useState<MessageResponse[]>([]);
   const mbti: Mbti =
     (window.location.pathname.split('/').at(-1)?.toUpperCase() as Mbti) ||
     'ISFJ';
@@ -41,7 +41,6 @@ export default function AppChatMbtiPage() {
   const [isShownWaitingDot, setIsShownWaitingDot] = useState(false);
   const [hasChattedThisMount, setHasChattedThisMount] = useState(false);
   const [sendingPhase, setSendingPhase] = useState<SendingPhase>('complete');
-  const [isChatFirstLoading, setIsChatFirstLoading] = useState(true);
 
   const handleValueChange = useCallback(() => {
     if (!contentRef.current) return;
@@ -54,44 +53,15 @@ export default function AppChatMbtiPage() {
     handleValueChange();
   }, [handleValueChange]);
 
-  useEffect(() => {
-    let isFetching = false;
-    async function messageUpdate() {
-      if (isFetching) return;
-      isFetching = true;
-      try {
-        const offset = 9;
-        const lastMs = +new Date(messages.at(-1)?.time || 0);
-        const nowMs = lastMs + 1000 + offset * 60 * 60 * 1000;
-        const targetDate = new Date(nowMs);
+  const queryClient = useQueryClient();
 
-        const messageResponses = await getFetch<ChatMbtiResponseBody>(
-          HTTP_API_END_POINT.mbtiChatGet(
-            mbti,
-            targetDate.toISOString().slice(0, -5),
-          ),
-        );
-
-        if (messageResponses.at(-1)?.isUserChat) {
-          setSendingMessage(null);
-          setSendingPhase('complete');
-        }
-
-        setMessages((prev) =>
-          messageResponses.length === 0 ? prev : [...prev, ...messageResponses],
-        );
-      } finally {
-        setIsChatFirstLoading(false);
-        isFetching = false;
-      }
-    }
-
-    const timeoutId = setInterval(messageUpdate, 100);
-    return () => clearInterval(timeoutId);
-  }, [messages, mbti]);
+  const { data: messages = [], isLoading } = useQuery({
+    ...mbtiChatQueryBases.room(mbti, queryClient),
+    refetchInterval: 100,
+  });
 
   useEffect(() => {
-    const lastMessage = messages.at(-1);
+    const lastMessage = messages?.at(-1);
     if (!lastMessage) return;
 
     if (lastMessage.isUserChat) {
@@ -147,7 +117,7 @@ export default function AppChatMbtiPage() {
   }, [messages]);
 
   const isFallbacked =
-    !isChatFirstLoading && sendingPhase === 'complete' && messages.length === 0;
+    !isLoading && sendingPhase === 'complete' && messages.length === 0;
   return (
     <>
       <ChatHeader
@@ -164,7 +134,7 @@ export default function AppChatMbtiPage() {
           ref={contentRef}
         >
           {isFallbacked && <ChatFallback mbti={mbti} />}
-          {isChatFirstLoading && <ChatSkeleton />}
+          {isLoading && <ChatSkeleton />}
           {messages.map((message, index) => {
             const lastMessage = messages[index - 1];
             const lastDate = lastMessage
