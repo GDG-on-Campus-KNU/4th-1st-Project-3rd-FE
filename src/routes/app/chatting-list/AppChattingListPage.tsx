@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import Button from '@_/components/common/Button/Button';
@@ -10,13 +11,14 @@ import SolidPlusSVG from '@_/components/common/svgs/SolidPlusSVG';
 import SONASvg from '@_/components/common/svgs/sona/SONASvg';
 import APP_END_POINT from '@_/constants/appEndpoint';
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
-import { deleteFetch, getFetch, postFetch } from '@_/fetches/BaseFetches';
+import { deleteFetch, postFetch } from '@_/fetches/BaseFetches';
 import useEmail from '@_/hooks/useEmail';
 
 import styles from './AppChattingListPage.module.css';
 import ChattingList from './_components/ChattingList/ChattingList';
 import ChattingListSkeleton from './_components/ChattingListSkeleton/ChattingListSkeleton';
 import ChattingRoomSidebar from './_components/ChattingRoomSidebar/ChattingRoomSidebar';
+import mbtiChatQueryBases from './remote/mbtiChatQueryBases';
 
 const ChatManageModalContent = ({
   mbti,
@@ -166,9 +168,6 @@ const getSideBarStyle = (isMoved: boolean, isOpen: boolean) => {
 };
 
 export default function AppChattingListPage() {
-  const [chattingList, setChattingList] = useState<ChattingPreview[]>([]);
-  const [isFirstLoading, setIsFirstLoading] = useState(true);
-  const intervalId = useRef<ReturnType<typeof setInterval>>(undefined);
   const location = useLocation();
   const { isSidebarOpened: isSidebarOpenedFromLocation = false } =
     (location.state || {}) as { isSidebarOpened: boolean };
@@ -189,22 +188,14 @@ export default function AppChattingListPage() {
   const [isChattingModifying, setIsChattingModifying] = useState(false);
   const afterModifyFn = useRef<undefined | (() => void)>(undefined);
 
-  useEffect(() => {
-    let isFetching = false;
-    async function updateChattingList() {
-      if (isFetching) return;
-      isFetching = true;
-      const data = await getFetch<ChatMbtiRecentResponseBody>(
-        HTTP_API_END_POINT.recentMbtiChat,
-      );
-
-      setChattingList(data);
-      isFetching = false;
-      setIsFirstLoading(false);
-    }
-    intervalId.current = setInterval(updateChattingList, 100);
-    return () => clearInterval(intervalId.current);
-  }, []);
+  const {
+    data: chattingList,
+    isSuccess: isChattingListSuccess,
+    isPending: isChattingListPending,
+  } = useQuery({
+    ...mbtiChatQueryBases.all(),
+    refetchInterval: 100,
+  });
 
   useEffect(() => {
     if (!isSidebarOpened) return;
@@ -281,7 +272,7 @@ export default function AppChattingListPage() {
               </p>
               <SolidPlusSVG className={styles['plus-icon']} />
             </button>
-            {!isFirstLoading && chattingList.length === 0 && (
+            {isChattingListSuccess && chattingList.length === 0 && (
               <div className={styles['empty-container']}>
                 <div className={styles['sona-container']}>
                   <div className={styles.blur} />
@@ -294,8 +285,8 @@ export default function AppChattingListPage() {
                 </p>
               </div>
             )}
-            {isFirstLoading && <ChattingListSkeleton />}
-            {!isFirstLoading && chattingList.length > 0 && (
+            {isChattingListPending && <ChattingListSkeleton />}
+            {isChattingListSuccess && chattingList.length > 0 && (
               <ChattingList
                 chattingPreviews={chattingList}
                 onChattingRoomClick={(mbti) =>
