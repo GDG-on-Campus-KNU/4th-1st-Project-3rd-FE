@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
+import { MutationOptions, useMutation } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 
 import Button from '@_/components/common/Button/Button';
@@ -11,29 +12,45 @@ import useNonLoginPage from '@_/hooks/useNonLoginPage';
 
 import styles from './LoginPage.module.css';
 
+const useLoginMutation = (
+  options: MutationOptions<
+    EmptyResponse,
+    Error,
+    { email: string; password: string }
+  > = {},
+) => {
+  const navigate = useNavigate();
+  return useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      postFetch<LoginRequestBody>(HTTP_API_END_POINT.login, {
+        body: { email, password },
+      }),
+    onSuccess: () => {
+      navigate(APP_END_POINT.chattingList);
+    },
+
+    ...options,
+  });
+};
 export default function AppLoginPage() {
   useNonLoginPage();
   const [email, setEmail] = useState('');
   const [password, setPassWord] = useState('');
   const [errorMessage, setErrorMessage] = useState<null | string>(null);
-  const [isLoginSending, setIsLoginSending] = useState(false);
-  const navigate = useNavigate();
 
-  const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setIsLoginSending(true);
-    try {
-      await postFetch<LoginRequestBody>(HTTP_API_END_POINT.login, {
-        body: { email, password },
-      });
-    } catch (_: unknown) {
-      setIsLoginSending(false);
+  const { mutate: login, isPending: isLoginPending } = useLoginMutation({
+    onError: () => {
       setErrorMessage('아이디 혹은 비밀번호가 틀렸습니다');
-      return;
-    }
-    setIsLoginSending(false);
-    navigate(APP_END_POINT.chattingList);
-  };
+    },
+  });
+
+  const handleLogin = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      login({ email, password });
+    },
+    [email, password, login],
+  );
 
   return (
     <>
@@ -48,7 +65,7 @@ export default function AppLoginPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           isError={!!errorMessage}
-          disabled={isLoginSending}
+          disabled={isLoginPending}
           autoFocus
           autoComplete="username"
         />
@@ -60,13 +77,13 @@ export default function AppLoginPage() {
           value={password}
           onChange={(e) => setPassWord(e.target.value)}
           isError={!!errorMessage}
-          disabled={isLoginSending}
+          disabled={isLoginPending}
           autoComplete="current-password"
         />
         <div className={styles['error-message']}>
-          {!isLoginSending && errorMessage}
+          {!isLoginPending && errorMessage}
         </div>
-        <Button className={styles['login-button']} isLoading={isLoginSending}>
+        <Button className={styles['login-button']} isLoading={isLoginPending}>
           로그인
         </Button>
       </form>
