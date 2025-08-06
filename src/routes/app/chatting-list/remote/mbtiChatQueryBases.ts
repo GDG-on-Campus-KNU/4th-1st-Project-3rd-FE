@@ -24,7 +24,7 @@ const mbtiChatQueryBases = {
         getFetch<ChatMbtiOpenGetResponseBody>(
           HTTP_API_END_POINT.mbtiChatOpenGet,
         ),
-      select: (data) => getTargetMbtiBit(data.closedMbti),
+      select: (data) => getTargetMbtiBit(~data.closedMbti),
     }),
 } as const satisfies Record<keyof typeof mbtiChatQueryKeys, () => void>;
 

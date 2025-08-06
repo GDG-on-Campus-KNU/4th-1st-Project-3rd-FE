@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import Button from '@_/components/common/Button/Button';
@@ -10,9 +11,9 @@ import APP_END_POINT from '@_/constants/appEndpoint';
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { postFetch } from '@_/fetches/BaseFetches';
 
+import mbtiChatQueryBases from '../remote/mbtiChatQueryBases';
 import MbtiList from './_components/MbtiList/MbtiList';
 import MbtiListSkeleton from './_components/MbtiListSkeleton/MBTIListSkeleton';
-import useClosedMbti from './_hooks/useClosedMbti';
 import styles from './page.module.css';
 
 const ModalContent = ({
@@ -86,7 +87,7 @@ const ModalContent = ({
 
 export default function AppAddChatPage() {
   const navigate = useNavigate();
-  const closedMbti = useClosedMbti();
+  const { data: closedMbti } = useQuery(mbtiChatQueryBases.closed());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMbti, setSelectedMbti] = useState<Mbti | null>(null);
 
