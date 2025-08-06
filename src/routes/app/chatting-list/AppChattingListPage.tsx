@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import Button from '@_/components/common/Button/Button';
 import { Modal } from '@_/components/common/Modal/Modal';
@@ -169,13 +169,20 @@ export default function AppChattingListPage() {
   const [chattingList, setChattingList] = useState<ChattingPreview[]>([]);
   const [isFirstLoading, setIsFirstLoading] = useState(true);
   const intervalId = useRef<ReturnType<typeof setInterval>>(undefined);
+  const location = useLocation();
+  const { isSidebarOpened: isSidebarOpenedFromLocation = false } =
+    (location.state || {}) as { isSidebarOpened: boolean };
   const navigate = useNavigate();
   const [lastMbti, setLastMbti] = useState<Mbti | null>(null);
   const [lastType, setLastType] = useState<'close' | 'reset' | null>(null);
   const [isChatManageModalOpen, setIsChatManageModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const [isSidebarOpened, setIsSidebarOpened] = useState(false);
-  const [isSidebarMoved, setIsSidebarMoved] = useState(false);
+  const [isSidebarOpened, setIsSidebarOpened] = useState(
+    isSidebarOpenedFromLocation,
+  );
+  const [isSidebarMoved, setIsSidebarMoved] = useState(
+    isSidebarOpenedFromLocation,
+  );
   const { email, resetEmail } = useEmail();
   const mainContainerRef = useRef<HTMLDivElement>(null);
   const [isLogoutSending, setIsLogoutSending] = useState(false);
@@ -253,7 +260,7 @@ export default function AppChattingListPage() {
         <ChattingRoomSidebar
           email={email}
           logout={() => setIsLogoutModalOpen(true)}
-          cancel={() => navigate(APP_END_POINT.cancel)}
+          hide={() => setIsSidebarOpened(false)}
         />
 
         <div className={styles['main-container']}>

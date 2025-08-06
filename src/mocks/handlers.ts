@@ -1,6 +1,7 @@
 import { RequestHandler } from 'node_modules/msw/lib/core/handlers/RequestHandler';
 import { WebSocketHandler } from 'node_modules/msw/lib/core/handlers/WebSocketHandler';
 
+import analysis from '@_/mocks/handlers/analysis';
 import auth from '@_/mocks/handlers/auth/auth';
 import email from '@_/mocks/handlers/auth/email';
 import register from '@_/mocks/handlers/auth/register';
@@ -11,4 +12,5 @@ export const handlers: Array<RequestHandler | WebSocketHandler> = [
   ...auth,
   ...email,
   ...register,
+  ...analysis,
 ];

@@ -6,6 +6,7 @@ import AppMainPage from '@_/routes/app/MainPage';
 import MainLayout from '@_/routes/app/layout';
 
 import NormalErrorBoundary from './NormalErrorBoundary';
+import AnalysisFacePage from './analysis/face/page';
 import AppCancelPage from './cancel/AppCancelPage';
 import AppChatMbtiPage from './chat/mbti/[mbti]/ChatMbtiPage';
 import AppChattingListPage from './chatting-list/AppChattingListPage';
@@ -43,6 +44,10 @@ export default function AppRouter() {
               element={<AppAddChatPage />}
             />
             <Route path={APP_END_POINT.cancel} element={<AppCancelPage />} />
+            <Route
+              path={APP_END_POINT.analysisFace}
+              element={<AnalysisFacePage />}
+            />
           </Routes>
         </NetworkErrorBoundary>
       </NormalErrorBoundary>

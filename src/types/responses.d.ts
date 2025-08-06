@@ -33,4 +33,9 @@ type GetEmailResponseBody = string;
 
 type GetEmailResponse = BaseResponse<GetEmailResponseBody>;
 
+type AnalysisFaceResponseBody = {
+  mbti: Mbti;
+};
+type AnalysisFaceResponse = BaseResponse<AnalysisFaceResponseBody>;
+
 type EmptyResponse = Record<string, never>;
