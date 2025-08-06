@@ -7,7 +7,12 @@ import {
   useState,
 } from 'react';
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  MutationOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import WaitingDot from '@_/components/common/WaitingDot/WaitingDot';
@@ -28,6 +33,20 @@ import MessageTextArea from './_component/MessageTextArea/MessageTextArea';
 
 type SendingPhase = 'posting' | 'wait-update' | 'complete';
 
+const useSendMessage = (
+  mbti: Mbti,
+  options: MutationOptions<EmptyResponse, Error, string> = {},
+) => {
+  return useMutation({
+    mutationFn: (value: string) =>
+      postFetch<ChatMbtiRequestBody>(HTTP_API_END_POINT.mbtiChatPost(mbti), {
+        body: { content: value },
+      }),
+
+    ...options,
+  });
+};
+
 export default function AppChatMbtiPage() {
   const navigate = useNavigate();
   const mbti: Mbti =
@@ -39,7 +58,6 @@ export default function AppChatMbtiPage() {
   const endRef = useRef<HTMLDivElement>(null);
   const [sendingMessage, setSendingMessage] = useState<string | null>(null);
   const [isShownWaitingDot, setIsShownWaitingDot] = useState(false);
-  const [hasChattedThisMount, setHasChattedThisMount] = useState(false);
   const [sendingPhase, setSendingPhase] = useState<SendingPhase>('complete');
 
   const handleValueChange = useCallback(() => {
@@ -65,44 +83,23 @@ export default function AppChatMbtiPage() {
     if (!lastMessage) return;
 
     if (lastMessage.isUserChat) {
-      const id = setTimeout(
-        () => setIsShownWaitingDot(true),
-        hasChattedThisMount ? 600 : 0,
-      );
+      const id = setTimeout(() => setIsShownWaitingDot(true), 600);
       return () => clearTimeout(id);
     }
 
     setIsShownWaitingDot(false);
-  }, [messages, hasChattedThisMount]);
+  }, [messages]);
 
   useLayoutEffect(() => {
     endRef.current?.scrollIntoView();
   }, [messages, isShownWaitingDot, sendingMessage]);
 
-  const handleSubmit = useCallback(
-    async (value: string) => {
+  const { mutate: sendMessage } = useSendMessage(mbti, {
+    onMutate: (value) => {
       setSendingMessage(value);
       setSendingPhase('posting');
-      postFetch<ChatMbtiRequestBody>(HTTP_API_END_POINT.mbtiChatPost(mbti), {
-        body: { content: value },
-      })
-        .then(() =>
-          setSendingPhase((prev) =>
-            prev === 'complete' ? prev : 'wait-update',
-          ),
-        )
-        .catch(() => {
-          alert('메세지 발신에 실패하였습니다..');
-
-          setSendingMessage(null);
-          setSendingPhase('complete');
-        })
-        .finally(() => {
-          setHasChattedThisMount(true);
-        });
     },
-    [mbti],
-  );
+  });
 
   // useEffect(() => {
   //   for (let i = 0; i < 100; i++) {
@@ -171,7 +168,7 @@ export default function AppChatMbtiPage() {
         </div>
         <div className={styles['text-area']} ref={messageTextAreaRef}>
           <MessageTextArea
-            onSubmit={handleSubmit}
+            onSubmit={sendMessage}
             onValueChange={handleValueChange}
             maxTextAreaHeight={70}
             canSend={!sendingMessage && !messages.at(-1)?.isUserChat}
