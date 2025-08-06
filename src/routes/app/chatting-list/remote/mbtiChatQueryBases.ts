@@ -35,10 +35,10 @@ const mbtiChatQueryBases = {
           queryClient.getQueryData<ChatMbtiResponseBody>(
             mbtiChatQueryKeys.room(mbti),
           ) || [];
-        const offset = 9;
         const lastMs = +new Date(messages?.at(-1)?.time || 0);
-        const nowMs = lastMs + 1000 + offset * 60 * 60 * 1000;
-        const targetDate = new Date(nowMs);
+        // UTC+9을 맞추기 위한 오프셋
+        const timeOffset = 9 * 60 * 60 * 1000;
+        const targetDate = new Date(lastMs + timeOffset);
 
         const messageResponses = await getFetch<ChatMbtiResponseBody>(
           HTTP_API_END_POINT.mbtiChatGet(
