@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import Button from '@_/components/common/Button/Button';
@@ -9,12 +10,13 @@ import SolidArrowHeadSVG from '@_/components/common/svgs/SolidArrowHeadSVG';
 import APP_END_POINT from '@_/constants/appEndpoint';
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { deleteFetch } from '@_/fetches/BaseFetches';
-import useEmail from '@_/hooks/useEmail';
+import profileQueryBases from '@_/remote/profileQueryBase';
 
 import styles from './AppCancelPage.module.css';
 
 export default function AppCancelPage() {
-  const { email, resetEmail } = useEmail();
+  const { data: email } = useQuery(profileQueryBases.email());
+  const queryClient = useQueryClient();
   const [typedEmail, setTypedEmail] = useState('');
   const [isCancelSending, setIsCancelSending] = useState(false);
   const navigate = useNavigate();
@@ -30,9 +32,9 @@ export default function AppCancelPage() {
       return;
     }
     setIsCancelSending(false);
-    resetEmail();
+    queryClient.invalidateQueries(profileQueryBases.email());
     navigate(APP_END_POINT.main);
-  }, [navigate, resetEmail]);
+  }, [navigate, queryClient]);
 
   return (
     <>

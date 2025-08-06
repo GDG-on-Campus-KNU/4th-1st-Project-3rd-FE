@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import Button from '@_/components/common/Button/Button';
@@ -12,7 +12,7 @@ import SONASvg from '@_/components/common/svgs/sona/SONASvg';
 import APP_END_POINT from '@_/constants/appEndpoint';
 import HTTP_API_END_POINT from '@_/constants/httpApiEndpoint';
 import { deleteFetch, postFetch } from '@_/fetches/BaseFetches';
-import useEmail from '@_/hooks/useEmail';
+import profileQueryBases from '@_/remote/profileQueryBase';
 
 import styles from './AppChattingListPage.module.css';
 import ChattingList from './_components/ChattingList/ChattingList';
@@ -182,7 +182,8 @@ export default function AppChattingListPage() {
   const [isSidebarMoved, setIsSidebarMoved] = useState(
     isSidebarOpenedFromLocation,
   );
-  const { email, resetEmail } = useEmail();
+  const { data: email } = useQuery(profileQueryBases.email());
+  const queryClient = useQueryClient();
   const mainContainerRef = useRef<HTMLDivElement>(null);
   const [isLogoutSending, setIsLogoutSending] = useState(false);
   const [isChattingModifying, setIsChattingModifying] = useState(false);
@@ -228,10 +229,10 @@ export default function AppChattingListPage() {
       return;
     }
     setIsLogoutSending(false);
-    resetEmail();
+    queryClient.invalidateQueries(profileQueryBases.email());
     setIsLogoutModalOpen(false);
     navigate(APP_END_POINT.main);
-  }, [resetEmail, navigate]);
+  }, [queryClient, navigate]);
 
   return (
     <>
@@ -249,7 +250,7 @@ export default function AppChattingListPage() {
         ref={mainContainerRef}
       >
         <ChattingRoomSidebar
-          email={email}
+          email={email ?? null}
           logout={() => setIsLogoutModalOpen(true)}
           hide={() => setIsSidebarOpened(false)}
         />
